@@ -3,6 +3,7 @@
 import re
 from collections import defaultdict
 from typing import Dict, List, Tuple
+import itertools
 
 with open('%FILE%.txt') as f:
     %HERE%
