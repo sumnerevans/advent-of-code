@@ -47,15 +47,30 @@ def intersections(p1, p2):
     vert_lines1, hor_lines1 = lines(p1)
     vert_lines2, hor_lines2 = lines(p2)
 
-    print(vert_lines1, hor_lines1)
-    print(vert_lines2, hor_lines2)
+    def intersects(hor_line, vert_line):
+        y, (x_0, x_1) = hor_line
+        x, (y_0, y_1) = vert_line
 
-    # TODO: vertical lines can only intersect with horiz lines and vice versa
-    pass
+        if x_0 <= x <= x_1 and y_0 <= y <= y_1:
+            return (x, y)
+
+    for hl1 in hor_lines1:
+        for vl2 in vert_lines2:
+            i = intersects(hl1, vl2)
+            if i:
+                yield i
+
+    for hl2 in hor_lines2:
+        for vl1 in vert_lines1:
+            i = intersects(hl2, vl1)
+            if i:
+                yield i
 
 
 print('Part 1:')
 
-print(intersections(*wire_paths))
+(map(lambda i: (sum(i), i), intersections(*wire_paths)))
+
+print(list(intersections(*wire_paths)))
 
 print('Part 2:')
