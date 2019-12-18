@@ -9,11 +9,6 @@ import itertools
 with open('7.txt') as f:
     intape = tuple(int(x) for x in f.read().split(','))
 
-intape = [
-    3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26, 27, 4, 27,
-    1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5
-]
-
 
 def run(tape, inputs, pc=0):
     inputs = iter(inputs)
@@ -57,8 +52,7 @@ def run(tape, inputs, pc=0):
             pc_inc = 2
             tape[tape[pc + 1]] = int(next(inputs))
         elif opcode == 4:
-            pc_inc = 2
-            return get_value(tape[pc + 1], m1), pc
+            return get_value(tape[pc + 1], m1), pc + 2
         elif opcode == 5:
             cond, jump = tape[pc + 1:pc + 3]
             if get_value(cond, m1) != 0:
@@ -127,14 +121,13 @@ def run_with_phases(phases):
     # Subsequent rounds.
     i = 0
     while True:
-        print(i, tapes[i])
         output, pcs[i] = run(
             tapes[i],
             [current_input],
             pc=pcs[i],
         )
         if output is None:
-            return output
+            return current_input
 
         current_input = output
         i = (i + 1) % 5
