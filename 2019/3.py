@@ -4,9 +4,10 @@ import re
 from collections import defaultdict
 from typing import Dict, List, Tuple
 import itertools
+from functools import partial
 
 with open('3.txt') as f:
-    wire_paths = [[x for x in line.split(',')] for line in f]
+    wire_paths = [[x for x in line.strip().split(',')] for line in f]
 
 dir_re = re.compile(r'(L|R|U|D)(.*)')
 
@@ -67,10 +68,51 @@ def intersections(p1, p2):
                 yield i
 
 
+def manhattan_distance(p1, p2):
+    p1x, p1y = p1
+    p2x, p2y = p2
+
+    return abs(p2x - p1x) + abs(p2y - p1y)
+
+
 print('Part 1:')
-
-(map(lambda i: (sum(i), i), intersections(*wire_paths)))
-
-print(list(intersections(*wire_paths)))
+print(min(map(partial(manhattan_distance, (0, 0)),
+              intersections(*wire_paths))))
 
 print('Part 2:')
+
+
+def steps(path, intersection):
+    pos = (0, 0)
+    steps = 0
+    current_segment_steps = 0
+    path_idx = 0
+
+    # Step one-by-one to find the intersection from the start position.
+    while pos != intersection:
+        # Determine the direction we are going.
+        direction, length = dir_re.match(path[path_idx]).groups()
+        length = int(length)
+        if direction == 'L':
+            pos = (pos[0] - 1, pos[1])
+        elif direction == 'R':
+            pos = (pos[0] + 1, pos[1])
+        elif direction == 'U':
+            pos = (pos[0], pos[1] + 1)
+        elif direction == 'D':
+            pos = (pos[0], pos[1] - 1)
+
+        # Go on to the next segment when we reach the end of this one.
+        current_segment_steps += 1
+        if length == current_segment_steps:
+            current_segment_steps = 0
+            path_idx += 1
+        steps += 1
+
+    return steps
+
+
+print(
+    min(
+        steps(wire_paths[0], intersection) + steps(wire_paths[1], intersection)
+        for intersection in intersections(*wire_paths)))
