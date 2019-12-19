@@ -2,7 +2,7 @@
 
 import itertools
 
-with open('2.txt') as f:
+with open('02.txt') as f:
     intape = [int(x) for x in f.read().split(',')]
 
 

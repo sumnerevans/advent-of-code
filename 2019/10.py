@@ -18,7 +18,7 @@ print('Part 1:')
 
 
 def obstructed(coord1, coord2):
-    if coord2.x == coord2.y:
+    if coord2.x == coord2.x:
         # TODO
         return False
     slope = Fraction(coord2.y - coord1.y, coord2.x - coord1.x)

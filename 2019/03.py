@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple
 import itertools
 from functools import partial
 
-with open('3.txt') as f:
+with open('03.txt') as f:
     wire_paths = [[x for x in line.strip().split(',')] for line in f]
 
 dir_re = re.compile(r'(L|R|U|D)(.*)')

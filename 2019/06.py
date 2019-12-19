@@ -13,7 +13,7 @@ orbits_tree = {}
 orbits_graph = defaultdict(list)
 
 orbit_re = re.compile(r'(.*)\)(.*)')
-with open('6.txt') as f:
+with open('06.txt') as f:
     for line in f:
         Y, X = orbit_re.match(line).groups()
         orbits_tree[X] = Y

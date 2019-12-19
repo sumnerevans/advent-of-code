@@ -6,7 +6,7 @@ from collections import defaultdict
 from typing import Dict, List, Tuple
 import itertools
 
-with open('5.txt') as f:
+with open('05.txt') as f:
     intape = tuple(int(x) for x in f.read().split(','))
 
 

@@ -25,7 +25,7 @@ def chunk(iterable, n):
 
 # (width, height)
 dimensions = (25, 6)
-with open('8.txt') as f:
+with open('08.txt') as f:
     picture = map(int, f.read().strip())
     layers = list(chunk(picture, n=dimensions[0] * dimensions[1]))
 

@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple
 
 masses = []
 
-with open('1.txt') as f:
+with open('01.txt') as f:
     for line in f:
         masses.append(int(line))
 
