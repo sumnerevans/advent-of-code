@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import math
 import os
 from fractions import Fraction
 import re
@@ -7,15 +8,14 @@ from collections import defaultdict, namedtuple
 from typing import Dict, List, Tuple
 import itertools
 import progressbar
+from functools import partial
 
 Point = namedtuple('Point', ('x', 'y'))
 
 with open('10.txt') as f:
-    grid = [[Point(x, y) for x, c in enumerate(line.strip()) if c == '#']
+    grid = [[Point(x, -y) for x, c in enumerate(line.strip()) if c == '#']
             for y, line in enumerate(f)]
     coords = tuple(itertools.chain(*grid))
-
-print('Part 1:')
 
 
 def obstructed(coord1, coord2):
@@ -50,7 +50,19 @@ def obstructed(coord1, coord2):
     return False
 
 
+def angle_between(coord1, coord2):
+    return math.atan2((coord2.y - coord1.y), (coord2.x - coord1.x))
+
+
+def angle_from_pi_over_2(angle):
+    if angle > math.pi / 2:
+        return 1.5 * math.pi + (math.pi - angle)
+
+    return (math.pi / 2) - angle
+
+
 max_viewable = 0
+base_coord = None
 for asteroid in progressbar.progressbar(coords):
     viewable = 0
     for other in coords:
@@ -62,7 +74,40 @@ for asteroid in progressbar.progressbar(coords):
 
     if viewable > max_viewable:
         max_viewable = viewable
+        base_coord = asteroid
 
+print('Part 1:')
 print(max_viewable)
 
 print('Part 2:')
+
+points_with_angle = defaultdict(list)
+
+for coord in coords:
+    if coord == base_coord:
+        continue
+
+    points_with_angle[angle_between(base_coord, coord)].append(coord)
+
+sorted_angles = list(sorted(points_with_angle, key=angle_from_pi_over_2))
+
+vaporized = set()
+
+i = 0
+while len(vaporized) < 200:
+    in_line = list(
+        sorted(
+            points_with_angle[sorted_angles[i]],
+            key=partial(math.dist, base_coord),
+        ))
+    for p in in_line:
+        if p in vaporized:
+            continue
+        vaporized.add(p)
+
+        if len(vaporized) == 200:
+            # subtract y instead of add because we are using an inverse Y-axis.
+            print(p.x * 100 - p.y)
+        break
+
+    i = (i + 1) % len(sorted_angles)
