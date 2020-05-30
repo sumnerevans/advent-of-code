@@ -1,6 +1,6 @@
 {
   "python.analysis.openFilesOnly": false,
-  "python.formatting.provider": "yapf",
+  "python.formatting.provider": "black",
   "python.jediEnabled": false,
   "python.linting.enabled": true,
   "python.linting.flake8Enabled": true,
