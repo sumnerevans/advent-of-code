@@ -9,6 +9,19 @@ let
     ]
   );
 
+  sessionToken = pkgs.lib.removeSuffix "\n" (builtins.readFile ./.session_token);
+  getInputScript = pkgs.writeShellScriptBin "getinput" ''
+    [[ $1 == "" ]] && echo "Usage: getinput <day>" && exit 1
+    year=$(basename $(pwd))
+
+    outfile=$1
+    [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
+
+    ${pkgs.curl}/bin/curl \
+        --cookie "session=${sessionToken}" \
+        https://adventofcode.com/$year/day/$1/input > $outfile.txt
+  '';
+
   # CoC Config
   cocConfig = {
     "python.pythonPath" = "${py38WithPackages}/bin/python";
@@ -42,7 +55,11 @@ pkgs.mkShell {
     # Core
     rnix-lsp
 
+    # Python
     py38WithPackages
     py38WithPackages.pkgs.flake8
+
+    # Utilities
+    getInputScript
   ];
 }
