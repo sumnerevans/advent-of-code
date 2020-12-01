@@ -60,6 +60,7 @@ pkgs.mkShell {
     # Python
     py38WithPackages
     py38WithPackages.pkgs.flake8
+    py38WithPackages.pkgs.yapf
 
     # Utilities
     getInputScript

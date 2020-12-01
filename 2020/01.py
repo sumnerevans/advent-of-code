@@ -27,7 +27,6 @@ for i, a in enumerate(expenses):
     if found:
         break
 
-
 print('Part 2:')
 
 for i, a in enumerate(expenses):
