@@ -31,8 +31,8 @@ let
   };
 in
 pkgs.mkShell {
+  # https://e.printstacktrace.blog/merging-json-files-recursively-in-the-command-line/
   shellHook = ''
-    # https://e.printstacktrace.blog/merging-json-files-recursively-in-the-command-line/
     mkdir -p .vim
     echo '${builtins.toJSON cocConfig}' |
       ${pkgs.jq}/bin/jq -s \
