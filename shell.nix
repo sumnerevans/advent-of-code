@@ -2,11 +2,10 @@ let
   pkgs = import <nixpkgs> {};
   py38WithPackages = pkgs.python38.withPackages (
     ps: with ps; [
-      pynvim
       flake8
-      black
       graphviz
-      python-language-server
+      jedi
+      pynvim
     ]
   );
 
@@ -44,7 +43,6 @@ pkgs.mkShell {
     rnix-lsp
 
     py38WithPackages
-    py38WithPackages.pkgs.black
     py38WithPackages.pkgs.flake8
   ];
 }
