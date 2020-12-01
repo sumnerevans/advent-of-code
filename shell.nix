@@ -18,8 +18,10 @@ let
     [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
 
     ${pkgs.curl}/bin/curl \
+        -f \
         --cookie "session=${sessionToken}" \
-        https://adventofcode.com/$year/day/$1/input > $outfile.txt
+        --output $outfile.txt \
+        https://adventofcode.com/$year/day/$1/input
   '';
 
   # CoC Config
