@@ -10,7 +10,7 @@ let
   );
 
   sessionToken = pkgs.lib.removeSuffix "\n" (builtins.readFile ./.session_token);
-  curl = "${pkgs.curl}/bin/curl";
+  curl = ''${pkgs.curl}/bin/curl -f --cookie "session=${sessionToken}"'';
   getInputScript = pkgs.writeShellScriptBin "getinput" ''
     [[ $1 == "" ]] && echo "Usage: getinput <day>" && exit 1
     year=$(basename $(pwd))
@@ -18,10 +18,7 @@ let
     outfile=$1
     [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
 
-    ${curl} -f \
-        --cookie "session=${sessionToken}" \
-        --output $outfile.txt \
-        https://adventofcode.com/$year/day/$1/input
+    ${curl} --output $outfile.txt https://adventofcode.com/$year/day/$1/input
   '';
 
   rg = "${pkgs.ripgrep}/bin/rg --color never";
@@ -31,14 +28,18 @@ let
     # Skip if not a year dir
     [[ ! $(echo $year | ${rg} "\d{4}") ]] && exit 0
 
-    ${curl} -f \
-        -s \
-        --cookie "session=${sessionToken}" \
-        https://adventofcode.com/$year/leaderboard/self |
+    ${curl} -s https://adventofcode.com/$year/leaderboard/self |
       ${pkgs.html-xml-utils}/bin/hxselect -c pre |
       ${pkgs.gnused}/bin/sed "s/<[^>]*>//g" |
       ${rg} "^\s*(Day\s+Time|-+Part|\d+\s+(&gt;24h|\d{2}:\d{2}:\d{2}))" |
       ${pkgs.gnused}/bin/sed "s/&gt;/>/g"
+  '';
+
+  runScript = pkgs.writeShellScriptBin "run" ''
+    day=$1
+    [[ $(echo "$1 < 10" | bc) == "1" ]] && day="0$day"
+
+    ${py38WithPackages}/bin/python ./$day.py <./$day.txt
   '';
 
   # CoC Config
@@ -84,5 +85,6 @@ pkgs.mkShell {
     # Utilities
     getInputScript
     printStatsScript
+    runScript
   ];
 }
