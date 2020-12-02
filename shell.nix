@@ -10,6 +10,7 @@ let
   );
 
   sessionToken = pkgs.lib.removeSuffix "\n" (builtins.readFile ./.session_token);
+  curl = "${pkgs.curl}/bin/curl";
   getInputScript = pkgs.writeShellScriptBin "getinput" ''
     [[ $1 == "" ]] && echo "Usage: getinput <day>" && exit 1
     year=$(basename $(pwd))
@@ -17,11 +18,27 @@ let
     outfile=$1
     [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
 
-    ${pkgs.curl}/bin/curl \
-        -f \
+    ${curl} -f \
         --cookie "session=${sessionToken}" \
         --output $outfile.txt \
         https://adventofcode.com/$year/day/$1/input
+  '';
+
+  rg = "${pkgs.ripgrep}/bin/rg --color never";
+  printStatsScript = pkgs.writeShellScriptBin "printstats" ''
+    year=$(basename $(pwd))
+
+    # Skip if not a year dir
+    [[ ! $(echo $year | ${rg} "\d{4}") ]] && exit 0
+
+    ${curl} -f \
+        -s \
+        --cookie "session=${sessionToken}" \
+        https://adventofcode.com/$year/leaderboard/self |
+      ${pkgs.html-xml-utils}/bin/hxselect -c pre |
+      ${pkgs.gnused}/bin/sed "s/<[^>]*>//g" |
+      ${rg} "^\s*(Day\s+Time|-+Part|\d+\s+(&gt;24h|\d{2}:\d{2}:\d{2}))" |
+      ${pkgs.gnused}/bin/sed "s/&gt;/>/g"
   '';
 
   # CoC Config
@@ -53,6 +70,8 @@ pkgs.mkShell {
       > .vim/coc-settings.json
   '';
 
+  POST_CD_COMMAND = "${printStatsScript}/bin/printstats";
+
   buildInputs = with pkgs; [
     # Core
     rnix-lsp
@@ -64,5 +83,6 @@ pkgs.mkShell {
 
     # Utilities
     getInputScript
+    printStatsScript
   ];
 }
