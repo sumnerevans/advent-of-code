@@ -8,26 +8,31 @@ from typing import Dict, List, Tuple
 import itertools
 from functools import partial
 
-with open('%FILE%.txt') as f:
-    for line in f:
-        %HERE%
+lines = [l.strip() for l in sys.stdin.readlines()]
+%HERE%
+for line in lines:
+    pass  # (<>)
+
+# (<>)
 
 ########################################################################################
+print('Part 1:')
+
 
 def part1():
-    print('Part 1:')
 
-    # (<>)
+    pass  # (<>)
 
 
 print(part1())
 
 ########################################################################################
+print('\nPart 2:')
+
 
 def part2():
-    print('\nPart 2:')
 
-    # (<>)
+    pass  # (<>)
 
 
 print(part2())

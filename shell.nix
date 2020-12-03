@@ -11,9 +11,13 @@ let
 
   sessionToken = pkgs.lib.removeSuffix "\n" (builtins.readFile ./.session_token);
   curl = ''${pkgs.curl}/bin/curl -f --cookie "session=${sessionToken}"'';
+  rg = "${pkgs.ripgrep}/bin/rg --color never";
   getInputScript = pkgs.writeShellScriptBin "getinput" ''
     [[ $1 == "" ]] && echo "Usage: getinput <day>" && exit 1
     year=$(basename $(pwd))
+
+    # Error if not a year dir
+    [[ ! $(echo $year | ${rg} "\d{4}") ]] && echo "Not a year dir" && exit 1
 
     outfile=$1
     [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
@@ -21,7 +25,6 @@ let
     ${curl} --output $outfile.txt https://adventofcode.com/$year/day/$1/input
   '';
 
-  rg = "${pkgs.ripgrep}/bin/rg --color never";
   printStatsScript = pkgs.writeShellScriptBin "printstats" ''
     year=$(basename $(pwd))
 
@@ -35,17 +38,38 @@ let
       ${pkgs.gnused}/bin/sed "s/&gt;/>/g"
   '';
 
-  runScript = pkgs.writeShellScriptBin "run" ''
+  getDayScriptPart = scriptName: ''
+    # Check that day is passed in.
+    [[ $1 == "" ]] && echo "Usage: ${scriptName} <day>" && exit 1
     day=$1
-    [[ $(echo "$1 < 10" | bc) == "1" ]] && day="0$day"
 
+    # Error if no day
+    [[ ! $(echo $day | ${rg} "\d+") ]] && echo "Not a valid day" && exit 1
+
+    # Zero-pad day
+    [[ $(echo "$1 < 10" | bc) == "1" ]] && day="0$day"
+  '';
+
+  runScript = pkgs.writeShellScriptBin "run" ''
+    ${getDayScriptPart "run"}
     ${py38WithPackages}/bin/python ./$day.py <./$day.txt
+  '';
+
+  mkTestScript = pkgs.writeShellScriptBin "mktest" ''
+    ${getDayScriptPart "mktest"}
+    ${pkgs.xsel}/bin/xsel --output > $day.test.txt
+  '';
+
+  runTestScript = pkgs.writeShellScriptBin "runtest" ''
+    ${getDayScriptPart "runtest"}
+    ${py38WithPackages}/bin/python ./$day.py <./$day.test.txt
   '';
 
   # CoC Config
   cocConfig = {
-    "python.pythonPath" = "${py38WithPackages}/bin/python";
     "python.jediPath" = "${py38WithPackages}/lib/python3.8/site-packages";
+    "python.linting.flake8Path" = "${py38WithPackages}/bin/flake8";
+    "python.pythonPath" = "${py38WithPackages}/bin/python";
   };
 in
 pkgs.mkShell {
@@ -84,7 +108,9 @@ pkgs.mkShell {
 
     # Utilities
     getInputScript
+    mkTestScript
     printStatsScript
     runScript
+    runTestScript
   ];
 }
