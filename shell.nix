@@ -1,11 +1,11 @@
 let
   pkgs = import <nixpkgs> {};
-  py38WithPackages = pkgs.python38.withPackages (
+  py3WithPackages = pkgs.python3.withPackages (
     ps: with ps; [
       flake8
       graphviz
-      jedi
       pynvim
+      python-language-server
     ]
   );
 
@@ -52,7 +52,7 @@ let
 
   runScript = pkgs.writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
-    ${py38WithPackages}/bin/python ./$day.py <./$day.txt
+    ${py3WithPackages}/bin/python ./$day.py <./$day.txt
   '';
 
   mkTestScript = pkgs.writeShellScriptBin "mktest" ''
@@ -62,14 +62,14 @@ let
 
   runTestScript = pkgs.writeShellScriptBin "runtest" ''
     ${getDayScriptPart "runtest"}
-    ${py38WithPackages}/bin/python ./$day.py <./$day.test.txt
+    ${py3WithPackages}/bin/python ./$day.py <./$day.test.txt
   '';
 
   # CoC Config
   cocConfig = {
-    "python.jediPath" = "${py38WithPackages}/lib/python3.8/site-packages";
-    "python.linting.flake8Path" = "${py38WithPackages}/bin/flake8";
-    "python.pythonPath" = "${py38WithPackages}/bin/python";
+    "python.jediPath" = "${py3WithPackages}/lib/python3.8/site-packages";
+    "python.linting.flake8Path" = "${py3WithPackages}/bin/flake8";
+    "python.pythonPath" = "${py3WithPackages}/bin/python";
   };
 in
 pkgs.mkShell {
@@ -102,9 +102,9 @@ pkgs.mkShell {
     rnix-lsp
 
     # Python
-    py38WithPackages
-    py38WithPackages.pkgs.flake8
-    py38WithPackages.pkgs.yapf
+    py3WithPackages
+    py3WithPackages.pkgs.flake8
+    py3WithPackages.pkgs.yapf
 
     # Utilities
     getInputScript
