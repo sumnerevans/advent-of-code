@@ -1,12 +1,20 @@
 #! /usr/bin/env python3
 
+import itertools
 import os
 import re
 import sys
 from collections import defaultdict
-from typing import Dict, List, Tuple
-import itertools
 from functools import partial
+from typing import Dict, List, Tuple
+
+
+# Utilities
+def rematch(pattern, string):
+    return re.fullmatch(pattern, string)
+
+
+# Input parsing
 
 lines = [l.strip() for l in sys.stdin.readlines()]
 %HERE%
