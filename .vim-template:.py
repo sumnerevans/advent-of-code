@@ -20,18 +20,20 @@ print('Part 1:')
 
 
 def part1():
-
     pass  # (<>)
 
 
-print(part1())
+ans_part1 = part1()
+print(ans_part1)
+
+# Regression Test
+# assert ans_part1 == (<>)
 
 ########################################################################################
 print('\nPart 2:')
 
 
 def part2():
-
     pass  # (<>)
 
 
