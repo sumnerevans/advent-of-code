@@ -70,7 +70,6 @@ let
 
   # CoC Config
   cocConfig = {
-    "python.jediPath" = "${py3WithPackages}/lib/python3.8/site-packages";
     "python.linting.flake8Path" = "${py3WithPackages}/bin/flake8";
     "python.pythonPath" = "${py3WithPackages}/bin/python";
   };
