@@ -52,6 +52,9 @@ let
 
   runScript = pkgs.writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
+
+    [[ ! -f $day.txt ]] && ${getInputScript}/bin/getinput $1
+
     ${py3WithPackages}/bin/python ./$day.py <./$day.txt
   '';
 
@@ -62,7 +65,7 @@ let
 
   runTestScript = pkgs.writeShellScriptBin "runtest" ''
     ${getDayScriptPart "runtest"}
-    ${py3WithPackages}/bin/python ./$day.py <./$day.test.txt
+    ${py3WithPackages}/bin/python ./$day.py --test <./$day.test.txt
   '';
 
   # CoC Config
