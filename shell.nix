@@ -69,32 +69,19 @@ let
   '';
 
   # CoC Config
-  cocConfig = {
-    "python.linting.flake8Path" = "${py3WithPackages}/bin/flake8";
-    "python.pythonPath" = "${py3WithPackages}/bin/python";
-  };
+  userCocConfig = builtins.fromJSON (builtins.readFile ./.vim/coc-settings.part.json);
+  cocConfig = pkgs.writeText "coc-settings.json" (
+    builtins.toJSON (
+      {
+        "python.pythonPath" = "${py3WithPackages}/bin/python";
+      } // userCocConfig
+    )
+  );
 in
 pkgs.mkShell {
-  # https://e.printstacktrace.blog/merging-json-files-recursively-in-the-command-line/
   shellHook = ''
     mkdir -p .vim
-    echo '${builtins.toJSON cocConfig}' |
-      ${pkgs.jq}/bin/jq -s \
-        'def deepmerge(a;b):
-          reduce b[] as $item (a;
-            reduce ($item | keys_unsorted[]) as $key (.;
-              $item[$key] as $val | ($val | type) as $type | .[$key] = if ($type == "object") then
-                deepmerge({}; [if .[$key] == null then {} else .[$key] end, $val])
-              elif ($type == "array") then
-                (.[$key] + $val | unique)
-              else
-                $val
-              end)
-            );
-          deepmerge({}; .)' \
-        .vim/coc-settings.part.json \
-        - \
-      > .vim/coc-settings.json
+    ln -sf ${cocConfig} .vim/coc-settings.json
   '';
 
   POST_CD_COMMAND = "${printStatsScript}/bin/printstats";
@@ -106,7 +93,7 @@ pkgs.mkShell {
     # Python
     py3WithPackages
     py3WithPackages.pkgs.flake8
-    py3WithPackages.pkgs.yapf
+    py3WithPackages.pkgs.black
 
     # Utilities
     getInputScript

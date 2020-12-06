@@ -11,7 +11,7 @@ from typing import Dict, List, Tuple
 
 test = False
 if len(sys.argv) > 1:
-    if sys.argv[1] == '--test':
+    if sys.argv[1] == "--test":
         test = True
 
 
@@ -30,7 +30,7 @@ for line in lines:
 # (<>)
 
 ########################################################################################
-print('Part 1:')
+print("Part 1:")
 
 
 def part1():
@@ -50,7 +50,7 @@ assert ans_part1 not in tries, "Same as an incorrect answer!"
 # assert test or ans_part1 == (<>)
 
 ########################################################################################
-print('\nPart 2:')
+print("\nPart 2:")
 
 
 def part2():
