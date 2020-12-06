@@ -11,7 +11,7 @@ from typing import Dict, List, Tuple
 
 test = False
 if len(sys.argv) > 1:
-    if sys.argv[1] == '--test':
+    if sys.argv[1] == "--test":
         test = True
 
 
@@ -25,7 +25,7 @@ def rematch(pattern, string):
 lines = [l.strip() for l in sys.stdin.readlines()]
 
 ########################################################################################
-print('Part 1:')
+print("Part 1:")
 sids = set()
 
 
@@ -39,7 +39,7 @@ def part1():
 
         for d in bf:
             m = math.ceil(low + (hi - low) / 2)
-            if d == 'B':
+            if d == "B":
                 low = m
             else:
                 hi = m
@@ -49,7 +49,7 @@ def part1():
         low, hi = 0, 7
         for d in lr:
             m = math.ceil(low + (hi - low) / 2)
-            if d == 'R':
+            if d == "R":
                 low = m
             else:
                 hi = m
@@ -71,7 +71,7 @@ print(ans_part1)
 assert test or ans_part1 == 987
 
 ########################################################################################
-print('\nPart 2:')
+print("\nPart 2:")
 
 
 def part2():
