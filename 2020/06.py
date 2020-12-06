@@ -34,8 +34,7 @@ for line in lines:
         current = set()
         current2 = []
     else:
-        for c in line:
-            current.add(c)
+        current = current.union(set(line))
         current2.append(line)
 
 groups.append(current)
@@ -54,7 +53,7 @@ print(ans_part1)
 
 # Store the attempts that failed here.
 tries = []
-print('Tries Part 1:', tries)
+print("Tries Part 1:", tries)
 assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
@@ -86,7 +85,7 @@ print(ans_part2)
 
 # Store the attempts that failed here.
 tries2 = []
-print('Tries Part 2:', tries2)
+print("Tries Part 2:", tries2)
 assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
