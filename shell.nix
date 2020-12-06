@@ -69,13 +69,15 @@ let
   '';
 
   # CoC Config
-  userCocConfig = builtins.fromJSON (builtins.readFile ./.vim/coc-settings.part.json);
   cocConfig = pkgs.writeText "coc-settings.json" (
-    builtins.toJSON (
-      {
-        "python.pythonPath" = "${py3WithPackages}/bin/python";
-      } // userCocConfig
-    )
+    builtins.toJSON {
+      "diagnostic.showUnused" = false;
+      "python.formatting.provider" = "black";
+      "python.linting.flake8Enabled" = true;
+      "python.linting.mypyEnabled" = true;
+      "python.linting.pylintEnabled" = false;
+      "python.pythonPath" = "${py3WithPackages}/bin/python";
+    }
   );
 in
 pkgs.mkShell {
