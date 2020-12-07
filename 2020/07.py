@@ -56,7 +56,7 @@ def part1():
             can.add(d)
             look.append(d)
 
-    return len(set(x for x in can))
+    return len(can)
 
 
 ans_part1 = part1()

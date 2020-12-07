@@ -6,7 +6,7 @@ import os
 import re
 import sys
 from collections import defaultdict
-from functools import partial
+from functools import partial, lru_cache
 from typing import Dict, List, Tuple
 
 test = False
