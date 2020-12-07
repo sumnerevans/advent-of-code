@@ -40,7 +40,7 @@ for line in lines:
         if rule == "no other bags":
             continue
         n, c = rematch(r"(\d+) (.*) bags?", rule).groups()
-        dependencies[c].append((int(n), color))
+        dependencies[c].append(color)
         dependencies2[color].append((int(n), c))
 
 ########################################################################################
@@ -49,14 +49,14 @@ print("Part 1:")
 
 def part1():
     can = set()
-    look = [(1, "shiny gold")]
+    look = ["shiny gold"]
     while len(look) > 0:
-        needs, c = look.pop()
+        c = look.pop()
         for d in dependencies[c]:
             can.add(d)
             look.append(d)
 
-    return len(set(x[1] for x in can))
+    return len(set(x for x in can))
 
 
 ans_part1 = part1()
@@ -81,7 +81,7 @@ def part2():
     while len(look) > 0:
         N, c = look.pop()
         for n, c1 in dependencies2[c]:
-            needs[c1] += n * N
+            needs[c1] += N * n
             look.append((N * n, c1))
 
     return sum(needs.values())
