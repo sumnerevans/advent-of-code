@@ -22,7 +22,7 @@ def rematch(pattern, string):
 
 
 # Crazy Machine
-class OC(Enum):
+class OC(Enum):  # Op-Codes
     jmp = 0  # jump relative to PC+1
     acc = 1  # update accumulator
     nop = 2  # do nothing
@@ -91,11 +91,18 @@ print("\nPart 2:")
 
 
 def part2():
-    for i in range(len(tape)):
-        ntape = tape[:i] + [(OC.nop, 0)] + tape[i + 1 :] + [(OC.trm, 0)]
-        result = run_machine(ntape, return_acc_if_loop=False)
-        if result:
-            return result
+    for i, (oc, v) in enumerate(tape):
+        if oc == OC.jmp:
+            ntape = tape[:i] + [(OC.nop, v)] + tape[i + 1 :] + [(OC.trm, 0)]
+            result = run_machine(ntape, return_acc_if_loop=False)
+            if result:
+                return result
+
+        elif oc == OC.nop:
+            ntape = tape[:i] + [(OC.jmp, v)] + tape[i + 1 :] + [(OC.trm, 0)]
+            result = run_machine(ntape, return_acc_if_loop=False)
+            if result:
+                return result
 
 
 ans_part2 = part2()
