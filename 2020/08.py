@@ -63,20 +63,15 @@ def run_machine(tape, return_acc_if_loop=True):
 
 
 # Input parsing
-lines = [l.strip() for l in sys.stdin.readlines()]
-# tape = decode_tape(lines)
-%HERE%
-for line in lines:
-    pass  # (<>)
+tape = decode_tape([l.strip() for l in sys.stdin.readlines()])
 
-# (<>)
 
 ########################################################################################
 print("Part 1:")
 
 
 def part1():
-    pass  # (<>)
+    return run_machine(tape)
 
 
 ans_part1 = part1()
@@ -89,14 +84,18 @@ assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
 # Regression Test
-# assert test or ans_part1 == (<>)
+assert test or ans_part1 == 1810
 
 ########################################################################################
 print("\nPart 2:")
 
 
 def part2():
-    pass  # (<>)
+    for i in range(len(tape)):
+        ntape = tape[:i] + [(OC.nop, 0)] + tape[i + 1 :] + [(OC.trm, 0)]
+        result = run_machine(ntape, return_acc_if_loop=False)
+        if result:
+            return result
 
 
 ans_part2 = part2()
@@ -108,4 +107,4 @@ print("Tries Part 2:", tries2)
 assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-# assert test or ans_part2 == (<>)
+assert test or ans_part2 == 969
