@@ -60,7 +60,7 @@ let
 
   mkTestScript = pkgs.writeShellScriptBin "mktest" ''
     ${getDayScriptPart "mktest"}
-    ${pkgs.xsel}/bin/xsel --output > $day.test.txt
+    ${pkgs.xsel}/bin/xsel --output > inputs/$day.test.txt
   '';
 
   runTestScript = pkgs.writeShellScriptBin "runtest" ''
