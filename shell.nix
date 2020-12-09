@@ -55,7 +55,7 @@ let
 
     [[ ! -f inputs/$day.txt ]] && ${getInputScript}/bin/getinput $1
 
-    ${py3WithPackages}/bin/python ./$day.py <./inputs/$day.txt
+    ${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt
   '';
 
   mkTestScript = pkgs.writeShellScriptBin "mktest" ''
@@ -65,7 +65,7 @@ let
 
   runTestScript = pkgs.writeShellScriptBin "runtest" ''
     ${getDayScriptPart "runtest"}
-    ${py3WithPackages}/bin/python ./$day.py --test <./inputs/$day.test.txt
+    ${pkgs.pypy3}/bin/pypy3 ./$day.py --test <./inputs/$day.test.txt
   '';
 
   # CoC Config
@@ -94,8 +94,9 @@ pkgs.mkShell {
 
     # Python
     py3WithPackages
-    py3WithPackages.pkgs.flake8
     py3WithPackages.pkgs.black
+    py3WithPackages.pkgs.flake8
+    pypy3
 
     # Utilities
     getInputScript

@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import itertools
+import itertools as it
 import math
 import os
 import re
@@ -68,6 +68,7 @@ def run_machine(tape, return_acc_if_loop=True):
 # Input parsing
 lines = [l.strip() for l in sys.stdin.readlines()]
 # tape = decode_tape(lines)
+# seq = [int(x) for x in lines]
 %HERE%
 for line in lines:
     pass  # (<>)
