@@ -107,6 +107,7 @@ assert test or ans_part1 == 18272118
 print("\nPart 2:")
 
 
+# This is what I used to solve first. It's very inefficient, but effective.
 def part2():  # O(3n^3)
     for s in range(len(seq)):
         for e in range(s, len(seq)):
@@ -114,7 +115,23 @@ def part2():  # O(3n^3)
                 return max(seq[s : e + 1]) + min(seq[s : e + 1])
 
 
-ans_part2 = part2()
+# This is a much cleaner way to do the same thing, removing a factor of 3n from the
+# complexity.
+def part2_cleaner():  # O(n^2)
+    for s in range(len(seq)):
+        current_sum = 0
+        current_min = float("inf")
+        current_max = 0
+        for e in range(len(seq) - s):
+            c = seq[s + e]
+            current_sum += c
+            current_min = min(current_min, c)
+            current_max = max(current_max, c)
+            if current_sum == 18272118:
+                return current_min + current_max
+
+
+ans_part2 = part2_cleaner()
 print(ans_part2)
 
 # Store the attempts that failed here.

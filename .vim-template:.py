@@ -15,6 +15,9 @@ if len(sys.argv) > 1:
     if sys.argv[1] == "--test":
         test = True
 
+# Constants
+INF = float('inf')
+
 
 # Utilities
 def rematch(pattern, string):
