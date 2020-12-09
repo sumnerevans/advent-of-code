@@ -2,18 +2,15 @@
 
 import os
 import re
+import sys
 from collections import defaultdict
 from typing import Dict, List, Tuple
 import itertools
 from functools import partial
 
-expenses = []
+expenses = [int(l) for l in sys.stdin.readlines()]
 
-with open('01.txt') as f:
-    for line in f:
-        expenses.append(int(line))
-
-print('Part 1:')
+print("Part 1:")
 
 for i, a in enumerate(expenses):
     found = False
@@ -27,7 +24,7 @@ for i, a in enumerate(expenses):
     if found:
         break
 
-print('Part 2:')
+print("Part 2:")
 
 for i, a in enumerate(expenses):
     found = False

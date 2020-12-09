@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 from collections import defaultdict
 from typing import Dict, List, Tuple
 import itertools
@@ -9,18 +10,18 @@ from functools import partial
 
 passwords = []
 
-with open('02.txt') as f:
-    for line in f:
-        bounds, letter, password = line.split()
-        lower, upper = map(int, bounds.split('-'))
-        letter = letter[0]
-        passwords.append((lower, upper, letter, password))
+lines = [l.strip() for l in sys.stdin.readlines()]
+for line in lines:
+    bounds, letter, password = line.split()
+    lower, upper = map(int, bounds.split("-"))
+    letter = letter[0]
+    passwords.append((lower, upper, letter, password))
 
 ########################################################################################
 
 
 def part1():
-    print('Part 1:')
+    print("Part 1:")
 
     num_valid = 0
     for l, u, c, p in passwords:
@@ -35,7 +36,7 @@ print(part1())
 
 
 def part2():
-    print('Part 2:')
+    print("Part 2:")
 
     num_valid = 0
     for l, u, c, p in passwords:

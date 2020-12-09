@@ -22,7 +22,7 @@ let
     outfile=$1
     [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
 
-    ${curl} --output $outfile.txt https://adventofcode.com/$year/day/$1/input
+    ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
   '';
 
   printStatsScript = pkgs.writeShellScriptBin "printstats" ''
@@ -53,9 +53,9 @@ let
   runScript = pkgs.writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
 
-    [[ ! -f $day.txt ]] && ${getInputScript}/bin/getinput $1
+    [[ ! -f inputs/$day.txt ]] && ${getInputScript}/bin/getinput $1
 
-    ${py3WithPackages}/bin/python ./$day.py <./$day.txt
+    ${py3WithPackages}/bin/python ./$day.py <./inputs/$day.txt
   '';
 
   mkTestScript = pkgs.writeShellScriptBin "mktest" ''
@@ -65,7 +65,7 @@ let
 
   runTestScript = pkgs.writeShellScriptBin "runtest" ''
     ${getDayScriptPart "runtest"}
-    ${py3WithPackages}/bin/python ./$day.py --test <./$day.test.txt
+    ${py3WithPackages}/bin/python ./$day.py --test <./inputs/$day.test.txt
   '';
 
   # CoC Config
