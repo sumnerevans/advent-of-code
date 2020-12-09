@@ -11,60 +11,15 @@ from functools import partial, lru_cache
 from typing import Dict, List, Tuple
 
 test = False
+P = 25
 if len(sys.argv) > 1:
     if sys.argv[1] == "--test":
         test = True
-
-
-# Utilities
-def rematch(pattern, string):
-    return re.fullmatch(pattern, string)
-
-
-# Crazy Machine
-class OC(Enum):
-    jmp = 0  # jump relative to PC+1
-    acc = 1  # update accumulator
-    nop = 2  # do nothing
-    trm = 3  # terminate program
-
-
-def decode_tape(lines):
-    ops = []
-    for line in lines:
-        opcode, *vals = line.split()
-        ops.append((OC[opcode], tuple(int(v) for v in vals)))
-    return ops
-
-
-def run_machine(tape, return_acc_if_loop=True):
-    a = 0
-    pc = 0
-    seen = set()
-    while True:
-        if pc in seen:
-            return a if return_acc_if_loop else None
-
-        seen.add(pc)
-
-        oc, vs = tape[pc]
-        if oc == OC.trm:
-            return a
-        elif oc == OC.jmp:
-            pc += vs[0] - 1
-        elif oc == OC.acc:
-            a += vs[0]
-        elif oc == OC.nop:
-            pass
-
-        pc += 1
-
-    return a
+        P = 5
 
 
 # Input parsing
 lines = [l.strip() for l in sys.stdin.readlines()]
-# tape = decode_tape(lines)
 seq = [int(x) for x in lines]
 
 ########################################################################################
@@ -72,8 +27,8 @@ print("Part 1:")
 
 
 def part1():
-    current = seq[:25]
-    i = 25
+    current = seq[:P]
+    i = P
     while True:
         sumof = False
         for j, a in enumerate(current):
@@ -111,7 +66,7 @@ print("\nPart 2:")
 def part2():  # O(3n^3)
     for s in range(len(seq)):
         for e in range(s, len(seq)):
-            if sum(seq[s : e + 1]) == 18272118:
+            if sum(seq[s : e + 1]) == ans_part1:
                 return max(seq[s : e + 1]) + min(seq[s : e + 1])
 
 
@@ -127,7 +82,7 @@ def part2_cleaner():  # O(n^2)
             current_sum += c
             current_min = min(current_min, c)
             current_max = max(current_max, c)
-            if current_sum == 18272118:
+            if current_sum == ans_part1:
                 return current_min + current_max
 
 
