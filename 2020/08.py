@@ -78,7 +78,7 @@ ans_part1 = part1()
 print(ans_part1)
 
 # Store the attempts that failed here.
-tries = []
+tries = [1815]
 print("Tries Part 1:", tries)
 assert ans_part1 not in tries, "Same as an incorrect answer!"
 
@@ -94,15 +94,14 @@ def part2():
     for i, (oc, v) in enumerate(tape):
         if oc == OC.jmp:
             ntape = tape[:i] + [(OC.nop, v)] + tape[i + 1 :] + [(OC.trm, 0)]
-            result = run_machine(ntape, return_acc_if_loop=False)
-            if result:
-                return result
-
         elif oc == OC.nop:
             ntape = tape[:i] + [(OC.jmp, v)] + tape[i + 1 :] + [(OC.trm, 0)]
-            result = run_machine(ntape, return_acc_if_loop=False)
-            if result:
-                return result
+        else:
+            continue
+
+        result = run_machine(ntape, return_acc_if_loop=False)
+        if result:
+            return result
 
 
 ans_part2 = part2()
