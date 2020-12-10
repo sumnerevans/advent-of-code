@@ -6,7 +6,7 @@ import os
 import re
 import sys
 from collections import defaultdict
-from enum import Enum
+from enum import IntEnum
 from functools import partial, lru_cache
 from typing import Dict, List, Tuple
 
@@ -25,11 +25,15 @@ def rematch(pattern, string):
 
 
 # Crazy Machine
-class OC(Enum):
+class OC(IntEnum):
     jmp = 0  # jump relative to PC+1
     acc = 1  # update accumulator
     nop = 2  # do nothing
     trm = 3  # terminate program
+
+
+# Change if you add instructions
+assert len(OC) == 4  
 
 
 def decode_tape(lines):

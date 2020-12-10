@@ -56,7 +56,7 @@ let
 
     [[ ! -f inputs/$day.txt ]] && ${getInputScript}/bin/getinput $1
 
-    ${pkgs.watchexec}/bin/watchexec ${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt
+    ${pkgs.watchexec}/bin/watchexec "${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt"
   '';
 
   mkTestScript = pkgs.writeShellScriptBin "mktest" ''
