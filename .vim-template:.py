@@ -33,7 +33,7 @@ class OC(IntEnum):
 
 
 # Change if you add instructions
-assert len(OC) == 4  
+assert len(OC) == 4
 
 
 def decode_tape(lines):
