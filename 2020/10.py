@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import functools as ft
 import itertools as it
 import math
 import os
@@ -7,13 +8,17 @@ import re
 import sys
 from collections import defaultdict
 from enum import IntEnum
-from functools import partial, lru_cache
 from typing import Dict, List, Tuple
 
 test = False
 if len(sys.argv) > 1:
     if sys.argv[1] == "--test":
         test = True
+
+
+# Utilities
+def cache():  # Python 3.9 compat
+    return ft.lru_cache(maxsize=None)
 
 
 # Input parsing
@@ -61,8 +66,9 @@ for i, s in enumerate(seq):
         if abs(s - k) <= 3:
             Es[s].add(k)
 
+
 # Count the number of paths to the end of the chain.
-@lru_cache(maxsize=None)
+@cache()
 def paths(x):
     if m + 3 in Es[x]:
         return 1

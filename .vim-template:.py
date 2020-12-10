@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import functools as ft
 import itertools as it
 import math
 import os
@@ -7,7 +8,6 @@ import re
 import sys
 from collections import defaultdict
 from enum import IntEnum
-from functools import partial, lru_cache
 from typing import Dict, List, Tuple
 
 test = False
@@ -22,6 +22,10 @@ INF = float('inf')
 # Utilities
 def rematch(pattern, string):
     return re.fullmatch(pattern, string)
+
+
+def cache():  # Python 3.9 compat
+    return ft.lru_cache(maxsize=None)
 
 
 # Crazy Machine
