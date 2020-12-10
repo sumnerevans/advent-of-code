@@ -2,6 +2,7 @@ let
   pkgs = import <nixpkgs> {};
   py3WithPackages = pkgs.python3.withPackages (
     ps: with ps; [
+      black
       flake8
       graphviz
       pynvim
@@ -55,7 +56,7 @@ let
 
     [[ ! -f inputs/$day.txt ]] && ${getInputScript}/bin/getinput $1
 
-    ${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt
+    ${pkgs.watchexec}/bin/watchexec ${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt
   '';
 
   mkTestScript = pkgs.writeShellScriptBin "mktest" ''

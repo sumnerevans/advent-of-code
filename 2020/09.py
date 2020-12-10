@@ -23,6 +23,7 @@ lines = [l.strip() for l in sys.stdin.readlines()]
 seq = [int(x) for x in lines]
 
 ########################################################################################
+print(f"\n{'=' * 30}\n")
 print("Part 1:")
 
 
