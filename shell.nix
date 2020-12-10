@@ -59,6 +59,15 @@ let
     ${pkgs.watchexec}/bin/watchexec "${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt"
   '';
 
+  # Single run, don't watchexec
+  srunTestScript = pkgs.writeShellScriptBin "srun" ''
+    ${getDayScriptPart "srun"}
+
+    [[ ! -f inputs/$day.txt ]] && ${getInputScript}/bin/getinput $1
+
+    ${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt
+  '';
+
   mkTestScript = pkgs.writeShellScriptBin "mktest" ''
     ${getDayScriptPart "mktest"}
     ${pkgs.xsel}/bin/xsel --output > inputs/$day.test.txt
@@ -105,5 +114,6 @@ pkgs.mkShell {
     printStatsScript
     runScript
     runTestScript
+    srunTestScript
   ];
 }
