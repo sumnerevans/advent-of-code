@@ -18,16 +18,19 @@ if len(sys.argv) > 1:
 
 # Constants
 INF = float('inf')
-GRID_DIRS = [  # Tuples of (delta_row, delta_col)
+COMPASS_GRID_DIRS = [  # Tuples of (delta_row, delta_col)
     (-1, 0),  # above
     (1, 0),  # below
     (0, -1),  # left
     (0, 1),  # right
+]
+DIAG_GRID_DIRS = [  # Tuples of (delta_row, delta_col)
     (-1, -1),  # top-left
     (-1, 1),  # top-right
     (1, -1),  # bottom-left
     (1, 1),  # bottom-right
 ]
+GRID_DIRS = COMPASS_GRID_DIRS + DIAG_GRID_DIRS
 
 
 # Utilities
