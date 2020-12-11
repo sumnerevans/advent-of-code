@@ -6,6 +6,7 @@ import math
 import os
 import re
 import sys
+from copy import deepcopy
 from collections import defaultdict
 from enum import IntEnum
 from typing import Dict, List, Tuple
@@ -17,6 +18,16 @@ if len(sys.argv) > 1:
 
 # Constants
 INF = float('inf')
+GRID_DIRS = [  # Tuples of (delta_row, delta_col)
+    (-1, 0),  # above
+    (1, 0),  # below
+    (0, -1),  # left
+    (0, 1),  # right
+    (-1, -1),  # top-left
+    (-1, 1),  # top-right
+    (1, -1),  # bottom-left
+    (1, 1),  # bottom-right
+]
 
 
 # Utilities
@@ -26,6 +37,14 @@ def rematch(pattern, string):
 
 def cache():  # Python 3.9 compat
     return ft.lru_cache(maxsize=None)
+
+
+def grid_adjs(row, col, max_row, max_col, dirs=GRID_DIRS):
+    # Iterate through all of the directions and return all of the (row, col) tuples
+    # representing the adjacent cells.
+    for dy, dx in dirs:
+        if 0 <= row + dy < max_row and 0 <= col + dx < max_col:
+            yield row + dy, col + dx
 
 
 # Crazy Machine

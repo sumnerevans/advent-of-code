@@ -17,7 +17,28 @@ if len(sys.argv) > 1:
         test = True
 
 # Constants
-INF = float("inf")
+COMPASS_GRID_DIRS = [  # Tuples of (delta_row, delta_col)
+    (-1, 0),  # above
+    (1, 0),  # below
+    (0, -1),  # left
+    (0, 1),  # right
+]
+DIAG_GRID_DIRS = [  # Tuples of (delta_row, delta_col)
+    (-1, -1),  # top-left
+    (-1, 1),  # top-right
+    (1, -1),  # bottom-left
+    (1, 1),  # bottom-right
+]
+GRID_DIRS = COMPASS_GRID_DIRS + DIAG_GRID_DIRS
+
+
+# Utilities
+def grid_adjs(row, col, max_row, max_col, dirs=GRID_DIRS):
+    # Iterate through all of the directions and return all of the (row, col) tuples
+    # representing the adjacent cells.
+    for dy, dx in dirs:
+        if 0 <= row + dy < max_row and 0 <= col + dx < max_col:
+            yield row + dy, col + dx
 
 
 # Input parsing
@@ -29,29 +50,9 @@ R = len(lines)
 print(f"\n{'=' * 30}\n")
 print("Part 1:")
 
-DIRS = [  # Tuples of (delta_row, delta_col)
-    (-1, 0),  # above
-    (1, 0),  # below
-    (0, -1),  # left
-    (0, 1),  # right
-    (-1, -1),  # top-left
-    (-1, 1),  # top-right
-    (1, -1),  # bottom-left
-    (1, 1),  # bottom-right
-]
-
-
-def adjs(r, c):
-    # Iterate through all of the directions and return all of the (row, col) tuples
-    # representing the adjacent cells.
-    for dy, dx in DIRS:
-        if 0 <= r + dy < R and 0 <= c + dx < C:
-            yield r + dy, c + dx
-
 
 def part1():
     prev = copy.deepcopy(lines)
-    i = 0
     while True:
         new = copy.deepcopy(prev)
         for r in range(len(lines)):
@@ -60,7 +61,7 @@ def part1():
                     # This cell is a seat that is either occupied or not.
                     # Count the number of occupied adjacent seats.
                     num_o = 0
-                    for a_r, a_c in adjs(r, c):
+                    for a_r, a_c in grid_adjs(r, c, R, C):
                         if prev[a_r][a_c] == "#":
                             num_o += 1
 
@@ -76,7 +77,6 @@ def part1():
             # Return the count of all of the occupied seats (marked with '#')
             return "".join("".join(p) for p in prev).count("#")
 
-        i += 1
         prev = new
 
 
@@ -108,12 +108,11 @@ def rays(r, c):
 
     # yield from == JavaScript yield*
     # This yields all of the elements of the generator individually.
-    yield from (step(dy, dx) for (dy, dx) in DIRS)
+    yield from (step(dy, dx) for (dy, dx) in GRID_DIRS)
 
 
 def part2():
     prev = copy.deepcopy(lines)
-    i = 0
     while True:
         new = copy.deepcopy(prev)
         for r in range(len(lines)):
@@ -136,7 +135,6 @@ def part2():
         if prev == new:
             return "".join("".join(p) for p in prev).count("#")
 
-        i += 1
         prev = new
 
 
