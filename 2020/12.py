@@ -25,6 +25,10 @@ def rot(x, y, deg, origin=(0, 0)):
     return (x2 + origin[0], y2 + origin[1])
 
 
+def manhattan(x1, y1, x2=0, y2=0):
+    return abs(x2 - x1) + abs(y2 - y1)
+
+
 # Input parsing
 lines = [l.strip() for l in sys.stdin.readlines()]
 actions = []
@@ -65,7 +69,7 @@ def part1():
             # Action R means to turn right the given number of degrees.
             facing = dirs[(dirs.index(facing) - v // 90) % 4]
 
-    return abs(pos[0]) + abs(pos[1])
+    return manhattan(pos[0], pos[1])
 
 
 ans_part1 = part1()
@@ -102,7 +106,7 @@ def part2():
             wp = rot(*wp, v)
         if c == "R":
             wp = rot(*wp, -v)
-    return abs(pos[0]) + abs(pos[1])
+    return manhattan(pos[0], pos[1])
 
 
 ans_part2 = part2()

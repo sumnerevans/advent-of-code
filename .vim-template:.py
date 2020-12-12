@@ -19,10 +19,10 @@ if len(sys.argv) > 1:
 # Constants
 INF = float('inf')
 COMPASS_GRID_DIRS = [  # Tuples of (delta_row, delta_col)
-    (-1, 0),  # above
+    (0, 1),  # right
     (1, 0),  # below
     (0, -1),  # left
-    (0, 1),  # right
+    (-1, 0),  # above
 ]
 DIAG_GRID_DIRS = [  # Tuples of (delta_row, delta_col)
     (-1, -1),  # top-left
@@ -55,6 +55,10 @@ def rot(x, y, deg, origin=(0, 0)):
     x2 = round((x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta))
     y2 = round((x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta))
     return (x2 + origin[0], y2 + origin[1])
+
+
+def manhattan(x1, y1, x2=0, y2=0):
+    return abs(x2 - x1) + abs(y2 - y1)
 
 
 # Crazy Machine
