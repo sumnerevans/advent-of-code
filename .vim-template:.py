@@ -50,6 +50,13 @@ def grid_adjs(row, col, max_row, max_col, dirs=GRID_DIRS):
             yield row + dy, col + dx
 
 
+def rot(x, y, deg, origin=(0, 0)):
+    theta = deg * math.pi / 180
+    x2 = round((x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta))
+    y2 = round((x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta))
+    return (x2 + origin[0], y2 + origin[1])
+
+
 # Crazy Machine
 class OC(IntEnum):
     jmp = 0  # jump relative to PC+1
