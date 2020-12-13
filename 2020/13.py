@@ -146,7 +146,7 @@ assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
 # Regression Test
-# assert test or ans_part1 == (<>)
+assert test or ans_part1 == 3882
 
 ########################################################################################
 print("\nPart 2:")
@@ -417,6 +417,4 @@ print("Tries Part 2:", tries2)
 assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-if test:
-    assert ans_part2 == 1202161486
-# assert test or ans_part2 == (<>)
+assert test or ans_part2 == 867295486378319
