@@ -18,93 +18,6 @@ if len(sys.argv) > 1:
 
 # Constants
 INF = float("inf")
-COMPASS_GRID_DIRS = [  # Tuples of (delta_row, delta_col)
-    (0, 1),  # right
-    (1, 0),  # below
-    (0, -1),  # left
-    (-1, 0),  # above
-]
-DIAG_GRID_DIRS = [  # Tuples of (delta_row, delta_col)
-    (-1, -1),  # top-left
-    (-1, 1),  # top-right
-    (1, -1),  # bottom-left
-    (1, 1),  # bottom-right
-]
-GRID_DIRS = COMPASS_GRID_DIRS + DIAG_GRID_DIRS
-
-
-# Utilities
-def rematch(pattern, string):
-    return re.fullmatch(pattern, string)
-
-
-def cache():  # Python 3.9 compat
-    return ft.lru_cache(maxsize=None)
-
-
-def grid_adjs(row, col, max_row, max_col, dirs=GRID_DIRS):
-    # Iterate through all of the directions and return all of the (row, col) tuples
-    # representing the adjacent cells.
-    for dy, dx in dirs:
-        if 0 <= row + dy < max_row and 0 <= col + dx < max_col:
-            yield row + dy, col + dx
-
-
-def rot(x, y, deg, origin=(0, 0)):
-    theta = deg * math.pi / 180
-    x2 = round((x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta))
-    y2 = round((x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta))
-    return (x2 + origin[0], y2 + origin[1])
-
-
-def manhattan(x1, y1, x2=0, y2=0):
-    return abs(x2 - x1) + abs(y2 - y1)
-
-
-# Crazy Machine
-class OC(IntEnum):
-    jmp = 0  # jump relative to PC+1
-    acc = 1  # update accumulator
-    nop = 2  # do nothing
-    trm = 3  # terminate program
-
-
-# Change if you add instructions
-assert len(OC) == 4
-
-
-def decode_tape(lines):
-    ops = []
-    for line in lines:
-        opcode, *vals = line.split()
-        ops.append((OC[opcode], tuple(int(v) for v in vals)))
-    return ops
-
-
-def run_machine(tape, return_acc_if_loop=True):
-    a = 0
-    pc = 0
-    seen = set()
-    while True:
-        if pc in seen:
-            return a if return_acc_if_loop else None
-
-        seen.add(pc)
-
-        oc, vs = tape[pc]
-        if oc == OC.trm:
-            return a
-        elif oc == OC.jmp:
-            pc += vs[0] - 1
-        elif oc == OC.acc:
-            a += vs[0]
-        elif oc == OC.nop:
-            pass
-
-        pc += 1
-
-    return a
-
 
 # Input parsing
 lines = [l.strip() for l in sys.stdin.readlines()]
@@ -124,16 +37,12 @@ def part1():
 
         busses.append(int(b))
 
-    print(s)
     c = s
     while True:
-        print(s, [s // b for b in busses])
         for b in busses:
             if c % b == 0:
                 return b * (c - s)
         c += 1
-
-    print(busses)
 
 
 ans_part1 = part1()
@@ -164,6 +73,10 @@ def seqgcd(d):
 
 
 def part2_old():
+    """
+    This was my first attempt. It is a brute-force algorithm, which clearly doesn't work
+    because the input is to big. It does solve the samples, though.
+    """
     busses = []
     gaps = [0]
     for b in lines[1].split(","):
@@ -174,14 +87,6 @@ def part2_old():
             gaps.append(1)
             busses.append(int(b))
 
-    mb = 0
-    mi = 0
-    for i, b in enumerate(busses):
-        if b > mb:
-            mb = b
-            mi = i
-
-    A = sum(gaps)
     i = busses[0]
     k = 0
     while True:
@@ -200,7 +105,10 @@ def part2_old():
 
 
 def extended_gcd(a, b):
-    """Extended Greatest Common Divisor Algorithm
+    """
+    I don't claim any copyright on this. I copied it from the internet somewhere.
+
+    Extended Greatest Common Divisor Algorithm.
 
     Returns:
         gcd: The greatest common divisor of a and b.
@@ -222,7 +130,10 @@ def extended_gcd(a, b):
 
 
 def combine_phased_rotations(a_period, a_phase, b_period, b_phase):
-    """Combine two phased rotations into a single phased rotation
+    """
+    I don't claim any copyright on this. I copied it from the internet somewhere.
+
+    Combine two phased rotations into a single phased rotation
 
     Returns: combined_period, combined_phase
 
@@ -241,6 +152,7 @@ def combine_phased_rotations(a_period, a_phase, b_period, b_phase):
 
 
 def arrow_alignment(red_len, green_len, advantage):
+    # I don't claim any copyright on this. I copied it from the internet somewhere.
     print("aa", "r:", red_len, "g:", green_len, "a:", advantage)
     """Where the arrows first align, where green starts shifted by advantage"""
     period, phase = combine_phased_rotations(
@@ -250,7 +162,14 @@ def arrow_alignment(red_len, green_len, advantage):
 
 
 def part2_2():
-    print(lines[1].split(","))
+    """
+    This was my second attempt. It's slightly more intelligent as it uses the smallest
+    and largest bus IDs to calculate a larger step.
+
+    This would have worked if I also had the additional insight that I needed to then
+    use that to bootstrap finding how each subsequent bus lines up by iterating until I
+    got to a point where another bus lined up and then use that as a step.
+    """
     busses = []
     gaps = [0]
     for b in lines[1].split(","):
@@ -260,14 +179,6 @@ def part2_2():
         else:
             gaps.append(1)
             busses.append(int(b))
-
-    # print(busses, gaps)
-
-    # print(seqgcd([b + gaps[i] for i, b in enumerate(busses)]))
-    # print("gcd", seqgcd(busses))
-    # print("lcm", lcm([busses[0], busses[1]]), gaps[0], gaps[1])
-    # K = lcm([busses[0], busses[-1]])
-    # print("ohea", K)
 
     max_bus = 0
     min_bus = INF
@@ -281,52 +192,18 @@ def part2_2():
             min_bus = b
             min_bus_i = i
 
-    print("max", max_bus, max_bus_i)
-    print("min", min_bus, min_bus_i)
-
-    mb_off = sum(gaps[: max_bus_i + 1])
-    offsets = [sum(gaps[: k + 2]) for k in range(len(busses) - 1)]
-    print(offsets)
-    print("ohea", mb_off)
-    print("max_bus_i", max_bus_i)
     indexes = sorted([min_bus_i, max_bus_i])
-    print(",", indexes)
-    print(gaps)
-    print(sum(gaps[indexes[0] : indexes[1] + 1]))
     i = arrow_alignment(
         red_len=busses[indexes[0]],
         green_len=busses[indexes[1]],
         advantage=sum(gaps[indexes[0] : indexes[1] + 1]),
     )
-    # i = arrow_alignment(red_len=9, green_len=15, advantage=3)
-    # ohea
-    # print("lcm", lcm(offsets))
     jmp = lcm([busses[indexes[0]], busses[indexes[1]]])
-    print(i, jmp)
-
-    print("&" * 30)
     i = arrow_alignment(red_len=busses[0], green_len=busses[1], advantage=gaps[1],)
-    # i = arrow_alignment(red_len=9, green_len=15, advantage=3)
-    # ohea
-    # print("lcm", lcm(offsets))
     jmp = lcm([busses[0], busses[1]])
-    print(i, jmp)
-    _, s, t = extended_gcd(busses[0], busses[1])
-    z = ()
 
-    print()
-
-    # %jmp
-    ohea
-    # for o in offsets:
-    #     print(">>>>", lcm([o, busses[0]]))
-    print("jmp", jmp)
     assert jmp != 0
 
-    A = sum(gaps)
-    print("gap", A)
-    # i = busses[0]
-    # i = 1
     k = 0
     while True:
         if k % 100000 == 0:
@@ -347,6 +224,10 @@ def part2_2():
 
 
 def part2_3():
+    """
+    Third attempt. This one I tried to implement the Chinese Remainder Theorem by hand.
+    I failed.
+    """
     print(lines[1].split(","))
     busses = []
     gaps = [0]
@@ -373,6 +254,9 @@ def part2_3():
 
 
 def chinese_remainder(n, a):
+    """
+    I claim no copyright on this function. I copied it from the internet.
+    """
     sum = 0
     prod = reduce(lambda a, b: a * b, n)
     for n_i, a_i in zip(n, a):
@@ -382,6 +266,9 @@ def chinese_remainder(n, a):
 
 
 def mul_inv(a, b):
+    """
+    I claim no copyright on this function. I copied it from the internet.
+    """
     b0 = b
     x0, x1 = 0, 1
     if b == 1:
@@ -396,7 +283,14 @@ def mul_inv(a, b):
 
 
 def part2():
-    print(lines[1].split(","))
+    """
+    Final attempt at part 2. At this point I had struggled through enough that I
+    understood what I needed to do with the Chinese Remainder Theorem. I copied an
+    implementation of it (above) and then just created the necessary arrays for it.
+
+    One key is the ``indicies.append(-i)`` line. It needs to be negative because index
+    in question happens ``i`` before the period of ``b``.
+    """
     busses = []
     indicies = []
     for i, b in enumerate(lines[1].split(",")):
@@ -405,7 +299,7 @@ def part2():
             indicies.append(-i)
     n = busses
     a = indicies
-    print(chinese_remainder(n, a))
+    return chinese_remainder(n, a)
 
 
 ans_part2 = part2()
