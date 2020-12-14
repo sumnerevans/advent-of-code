@@ -76,6 +76,7 @@ def part1():
                 # First, binary left shift the andmask and ormask by one. This moves all
                 # the bits over to the left by 1, leaving a 0 at the least-significant
                 # bit (LSB).
+                # This is equivalent to multiplying both of these by 2.
                 andmask = andmask << 1
                 ormask = ormask << 1
                 if x != "0":
