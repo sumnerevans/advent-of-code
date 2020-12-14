@@ -24,6 +24,8 @@ let
     [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
 
     ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
+
+    less inputs/$outfile.txt
   '';
 
   printStatsScript = pkgs.writeShellScriptBin "printstats" ''
@@ -54,16 +56,12 @@ let
   runScript = pkgs.writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
 
-    [[ ! -f inputs/$day.txt ]] && ${getInputScript}/bin/getinput $1
-
     ${pkgs.watchexec}/bin/watchexec -r "${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt"
   '';
 
   # Single run, don't watchexec
   srunTestScript = pkgs.writeShellScriptBin "srun" ''
     ${getDayScriptPart "srun"}
-
-    [[ ! -f inputs/$day.txt ]] && ${getInputScript}/bin/getinput $1
 
     ${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt
   '';

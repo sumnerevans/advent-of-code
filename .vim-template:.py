@@ -61,6 +61,13 @@ def manhattan(x1, y1, x2=0, y2=0):
     return abs(x2 - x1) + abs(y2 - y1)
 
 
+def pbits(num, pad=32):
+    """
+    Return the bits of `num` in binary with the given padding.
+    """
+    return bin(num)[2:].zfill(pad)
+
+
 # Crazy Machine
 class OC(IntEnum):
     jmp = 0  # jump relative to PC+1
