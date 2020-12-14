@@ -34,12 +34,12 @@ GRID_DIRS = COMPASS_GRID_DIRS + DIAG_GRID_DIRS
 
 
 # Utilities
-def rematch(pattern, string):
-    return re.fullmatch(pattern, string)
-
-
 def cache():  # Python 3.9 compat
     return ft.lru_cache(maxsize=None)
+
+
+def rematch(pattern, string):
+    return re.fullmatch(pattern, string)
 
 
 def grid_adjs(row, col, max_row, max_col, dirs=GRID_DIRS):
@@ -48,13 +48,6 @@ def grid_adjs(row, col, max_row, max_col, dirs=GRID_DIRS):
     for dy, dx in dirs:
         if 0 <= row + dy < max_row and 0 <= col + dx < max_col:
             yield row + dy, col + dx
-
-
-def rot(x, y, deg, origin=(0, 0)):
-    theta = deg * math.pi / 180
-    x2 = round((x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta))
-    y2 = round((x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta))
-    return (x2 + origin[0], y2 + origin[1])
 
 
 def manhattan(x1, y1, x2=0, y2=0):
@@ -66,6 +59,18 @@ def pbits(num, pad=32):
     Return the bits of `num` in binary with the given padding.
     """
     return bin(num)[2:].zfill(pad)
+
+
+def rot(x, y, deg, origin=(0, 0)):
+    theta = deg * math.pi / 180
+    x2 = round((x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta))
+    y2 = round((x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta))
+    return (x2 + origin[0], y2 + origin[1])
+
+
+def sizezip(*iterables):
+    assert len(set(len(x) for x in iterables)) == 1
+    yield from zip(*iterables)
 
 
 # Crazy Machine
