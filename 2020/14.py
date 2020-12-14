@@ -9,7 +9,7 @@ import sys
 from copy import deepcopy
 from collections import defaultdict
 from enum import IntEnum
-from typing import Dict, List, Tuple
+from typing import Dict, Generator, Iterable, List, Match, Optional, Sized, Tuple
 
 test = False
 if len(sys.argv) > 1:
@@ -18,16 +18,16 @@ if len(sys.argv) > 1:
 
 
 # Utilities
-def rematch(pattern, string):
+def rematch(pattern: str, string: str) -> Optional[Match]:
     return re.fullmatch(pattern, string)
 
 
-def pbits(num, pad=32):
+def pbits(num: int, pad: int = 32) -> str:
     return bin(num)[2:].zfill(pad)
 
 
-def sizezip(*iterables):
-    assert len(set(len(x) for x in iterables)) == 1
+def sizezip(*iterables: Iterable) -> Generator[Tuple, None, None]:
+    assert len(set(len(x) for x in iterables)) == 1  # type: ignore
     yield from zip(*iterables)
 
 
@@ -167,7 +167,7 @@ def part2():
 
     print(
         "Max number of Xs in any given string: {} so only ever {} tuples out of\n"
-        "the call to it.product".format(max_count_x, 2 ** max_count_x)
+        "    the call to `it.product`".format(max_count_x, 2 ** max_count_x)
     )
     return sum(mem.values())
 

@@ -22,7 +22,8 @@ def rematch(pattern, string):
 
 
 # Crazy Machine
-class OC(IntEnum):  # Op-Codes
+class OC(IntEnum):
+    """Opcodes for the Harvard-architecture machine."""
     jmp = 0  # jump relative to PC+1
     acc = 1  # update accumulator
     nop = 2  # do nothing
@@ -31,17 +32,14 @@ class OC(IntEnum):  # Op-Codes
 
 # Change if you add instructions
 assert len(OC) == 4
+Tape = List[Tuple[OC, Tuple[int, ...]]]
 
 
-def decode_tape(lines):
-    ops = []
-    for line in lines:
-        opcode, *vals = line.split()
-        ops.append((OC[opcode], tuple(int(v) for v in vals)))
-    return ops
+def decode_tape(lines: List[str]) -> Tape:
+    return [(OC[c], tuple(int(v) for v in vals)) for c, *vals in map(str.split, lines)]
 
 
-def run_machine(tape, return_acc_if_loop=True):
+def run_harvard(tape: Tape, return_acc_if_loop: bool = True):
     a = 0
     pc = 0
     seen = set()
@@ -75,7 +73,7 @@ print("Part 1:")
 
 
 def part1():
-    return run_machine(tape)
+    return run_harvard(tape)
 
 
 ans_part1 = part1()
@@ -97,13 +95,13 @@ print("\nPart 2:")
 def part2():
     for i, (oc, v) in enumerate(tape):
         if oc == OC.jmp:
-            ntape = tape[:i] + [(OC.nop, v)] + tape[i + 1 :] + [(OC.trm, 0)]
+            ntape = tape[:i] + [(OC.nop, v)] + tape[i + 1 :] + [(OC.trm, (0,))]
         elif oc == OC.nop:
-            ntape = tape[:i] + [(OC.jmp, v)] + tape[i + 1 :] + [(OC.trm, 0)]
+            ntape = tape[:i] + [(OC.jmp, v)] + tape[i + 1 :] + [(OC.trm, (0,))]
         else:
             continue
 
-        result = run_machine(ntape, return_acc_if_loop=False)
+        result = run_harvard(ntape, return_acc_if_loop=False)
         if result:
             return result
 

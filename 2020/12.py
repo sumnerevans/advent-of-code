@@ -18,14 +18,17 @@ if len(sys.argv) > 1:
 
 
 # Utilities
-def rot(x, y, deg, origin=(0, 0)):
-    theta = deg * math.pi / 180
-    x2 = round((x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta))
-    y2 = round((x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta))
-    return (x2 + origin[0], y2 + origin[1])
+def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:
+    """
+    Rotate an integer point by `deg` around the `origin`. Only works when deg % 90 == 0.
+    """
+    assert deg % 90 == 0
+    for _ in range((deg // 90) % 4):
+        x, y = -y, x
+    return (x, y)
 
 
-def manhattan(x1, y1, x2=0, y2=0):
+def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:
     return abs(x2 - x1) + abs(y2 - y1)
 
 
@@ -41,7 +44,7 @@ print(f"\n{'=' * 30}\n")
 print("Part 1:")
 
 
-def part1():
+def part1() -> int:
     dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
     pos = (0, 0)
     facing = (1, 0)
@@ -88,7 +91,7 @@ assert test or ans_part1 == 1186
 print("\nPart 2:")
 
 
-def part2():
+def part2() -> int:
     pos = (0, 0)
     wp = (10, 1)
     for c, v in actions:
@@ -103,9 +106,9 @@ def part2():
         if c == "F":
             pos = (pos[0] + v * wp[0], pos[1] + v * wp[1])
         if c == "L":
-            wp = rot(*wp, v)
+            wp = irot(*wp, v)
         if c == "R":
-            wp = rot(*wp, -v)
+            wp = irot(*wp, -v)
     return manhattan(pos[0], pos[1])
 
 
