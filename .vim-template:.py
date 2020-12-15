@@ -2,6 +2,7 @@
 
 import functools as ft
 import itertools as it
+import heapq
 import math
 import os
 import re
@@ -9,7 +10,18 @@ import sys
 from copy import deepcopy
 from collections import defaultdict
 from enum import IntEnum
-from typing import Dict, Generator, Iterable, List, Match, Optional, Sized, Tuple
+from typing import (
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Match,
+    Optional,
+    Sized,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 test = False
 if len(sys.argv) > 1:
@@ -33,9 +45,35 @@ DIAG_GRID_DIRS: List[Tuple[int, int]] = [  # Tuples of (delta_row, delta_col)
 GRID_DIRS: List[Tuple[int, int]] = COMPASS_GRID_DIRS + DIAG_GRID_DIRS
 
 
+# Type variables
+K = TypeVar("K")
+
+
 # Utilities
 def cache():  # Python 3.9 compat
     return ft.lru_cache(maxsize=None)
+
+
+def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
+    """
+    A simple implementation of Dijkstra's shortest path algorithm for finding the
+    shortest path from ``start`` to ``end`` in ``G``.
+    """
+    Q = []
+    for k in G:
+        heapq.heappush(Q, (math.inf, k))
+    heapq.heappush(Q, (0, start))
+
+    D = {}
+    while Q:
+        cost, el = heapq.heappop(Q)
+        if cost < D.get(el, math.inf):
+            D[el] = cost
+
+        for c, x in G[el]:
+            heapq.heappush(Q, (cost + c, x))
+
+    return D[end]
 
 
 def rematch(pattern: str, string: str) -> Optional[Match]:
@@ -100,6 +138,7 @@ def sizezip(*iterables: Iterable) -> Generator[Tuple, None, None]:
 # Harvard-Architecture Machine
 class OC(IntEnum):
     """Opcodes for the Harvard-architecture machine."""
+
     jmp = 0  # jump relative to PC+1
     acc = 1  # update accumulator
     nop = 2  # do nothing
