@@ -1,14 +1,8 @@
 #! /usr/bin/env python3
 
 import functools as ft
-import itertools as it
-import math
-import os
-import re
 import sys
 from collections import defaultdict
-from enum import IntEnum
-from typing import Dict, List, Tuple
 
 test = False
 if len(sys.argv) > 1:

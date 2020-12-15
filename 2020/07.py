@@ -1,13 +1,8 @@
 #! /usr/bin/env python3
 
-import itertools
-import math
-import os
 import re
 import sys
 from collections import defaultdict
-from functools import partial
-from typing import Dict, List, Tuple
 
 test = False
 if len(sys.argv) > 1:

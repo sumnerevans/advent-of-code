@@ -1,12 +1,7 @@
 #! /usr/bin/env python3
 
-import os
 import re
 import sys
-from collections import defaultdict
-from typing import Dict, List, Tuple
-import itertools
-from functools import partial
 
 
 # Utilities

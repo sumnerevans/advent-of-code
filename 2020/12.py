@@ -1,15 +1,7 @@
 #! /usr/bin/env python3
 
-import functools as ft
-import itertools as it
-import math
-import os
-import re
 import sys
-from copy import deepcopy
-from collections import defaultdict
-from enum import IntEnum
-from typing import Dict, List, Tuple
+from typing import Tuple
 
 test = False
 if len(sys.argv) > 1:
@@ -22,10 +14,12 @@ def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[in
     """
     Rotate an integer point by `deg` around the `origin`. Only works when deg % 90 == 0.
     """
+    transformed_x = x - origin[0]
+    transformed_y = y - origin[1]
     assert deg % 90 == 0
     for _ in range((deg // 90) % 4):
-        x, y = -y, x
-    return (x, y)
+        transformed_x, transformed_y = -transformed_y, transformed_x
+    return (transformed_x + origin[0], transformed_y + origin[1])
 
 
 def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:

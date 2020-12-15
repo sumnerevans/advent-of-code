@@ -1,15 +1,7 @@
 #! /usr/bin/env python3
 
-import functools as ft
-import itertools as it
 import math
-import os
-import re
 import sys
-from copy import deepcopy
-from collections import defaultdict
-from enum import IntEnum
-from typing import Dict, List, Tuple
 
 test = False
 if len(sys.argv) > 1:
@@ -140,7 +132,7 @@ def combine_phased_rotations(a_period, a_phase, b_period, b_phase):
     The combined rotation is at its reference point if and only if both a and b
     are at their reference points.
     """
-    gcd, s, t = extended_gcd(a_period, b_period)
+    gcd, s, _ = extended_gcd(a_period, b_period)
     phase_difference = a_phase - b_phase
     pd_mult, pd_remainder = divmod(phase_difference, gcd)
     if pd_remainder:
@@ -241,7 +233,6 @@ def part2_3():
 
     N = reduce(lambda a, b: a * b, busses, 1)
     print(N)
-    zs = []
     x = 0
     for i, b in enumerate(busses):
         y_i = N // b

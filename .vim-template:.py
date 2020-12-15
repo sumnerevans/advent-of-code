@@ -124,10 +124,12 @@ def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[in
     """
     Rotate an integer point by `deg` around the `origin`. Only works when deg % 90 == 0.
     """
+    transformed_x = x - origin[0]
+    transformed_y = y - origin[1]
     assert deg % 90 == 0
     for _ in range((deg // 90) % 4):
-        x, y = -y, x
-    return (x, y)
+        transformed_x, transformed_y = -transformed_y, transformed_x
+    return (transformed_x + origin[0], transformed_y + origin[1])
 
 
 def sizezip(*iterables: Iterable) -> Generator[Tuple, None, None]:

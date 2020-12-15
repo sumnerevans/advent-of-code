@@ -1,14 +1,6 @@
 #! /usr/bin/env python3
 
-import itertools
-import math
-import os
-import re
 import sys
-from collections import defaultdict
-from enum import Enum
-from functools import partial, lru_cache
-from typing import Dict, List, Tuple
 
 test = False
 P = 25

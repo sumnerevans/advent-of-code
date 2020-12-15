@@ -79,7 +79,6 @@ let
   # CoC Config
   cocConfig = pkgs.writeText "coc-settings.json" (
     builtins.toJSON {
-      "diagnostic.showUnused" = false;
       "python.formatting.provider" = "black";
       "python.linting.flake8Enabled" = true;
       "python.linting.mypyEnabled" = true;
