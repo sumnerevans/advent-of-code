@@ -1,9 +1,10 @@
 #! /usr/bin/env python3
 
+import operator
 import re
 import sys
-from copy import deepcopy
-from typing import List, Match, Optional
+from functools import reduce
+from typing import Iterable, List, Match, Optional
 
 test = False
 if len(sys.argv) > 1:
@@ -12,6 +13,10 @@ if len(sys.argv) > 1:
 
 
 # Utilities
+def prod(it: Iterable):
+    return reduce(operator.mul, it, 1)
+
+
 def rematch(pattern: str, string: str) -> Optional[Match]:
     return re.fullmatch(pattern, string)
 
@@ -64,11 +69,9 @@ def part1() -> int:
         for field in ticket:
             inrange = False
             for ranges in rules.values():
-                for low, high in ranges:
-                    if low <= field <= high:
-                        inrange = True
-                        break
-                if inrange:
+                (l1, h1), (l2, h2) = ranges
+                if l1 <= field <= h1 or l2 <= field <= h2:
+                    inrange = True
                     break
 
             # This field wasn't in any range, so add the field value to the
@@ -105,12 +108,10 @@ def part2() -> int:
         isinvalid = False
         for field in ticket:
             fieldvalid = False
-            for rn, ranges in rules.items():
-                for l, h in ranges:
-                    if l <= field <= h:
-                        fieldvalid = True
-                        break
-                if fieldvalid:
+            for ranges in rules.values():
+                (l1, h1), (l2, h2) = ranges
+                if l1 <= field <= h1 or l2 <= field <= h2:
+                    fieldvalid = True
                     break
 
             if not fieldvalid:
@@ -127,7 +128,7 @@ def part2() -> int:
         # For example, if there is a rule "seat: 2-3 or 5-7", and index 0 of our ticket
         # is 4, then we know that index 0 cannot be "seat".
         for i, field_value in enumerate(ticket):
-            new_possibles = set(deepcopy(possibles[i]))
+            new_possibles = set(possibles[i])
             for field_name in possibles[i]:
                 (a, b), (c, d) = rules[field_name]
                 if not (a <= field_value <= b) and not (c <= field_value <= d):
@@ -149,12 +150,7 @@ def part2() -> int:
             possibles[x].remove(truemap[remove_idx])
 
     # Calculate the product of all of the ticket fields in my ticket.
-    prod = 1
-    for i, field in truemap.items():
-        if field.startswith("departure"):
-            prod *= yours[i]
-
-    return prod
+    return prod(yours[i] for i, f in truemap.items() if f.startswith("departure"))
 
 
 ans_part2 = part2()

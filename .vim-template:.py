@@ -4,6 +4,7 @@ import functools as ft
 import itertools as it
 import heapq
 import math
+import operator
 import os
 import re
 import sys
@@ -74,6 +75,10 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
             heapq.heappush(Q, (cost + c, x))
 
     return D[end]
+
+
+def prod(it: Iterable):
+    return ft.reduce(operator.mul, it, 1)
 
 
 def rematch(pattern: str, string: str) -> Optional[Match]:
@@ -197,7 +202,11 @@ print("Part 1:")
 
 
 def part1() -> int:
-    pass  # (<>)
+    ans = 0
+
+    # (<>)
+
+    return ans
 
 
 ans_part1 = part1()
@@ -217,7 +226,11 @@ print("\nPart 2:")
 
 
 def part2() -> int:
-    pass  # (<>)
+    ans = 0
+
+    # (<>)
+
+    return ans
 
 
 ans_part2 = part2()
