@@ -17,7 +17,7 @@ channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 
 ## Results
 
-### 2020 (28*)
+### 2020 (32*)
 
 ```
       -------Part 1--------   -------Part 2--------
