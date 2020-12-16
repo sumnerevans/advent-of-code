@@ -22,6 +22,7 @@ channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 ```
       -------Part 1--------   -------Part 2--------
 Day       Time  Rank  Score       Time  Rank  Score
+ 16   00:10:02   399      0   00:26:58   254      0
  15   00:13:56  1055      0   00:15:28   464      0
  14   00:23:12  1982      0   00:43:30  1388      0
  13   00:06:21   573      0   03:50:06  5233      0
