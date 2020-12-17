@@ -29,22 +29,6 @@ if len(sys.argv) > 1:
     if sys.argv[1] == "--test":
         test = True
 
-# Constants
-INF = float("inf")
-COMPASS_GRID_DIRS: List[Tuple[int, int]] = [  # Tuples of (delta_row, delta_col)
-    (0, 1),  # right
-    (1, 0),  # below
-    (0, -1),  # left
-    (-1, 0),  # above
-]
-DIAG_GRID_DIRS: List[Tuple[int, int]] = [  # Tuples of (delta_row, delta_col)
-    (-1, -1),  # top-left
-    (-1, 1),  # top-right
-    (1, -1),  # bottom-left
-    (1, 1),  # bottom-right
-]
-GRID_DIRS: List[Tuple[int, int]] = COMPASS_GRID_DIRS + DIAG_GRID_DIRS
-
 
 # Type variables
 K = TypeVar("K")
@@ -86,21 +70,32 @@ def rematch(pattern: str, string: str) -> Optional[Match]:
 
 
 def grid_adjs(
-    row: int,
-    col: int,
-    max_row: int,
-    max_col: int,
-    dirs: List[Tuple[int, int]] = GRID_DIRS,
-) -> Generator[Tuple[int, int], None, None]:
-    """
-    Yields all of the adjacent in-bounds (row, col) tuples in the directions specified
-    in `dir`.
-    """
-    # Iterate through all of the directions and return all of the (row, col) tuples
-    # representing the adjacent cells.
-    for dy, dx in dirs:
-        if 0 <= row + dy < max_row and 0 <= col + dx < max_col:
-            yield row + dy, col + dx
+    coord: Tuple[int, ...],
+    bounds: Tuple[Tuple[int, int], ...] = None,
+    inclusive: bool = True,
+) -> Generator[Tuple[int, ...], None, None]:
+    # Iterate through all of the deltas for the N dimensions of the coord. A delta is
+    # -1, 0, or 1 indicating that the adjacent cell is one lower, same level, or higher
+    # than the given coordinate.
+    for delta in it.product((-1, 0, 1), repeat=len(coord)):
+        if all(d == 0 for d in delta):
+            # This is the coord itself, skip.
+            continue
+
+        # Check the bounds
+        if bounds is not None:
+            inbounds = True
+            for i, (d, (low, high)) in enumerate(zip(delta, bounds)):
+                if inclusive and not (low <= coord[i] + d <= high):
+                    inbounds = False
+                    break
+                elif not inclusive and not (low <= coord[i] + d <= high):
+                    inbounds = False
+                    break
+            if not inbounds:
+                continue
+
+        yield tuple(c + d for c, d in zip(coord, delta))
 
 
 def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:
