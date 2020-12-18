@@ -1,14 +1,26 @@
 #! /usr/bin/env python3
 """
-This is a really instructive problem. A few terms:
+This is a really instructive problem. In general, when evaluating a language (which you
+can consider these equations to be a language), you do it in three steps:
 
-* Tokenizer: takes a string of characters and turns it into a list of *tokens* which are
-  a list (or stream) of primitive entities in the language. In our case, the things we
-  care about are operators: +, *, (, and ) and operands (integers).
+1. Tokenize: takes a string of characters and turns it into a list of *tokens* which are
+   a list (or stream) of primitive entities in the language. In our case, the things we
+   care about are operators: +, *, (, and ) and operands (integers).
 
-* Parser: takes a list (or stream) of tokens and turns it into an AST (see below).
+2. Parse: takes a list (or stream) of tokens and turns it into an AST (see below).
 
-* Evaluator: take a parsed AST and evaluate it.
+3. Evaluate: take a parsed AST and evaluate it.
+
+For today, I only implemented a tokenizer and then combined the parsing with the
+evaluation step by implicitly navigating the tree using recursion, blood, sweat, and
+tears. In all honesty, though, this is a decent approach because there is no real need
+to encode the order of operations in a tree, and the syntax is very simple.
+
+One nice thing about the first part that makes it a bit easier to do the implicit
+traversal is that there is no order of operations except for parentheses.
+
+What is an AST?
+===============
 
 An AST is an Abstract Syntax Tree. It is a tree representing the computation that needs
 to be performed. I did not use an AST, but this is an explanation of what it is.
@@ -27,14 +39,6 @@ easier to expand upon the syntax if we had an AST to work with.
 
 One major advantage to parsing into an AST is that we can use the same evaluation
 function to evaluate both part 1 and part 2. We only need to change the parser.
-
-However what I did instead was basically implicitly navigate this tree using recursion,
-blood, sweat, and tears. In all honesty, though, this is a decent approach because there
-is no real need to encode the order of operations in a tree, and the syntax is very
-simple.
-
-One nice thing about the first part that makes it a bit easier to do the implicit
-traversal is that there is no order of operations except for parentheses.
 """
 
 import sys
@@ -86,7 +90,7 @@ def compute(tokens, i) -> Tuple[int, int]:
     ismul = False
     isadd = False
 
-    # This accumulates the computation at a level of the computation.
+    # This accumulates the computation at a level of the equation.
     x = 0
 
     while i < len(tokens):
@@ -124,12 +128,7 @@ def compute(tokens, i) -> Tuple[int, int]:
 
 
 def part1() -> int:
-    ans = 0
-
-    for e in eqns:
-        ans += compute(e, 0)[0]
-
-    return ans
+    return sum(compute(e, 0)[0] for e in eqns)
 
 
 ans_part1 = part1()
@@ -191,11 +190,7 @@ def compute2(tokens, i):
 
 
 def part2() -> int:
-    ans = 0
-    for e in eqns:
-        ans += compute2(e, 0)[0]
-
-    return ans
+    return sum(compute2(e, 0)[0] for e in eqns)
 
 
 ans_part2 = part2()
