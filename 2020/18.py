@@ -1,8 +1,18 @@
 #! /usr/bin/env python3
 """
-An AST is an Abstract Syntax Tree. It is a tree representing the computation that
-needs to be performed. I did not intially use an AST, but this is an explanation of
-what it is.
+This is a really instructive problem. A few terms:
+
+* Tokenizer: takes a string of characters and turns it into a list of *tokens* which are
+  a list (or stream) of primitive entities in the language. In our case, the things we
+  care about are operators: +, *, (, and ) and operands (integers).
+
+* Parser: takes a list (or stream) of tokens and turns it into an AST (see below).
+
+* Evaluator: take a parsed AST and evaluate it.
+
+An AST is an Abstract Syntax Tree. It is a tree representing the computation that needs
+to be performed. I did not use an AST, but this is an explanation of what it is.
+
 If you have the following computation: 1 + (2 * 3), then the tree would look something
 like this:
                          (+)
@@ -11,9 +21,17 @@ like this:
                             / \
                           (2) (3)
 
-This is what I should have used, but instead, I basically implicitly navigated this tree
-using recursion, blood, sweat, and tears. In all honesty, though, this isn't a terrible
-approach because there is no real need to encode the order of operations in a tree.
+I did not use one of these to solve tonight, but if I were doing this for a real project
+or job, I would use ASTs since they are much more maintainable and it would be a lot
+easier to expand upon the syntax if we had an AST to work with.
+
+One major advantage to parsing into an AST is that we can use the same evaluation
+function to evaluate both part 1 and part 2. We only need to change the parser.
+
+However what I did instead was basically implicitly navigate this tree using recursion,
+blood, sweat, and tears. In all honesty, though, this is a decent approach because there
+is no real need to encode the order of operations in a tree, and the syntax is very
+simple.
 
 One nice thing about the first part that makes it a bit easier to do the implicit
 traversal is that there is no order of operations except for parentheses.
@@ -135,6 +153,8 @@ def compute2(tokens, i):
         """
         Perform addition on all of the terms that need to be added and then do the
         multiplication.
+
+        This isn't the cleanest solution, but it was effective.
         """
         while len(terms) > 1:
             if any(t == "+" for t in terms):
