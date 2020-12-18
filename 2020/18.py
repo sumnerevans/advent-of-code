@@ -1,11 +1,12 @@
 #! /usr/bin/env python3
 """
-This is a really instructive problem. In general, when evaluating a language (which you
-can consider these equations to be a language), you do it in three steps:
+This is a really instructive problem. In general, when writing an evaluator a language
+(which you can consider these equations to be a language), you do it in three steps:
 
 1. Tokenize: takes a string of characters and turns it into a list of *tokens* which are
    a list (or stream) of primitive entities in the language. In our case, the things we
-   care about are operators: +, *, (, and ) and operands (integers).
+   care about are operators: +, *, (, and ) and operands (integers). Another term you
+   may hear for this concept is "lexing".
 
 2. Parse: takes a list (or stream) of tokens and turns it into an AST (see below).
 

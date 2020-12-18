@@ -155,7 +155,7 @@ def part2() -> int:
                     for a in range(minA - 1, maxA + 2):
                         cell = (r, c, z, a)
                         count = 0
-                        for x in grid_adjs((r, c, z, a)):
+                        for x in grid_adjs(cell):
                             if x in actives:
                                 count += 1
 
