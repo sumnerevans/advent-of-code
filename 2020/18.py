@@ -1,16 +1,31 @@
 #! /usr/bin/env python3
+"""
+An AST is an Abstract Syntax Tree. It is a tree representing the computation that
+needs to be performed. I did not intially use an AST, but this is an explanation of
+what it is.
+If you have the following computation: 1 + (2 * 3), then the tree would look something
+like this:
+                         (+)
+                        /   \
+                      (1)   (*)
+                            / \
+                          (2) (3)
+
+This is what I should have used, but instead, I basically implicitly navigated this tree
+using recursion, blood, sweat, and tears. In all honesty, though, this isn't a terrible
+approach because there is no real need to encode the order of operations in a tree.
+
+One nice thing about the first part that makes it a bit easier to do the implicit
+traversal is that there is no order of operations except for parentheses.
+"""
 
 import sys
-from typing import List, Tuple, TypeVar
+from typing import List, Tuple
 
 test = False
 if len(sys.argv) > 1:
     if sys.argv[1] == "--test":
         test = True
-
-
-# Type variables
-K = TypeVar("K")
 
 
 # Input parsing
@@ -36,27 +51,6 @@ eqns = [tokenize(l) for l in lines]
 ########################################################################################
 print(f"\n{'=' * 30}\n")
 print("Part 1:")
-
-
-"""
-An AST is an Abstract Syntax Tree. It is a tree representing the computation that
-needs to be performed. I did not intially use an AST, but this is an explanation of
-what it is.
-If you have the following computation: 1 + (2 * 3), then the tree would look something
-like this:
-                         (+)
-                        /   \
-                      (1)   (*)
-                            / \
-                          (2) (3)
-
-This is what I should have used, but instead, I basically implicitly navigated this tree
-using recursion, blood, sweat, and tears. In all honesty, though, this isn't a terrible
-approach because there is no real need to encode the order of operations in a tree.
-
-One nice thing about the first part that makes it a bit easier to do the implicit
-traversal is that there is no order of operations except for parentheses.
-"""
 
 
 def compute(tokens, i) -> Tuple[int, int]:
