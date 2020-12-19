@@ -1,28 +1,8 @@
 #! /usr/bin/env python3
 
-import functools as ft
-import itertools as it
-import heapq
-import math
-import operator
-import os
 import re
 import sys
-from copy import deepcopy
-from collections import defaultdict
-from enum import IntEnum
-from typing import (
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Match,
-    Optional,
-    Sized,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import List, Match, Optional
 
 test = False
 if len(sys.argv) > 1:
@@ -64,7 +44,6 @@ for line in lines:
     else:
         strs.append(line)
 
-print(RULES)
 
 ########################################################################################
 print(f"\n{'=' * 30}\n")
@@ -72,13 +51,30 @@ print("Part 1:")
 
 
 def part1() -> int:
+    """
+    This is the grossest way to solve this, but I think it's one of the best ways
+    because of the nice properties of the input.
+
+    Basically, I'm constructing a regular expression from the grammar (which luckily
+    already is regular for Part 1).
+
+    I originally tried to do this intelligently with another recursive descent parser,
+    but that failed miserably. I finally realized that you can just do this stupid
+    method of constructing a regex and converted to that.
+    """
+
     ans = 0
 
     def convert(rn) -> str:
+        """
+        This function converts a rule number to a regex. It uses the ``for`` loop to
+        deal with the OR cases, and then joins them with "|"s. For each of the sequence
+        rules, it calls itself recursively to generate a regex for the sub-rule.
+        """
         parts = []
         for r in RULES[rn]:
             if isinstance(r, str):
-                parts.append(r)
+                return r
             else:
                 parts.append("".join(convert(x) for x in r))
         return "(" + "|".join(parts) + ")"
@@ -91,236 +87,143 @@ def part1() -> int:
     return ans
 
 
-# ans_part1 = part1()
-# print(ans_part1)
+ans_part1 = part1()
+print(ans_part1)
 
-# # Store the attempts that failed here.
-# tries = []
-# print("Tries Part 1:", tries)
-# assert ans_part1 not in tries, "Same as an incorrect answer!"
+# Store the attempts that failed here.
+tries = []
+print("Tries Part 1:", tries)
+assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
-# # Regression Test
-# assert test or ans_part1 == 198
+# Regression Test
+assert test or ans_part1 == 198
 
 ########################################################################################
 print("\nPart 2:")
 
-# These are the new rules.
-# 8: 42 | 42 8
-# 11: 42 31 | 42 11 31
-
-RULES[8] = ((42,), (42, 8))
-RULES[11] = ((42, 31), (42, 11, 31))
-
-
-# def seq_matches(s, rns) -> Tuple[bool, int]:
-#     print("seq", s, rns)
-#     for rn in rns:
-#         if isinstance(rn, str):
-#             return s[0] == rn, 0
-#         for r in rules[rn]:
-#             m, i = or_matches(s, r)
-#             print(m, i)
-
-
-# def or_matches(s, rns) -> Tuple[bool, int]:
-#     print("or", s, rns)
-#     for rn in rns:
-#         print(rules[rn])
-#         print("ohea", rn, rules[rn])
-#         m, i = seq_matches(s, rules[rn])
-#         print(m, i)
-#         print(rule)
-
-
-def matchrule_broken(s, n, d=0):
-    if len(s) == 0:
-        return False, 0
-
-    indent = " " * d
-    if d == 10:
-        ohea
-
-    print(indent, "mr", s, n)
-    or_rule = rules[n]
-    if isinstance(or_rule, str):
-        print(indent, "here", s[0], or_rule)
-        return s[0] == or_rule, 1
-
-    for seq in or_rule:
-        i = 0
-        works = True
-        for r in seq:
-            m, inc = matchrule(s[i:], r, d=d + 1)
-            if not m:
-                works = False
-                break
-            i += inc
-
-        if works:
-            print(indent, "2")
-            return True, i
-
-    print(indent, "1")
-    return False, 0
-
-
-def matchrule2(s: str, rn: int, d=0) -> Tuple[bool, Iterable[int]]:
-    if len(s) == 0:
-        return False, (0,)
-
-    indent = " " * d
-    if d == 10:
-        ohea
-
-    head, *tail = rules[rn]
-    print(head, tail)
-
-    for opt in head:
-        print("oheaoheaohea")
-        print(opt)
-        print(matchrule(s, opt, d=d + 1))
-
-    m, incs = matchrule(s, head, d=d + 1)
-    if not m:
-        return False, (0,)
-    print(m, incs)
-
-    ohea
-
-    print(indent, "mr", s, n)
-    or_rule = rules[n]
-    if isinstance(or_rule, str):
-        return s[0] == or_rule, (1,)
-
-    increments = []
-    anyworks = False
-    for seq in or_rule:
-        i = 0
-        m, incs = matchrule(s[i:], seq[0], d=d + 1)
-        print(m, incs)
-
-        for inc in incs:
-            m2, incs2 = matchrule(s[i + inc :], seq[1:], d=d + 1)
-
-            # if works:
-            #     print(indent, "2")
-            #     increments.append(i)
-            #     anyworks= True
-
-    print(indent, "1")
-    return anyworks, increments
-
-
-# def matchorrule(s: str, rule_num: int, d=0) -> Tuple[bool, Iterable[int]]:
-# print('mr', s, rule)
-# if len(s) == 0:
-#     return False, (0,)
-
-# if isinstance(rule, str):
-#     return s[0] == rule, (1,)
-
-# increments = {0}
-# for option in RULES[rule]:
-#     opt_i = 0
-#     while opt_i < len(option):
-#         for inc in increments:
-#             m, incs = matchorrule(s[inc:], option[opt_i], d=d + 1)
-#         print(m, incs)
-#         increments = increments.union(incs)
-#         opt_i += 1
-
-EPSILON = "EPSILON"
-
-
-G = defaultdict(set)
-for rn in RULES:
-    for opt in RULES[rn]:
-        G[(rn, "s")].add(((opt, "s"), EPSILON))
-
-        prev = (opt, "s")
-        for i, v in enumerate(opt):
-            if isinstance(v, str):
-                G[prev].add(((opt, "e"), v))
-            else:
-                G[prev].add(((v, "s"), EPSILON))
-                G[(v, "e")].add(((opt, i + 1), EPSILON))
-                prev = (opt, i + 1)
-
-        G[(opt, i + 1)].add(((opt, "e"), EPSILON))
-        G[(opt, "e")].add(((rn, "e"), EPSILON))
-
-# for k, v in G.items():
-#     print(k, "->", v)
-
-
-def nfa_accepts(S: str):
-    Q = [((0, "s"), S)]
-    i = 0
-    while len(Q):
-        # print("START")
-        # print(Q)
-        current, *Q = Q
-        node, lookingfor = current
-        print(node, lookingfor)
-        if lookingfor == "" and node == (0, "e"):
-            return True
-
-        for next_node, transition in G[node]:
-            # print(next_node, transition, lookingfor)
-            if transition == EPSILON:
-                Q.append((next_node, lookingfor))
-            else:
-                if len(lookingfor) > 0 and lookingfor[0] == transition:
-                    Q.append((next_node, lookingfor[1:]))
-
-        # print(Q)
-
-        if i > 100_000:
-            return False
-        i += 1
-
-    return False
-
-
-# import graphviz
-# filename = "/tmp/aoc19.gv"
-# g = graphviz.Digraph("G", filename=filename, format="png")
-# g.attr("node", shape="circle")
-# g.attr(rankdir="RL")
-
-# for k, v in G.items():
-#     for other, edgeval in v:
-#         g.edge(str(k), str(other), label=edgeval)
-
-
-# g.render()
-
-# ohea
-
 
 def part2() -> int:
+    """
+    This is exactly the same as Part 1, except for there's special handling for rules 8
+    and 11.
+
+    The new Rule 8 is:
+
+        8: 42 | 42 8
+
+    This encodes a Kleene star in regex. It could be written as:
+
+        (42)(42)*
+
+        or
+
+        (42)+
+
+    (obviously replace 42 with the full expansion of the regex for 42).
+
+    The new Rule 11 is:
+
+        11: 42 31 | 42 11 31
+
+    This is impossible to represent cleanly with a regular expression. The reason for
+    this is that with a regular expression, you cannot maintain a stack (which is
+    basically what this rule is). This causes the language represented by this grammar
+    to no longer be regular, and therefore not encodable in a regular expression.
+
+    Note that if you have a 42 there always must be a 31 on the other side. For example,
+    the following is valid:
+
+        42 42 31 31
+
+    whereas:
+
+        42 31 31
+
+    would not be because there are too many 31s. This is impossible to represent with a
+    regular expression and I would have needed to implement a push-down automata[1] that
+    recognized the newly-created context-free grammar[2] instead.
+
+    Note, the problem encoded by this rule is the *parentheses matching problem* which
+    is basically "can you tell if a string of parentheses has all matching parentheses".
+    Conceptually, whenever you see an opening parentheses, you add a token to your stack
+    (meaning you are expecting a closing parentheses) and whenever you see a close
+    parentheses, then you remove a token from the stack. I want to emphasize that this
+    is not possible (in the general case) with regular expressions as famously pointed
+    out by this StackOverflow post[3].
+
+    The key insight is that for Rule 11 is twofold. First, rule 11 is only used on the
+    RHS of the grammar once. Secondly, the inputs are not arbitrarily large, there is a
+    specific set of inputs that you need to handle of which no input is more than ~100
+    characters. This means that you can just construct ~10 regular expressions with
+    varrying numbers of nestings of the 42, 31 rule-pair and see if any of them match on
+    every given input.
+
+    ************************************************************************************
+
+    Overall, I did not like this problem basically at all because cheezing it was the
+    fastest way to an answer on both parts. I literally realized it was a regular
+    language about 2 seconds in to reading the description on Part 1, but then I didn't
+    think that just constructing the regular expression would actually work.
+
+    Similarly, for Part 2, although there was text saying that you only have to solve
+    for the specific case, I literally had no idea how *not* to solve for the general
+    case for a *very* long time.
+
+    Obviously, my opinion of the problem is tainted by the fact tha I did very poorly on
+    the leaderboard (1931/4038), but I also think that it's unfortunate that it didn't
+    actually force anybody to learn anything new.
+
+    I spent probably 45 minutes trying to do part 1 "correctly", and then another 4.5
+    hours trying to do part 2 "correctly" with a variety of methods.
+
+    [1]: https://en.wikipedia.org/wiki/Pushdown_automaton
+    [2]: https://en.wikipedia.org/wiki/Context-free_grammar
+    [3]: https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags
+    """
+
+    def convert(rn, n11s) -> str:
+        """
+        This function converts a rule number to a regex. It uses the ``for`` loop to
+        deal with the OR cases, and then joins them with "|"s. For each of the sequence
+        rules, it calls itself recursively to generate a regex for the sub-rule.
+        """
+        parts = []
+        if rn == 8:
+            return "(" + convert(42, n11s) + ")" + "+"
+        elif rn == 11:
+            if n11s == 0:
+                return "(" + convert(42, n11s) + convert(31, n11s) + ")"
+            return (
+                "(("
+                + convert(42, n11s)
+                + convert(31, n11s)
+                + ")|("
+                + convert(42, n11s)
+                + convert(11, n11s - 1)
+                + convert(31, n11s)
+                + "))"
+            )
+
+        for r in RULES[rn]:
+            if isinstance(r, str):
+                return r
+            else:
+                parts.append("".join(convert(x, n11s) for x in r))
+        return "(" + "|".join(parts) + ")"
+
+    regexes = [convert(0, i) for i in range(10)]
     ans = 0
-
-    matched = []
     for s in strs:
-        # print("snothreasnotherao", matchrule(s, 0))
-        print("check", s)
-        if nfa_accepts(s):
-            matched.append(s)
-            ans += 1
-            print("MATCH")
-        else:
-            print("NO MATCH")
+        for regex in regexes:
+            if rematch(regex, s):
+                ans += 1
+                break
 
-    print("MATCHED")
-    print("\n".join(matched))
     return ans
 
 
 ans_part2 = part2()
-print("=" * 100)
 print(ans_part2)
 
 # Store the attempts that failed here.
@@ -329,4 +232,4 @@ print("Tries Part 2:", tries2)
 assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-# assert test or ans_part2 == (<>)
+assert test or ans_part2 == 372
