@@ -152,12 +152,12 @@ def part2() -> int:
     is not possible (in the general case) with regular expressions as famously pointed
     out by this StackOverflow post[3].
 
-    The key insight is that for Rule 11 is twofold. First, rule 11 is only used on the
-    RHS of the grammar once. Secondly, the inputs are not arbitrarily large, there is a
-    specific set of inputs that you need to handle of which no input is more than ~100
-    characters. This means that you can just construct ~10 regular expressions with
-    varrying numbers of nestings of the 42, 31 rule-pair and see if any of them match on
-    every given input.
+    The key insight for Rule 11 is twofold. First, rule 11 is only used on the RHS of
+    the grammar once, meaning that once you enter into rule 11, you never exit it.
+    Secondly, the inputs are *not* arbitrarily large, there is a specific set of inputs
+    that you need to handle of which no input is more than ~100 characters. This means
+    that you can just construct ~10 regular expressions with varrying numbers of
+    nestings of the 42, 31 rule-pair and see if any of them match on every given input.
 
     ************************************************************************************
 
