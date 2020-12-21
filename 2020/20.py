@@ -3,6 +3,7 @@
 Today's problem was very fun. It involved
 """
 
+import functools as ft
 import itertools as it
 import math
 import re
@@ -20,6 +21,10 @@ for arg in sys.argv:
 
 
 # Utilities
+def cache():  # Python 3.9 compat
+    return ft.lru_cache(maxsize=None)
+
+
 def rematch(pattern: str, string: str) -> Optional[Match]:
     return re.fullmatch(pattern, string)
 
@@ -123,6 +128,7 @@ ROTS = [
 ]
 
 
+@cache()
 def getside(tid, rot, flip, side):
     """
     This is pretty ugly, but very useful. It allows you to get a side of a tile after
