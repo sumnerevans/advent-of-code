@@ -18,28 +18,26 @@ def rematch(pattern, string):
 
 lines = [l.strip() for l in sys.stdin.readlines()]
 groups = []
-groups2 = []
-current = set()
-current2 = []
+current = []
 for line in lines:
     if line == "":
         groups.append(current)
-        groups2.append(current2)
-        current = set()
-        current2 = []
+        current = []
     else:
-        current = current.union(set(line))
-        current2.append(line)
+        current.append(set(line))
 
 groups.append(current)
-groups2.append(current2)
 
 ########################################################################################
 print("Part 1:")
 
 
 def part1():
-    return sum(len(g) for g in groups)
+    """
+    This part is just a sum of the number of letters in the *union* of all of the
+    responses for each group.
+    """
+    return sum(len(set.union(*g)) for g in groups)
 
 
 ans_part1 = part1()
@@ -59,8 +57,17 @@ print("\nPart 2:")
 
 
 def part2():
+    """
+    This part is just a sum of the number of letters in the *intersection* of all of the
+    responses for each group.
+    """
+    return sum(len(set.intersection(*g)) for g in groups)
+
+    # The following was what I implemented when I solved night-of. The nice thing about
+    # this method is that it was very easy to think about and I didn't take too much
+    # work to bang out.
     s = 0
-    for g in groups2:
+    for g in groups:
         for c in "abcdefghijklmnopqrstuvwxyz":
             no = False
             for p in g:
