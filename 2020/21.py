@@ -27,16 +27,16 @@ input_start = time.time()
 lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
 
 FOODS = []  # list of all the foods
-ALL_INGS_SET = set()
-ALL_INGS_OCURRENCES = defaultdict(int)
+ALL_INGREDIENTS = set()
+INGREDIENT_OCURRENCES = defaultdict(int)
 
 for line in lines:
     ingredients, contains = rematch(r"(.*) \(contains (.*)\)", line).groups()
     ingredients = ingredients.split()
     contains = contains.split(", ")
     for i in ingredients:
-        ALL_INGS_SET.add(i)
-        ALL_INGS_OCURRENCES[i] += 1
+        ALL_INGREDIENTS.add(i)
+        INGREDIENT_OCURRENCES[i] += 1
     FOODS.append((set(ingredients), set(contains)))
 
 input_end = time.time()
@@ -52,9 +52,9 @@ for ing, alg in FOODS:
     for a in alg:
         alergen_to_can_be[a].append(ing)
 
-NOALERGEN = set(ALL_INGS_SET)
+NO_ALERGEN = set(ALL_INGREDIENTS)
 for can_be in alergen_to_can_be.values():
-    NOALERGEN -= set.intersection(*can_be)
+    NO_ALERGEN -= set.intersection(*can_be)
 
 shared_end = time.time()
 
@@ -65,7 +65,7 @@ print("Part 1:")
 
 
 def part1() -> int:
-    return sum(ALL_INGS_OCURRENCES[x] for x in NOALERGEN)
+    return sum(INGREDIENT_OCURRENCES[x] for x in NO_ALERGEN)
 
 
 part1_start = time.time()
@@ -87,21 +87,28 @@ print("\nPart 2:")
 
 
 def part2() -> str:
-    possibles = defaultdict(lambda: deepcopy(ALL_INGS_SET))
+    # We start by assuming that all of the alergens can be any of the ingredients.
+    possibles = defaultdict(lambda: deepcopy(ALL_INGREDIENTS))
 
-    for a, b in it.product(FOODS, FOODS):
-        ing_intersects = b[0] & a[0]
-        alg_intersects = b[1] & a[1]
-        if len(alg_intersects) == 1:
-            alg_name = list(alg_intersects)[0]
-            possibles[alg_name] &= ing_intersects - NOALERGEN
+    # Go through each of the food pairings, and we can eliminate certain ingredients as
+    # being the ones that correspond to the given alergen.
+    for food1, food2 in it.product(FOODS, FOODS):
+        if food1 == food2:
+            continue
+        common_ingredients = food1[0] & food2[0]
+        common_alergens = food1[1] & food2[1]
+        if len(common_alergens) == 1:
+            possibles[common_alergens.pop()] &= common_ingredients
 
     truemap = {}
     while len(possibles):
+        # Find the alergen that only has one ingredient associated with it and pull it
+        # out of the possibles dictionary, and remove the ingredient from all of the
+        # other sets.
         remove_idx = 0
         for idx, possible_fields in possibles.items():
             if len(possible_fields) == 1:
-                truemap[idx] = list(possible_fields)[0]
+                truemap[idx] = possible_fields.pop()
                 remove_idx = idx
                 break
 
@@ -110,6 +117,7 @@ def part2() -> str:
             if truemap[remove_idx] in possibles[x]:
                 possibles[x].remove(truemap[remove_idx])
 
+    # Sort by the key (which is the alergen name)
     return ",".join(v for _, v in sorted(truemap.items()))
 
 
