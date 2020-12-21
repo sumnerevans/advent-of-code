@@ -1,57 +1,27 @@
 #! /usr/bin/env python3
+"""
+Today's problem was very fun. It involved
+"""
 
-import functools as ft
 import itertools as it
-import heapq
 import math
-import operator
 import re
 import sys
 from copy import deepcopy
-from enum import IntEnum
-from typing import Dict, Generator, Iterable, List, Match, Optional, Tuple, TypeVar
+from typing import Generator, List, Match, Optional, Tuple
 
 test = False
-if len(sys.argv) > 1:
-    if sys.argv[1] == "--test":
+debug = False
+for arg in sys.argv:
+    if arg == "--test":
         test = True
+    if arg == "--debug":
+        debug = True
 
 
 # Utilities
 def rematch(pattern: str, string: str) -> Optional[Match]:
     return re.fullmatch(pattern, string)
-
-
-def grid_adjs(
-    coord: Tuple[int, ...],
-    bounds: Tuple[Tuple[int, int], ...] = None,
-    inclusive: bool = True,
-) -> Generator[Tuple[int, ...], None, None]:
-    # Iterate through all of the deltas for the N dimensions of the coord. A delta is
-    # -1, 0, or 1 indicating that the adjacent cell is one lower, same level, or higher
-    # than the given coordinate.
-    for delta in it.product((-1, 0, 1), repeat=len(coord)):
-        if all(d == 0 for d in delta):
-            # This is the coord itself, skip.
-            continue
-
-        if sum(map(abs, delta)) > 1:
-            continue
-
-        # Check the bounds
-        if bounds is not None:
-            inbounds = True
-            for i, (d, (low, high)) in enumerate(zip(delta, bounds)):
-                if inclusive and not (low <= coord[i] + d <= high):
-                    inbounds = False
-                    break
-                elif not inclusive and not (low <= coord[i] + d <= high):
-                    inbounds = False
-                    break
-            if not inbounds:
-                continue
-
-        yield tuple(c + d for c, d in zip(coord, delta))
 
 
 # Input parsing
@@ -70,10 +40,12 @@ for line in lines:
     else:
         current.append([x == "#" for x in line])
 
-TILES[currentid] = current
+TILES[currentid] = current  # luckily I remembered this
 
 
+# A few utilities for this problem.
 def printtile(tile):
+    """Print a tile. If a tile ID is passed, look it up in the TILES dictionary."""
     if isinstance(tile, int):
         tile = TILES[tile]
 
@@ -84,6 +56,10 @@ def printtile(tile):
 
 
 def print_assignments(assignments):
+    """
+    Print an entire assignments array. This can be used at the very end to print the
+    picture.
+    """
     for r in assignments:
         print(r)
     for row in assignments:
@@ -105,33 +81,30 @@ def print_assignments(assignments):
             print(row)
 
 
-# Shared
+# Functions to actually solve the problem
 ########################################################################################
+# The following section contains the core functionality of stitching together the
+# picture. I implemented all of this for part 1 because I didn't realize that you can
+# just cheeze it by checking how many shared edges each tile has.
 
 
 def edges(tile) -> Generator[Tuple[Tuple[int, ...], str, bool], None, None]:
-    # returns generator of (edge, "r|b|l|t", flipped(bool))
-    # top
-    yield (tuple(tile[0]), "t", False)
-    # top flipped
-    yield (tuple(reversed(tile[0])), "t", True)
-    # bottom
-    yield (tuple(tile[-1]), "b", False)
-    # bottom flipped
-    yield (tuple(reversed(tile[-1])), "b", True)
+    """Returns a generator of (edge, "r|b|l|t", flipped(bool)) for the given tile"""
+    yield (tuple(tile[0]), "t", False)  # top
+    yield (tuple(reversed(tile[0])), "t", True)  # top flipped
+    yield (tuple(tile[-1]), "b", False)  # bottom
+    yield (tuple(reversed(tile[-1])), "b", True)  # bottom flipped
 
-    # left
     left = tuple(r[0] for r in tile)
-    yield left, "l", False
+    yield left, "l", False  # left
     yield tuple(reversed(left)), "l", True  # left flipped
 
-    # right
     right = tuple(r[-1] for r in tile)
-    yield right, "r", False
+    yield right, "r", False  # right
     yield tuple(reversed(right)), "r", True  # right flipped
 
 
-# edge_to_tile_info = defaultdict(set)
+# Calculate the edges of every tile.
 tile_rot_side_to_edge = {}
 
 for tid, tile in TILES.items():
@@ -148,129 +121,128 @@ ROTS = [
     2,  # right 180
     3,  # right 270
 ]
-SIDE_NAMES = "rblt"
 
 
 def getside(tid, rot, flip, side):
+    """
+    This is pretty ugly, but very useful. It allows you to get a side of a tile after
+    rotating it to the right ``rot`` times, and flipping it if ``flip`` is True.
+
+    I'm sure there's a better way, but I have no idea at this point.
+
+    This function caused me a lot of pain, since I tried to do it without just
+    hard-coding all of the rotations and flips. It got to complicated, and I just gave
+    up.
+    """
     if rot == 0:
         if not flip:
-            side, flip = {
-                "t": ("t", False),
-                "b": ("b", False),
-                "r": ("r", False),
-                "l": ("l", False),
-            }[side]
-            return tile_rot_side_to_edge[(tid, side, flip)]
+            return tile_rot_side_to_edge[(tid, side, False)]
         else:
-            side, flip = {
-                "t": ("t", True),
-                "b": ("b", True),
-                "r": ("l", False),
-                "l": ("r", False),
-            }[side]
-            return tile_rot_side_to_edge[(tid, side, flip)]
+            # Flip swaps r <-> l and reverses top and bottom
+            if side in "rl":
+                side = {"r": "l", "l": "r"}[side]
+            reverse = side in "tb"
+            return tile_rot_side_to_edge[(tid, side, reverse)]
     elif rot == 1:
         if not flip:
-            side, flip = {
+            side, reverse = {
                 "t": ("l", True),
                 "b": ("r", True),
                 "r": ("t", False),
                 "l": ("b", False),
             }[side]
-            return tile_rot_side_to_edge[(tid, side, flip)]
+            return tile_rot_side_to_edge[(tid, side, reverse)]
         else:
-            side, flip = {
-                "t": ("r", True),
-                "b": ("l", True),
-                "r": ("t", True),
-                "l": ("b", True),
-            }[side]
-            return tile_rot_side_to_edge[(tid, side, flip)]
+            side = {"t": "r", "b": "l", "r": "t", "l": "b"}[side]
+            return tile_rot_side_to_edge[(tid, side, True)]
     elif rot == 2:
         if not flip:
-            side, flip = {
-                "t": ("b", True),
-                "b": ("t", True),
-                "r": ("l", True),
-                "l": ("r", True),
-            }[side]
-            return tile_rot_side_to_edge[(tid, side, flip)]
+            side = {"t": "b", "b": "t", "r": "l", "l": "r"}[side]
+            return tile_rot_side_to_edge[(tid, side, True)]
         else:
-            side, flip = {
+            side, reverse = {
                 "t": ("b", False),
                 "b": ("t", False),
                 "r": ("r", True),
                 "l": ("l", True),
             }[side]
-            return tile_rot_side_to_edge[(tid, side, flip)]
+            return tile_rot_side_to_edge[(tid, side, reverse)]
     elif rot == 3:
         if not flip:
-            side, flip = {
+            side, reverse = {
                 "t": ("r", False),
                 "b": ("l", False),
                 "r": ("b", True),
                 "l": ("t", True),
             }[side]
-            return tile_rot_side_to_edge[(tid, side, flip)]
+            return tile_rot_side_to_edge[(tid, side, reverse)]
         else:
-            side, flip = {
-                "t": ("l", False),
-                "b": ("r", False),
-                "r": ("b", False),
-                "l": ("t", False),
-            }[side]
-            return tile_rot_side_to_edge[(tid, side, flip)]
+            side = {"t": "l", "b": "r", "r": "b", "l": "t"}[side]
+            return tile_rot_side_to_edge[(tid, side, False)]
 
     assert False
 
 
 # Tuples of (tid, rot, flipped) for each r, c
-Placements = Tuple[Tuple[Tuple[int, int, bool]]]
+Placements = Tuple[Tuple[Tuple[int, int, bool], ...], ...]
 
 
 def solve(placements: Placements, d=0) -> Optional[Placements]:
-    # indent = " " * d
+    """
+    This is a recursive function which, given a set of placements, returns a valid
+    configuration of valid placements if it exists, and ``None`` otherwise.
+    """
+    indent = "  " * d
+    if debug:
+        print(indent, "solve")
+        for row in placements:
+            print(indent, [x[0] for x in row])
+
+    # This is the base case of the recursion. If we have filled up the picture, then we
+    # can return all of the placements.
     if len(placements) == SIDELEN and all(len(x) == SIDELEN for x in placements):
         return placements
 
+    # Calculate the next tile location to place.
     num_placed = sum(map(len, placements))
-
-    nexttile_opts = set(TIDS)
-    for r in placements:
-        for c in r:
-            nexttile_opts.remove(c[0])
-
     nextloc = (num_placed // SIDELEN, num_placed % SIDELEN)
-    nexttile_opts = list(nexttile_opts)
 
+    # Calculate the possible options for the next tile to place.
+    nexttile_opts = set(TIDS) - {cell[0] for row in placements for cell in row}
+
+    # Go through all of the options for theh next tile to place and see if any of them
+    # work.
     while len(nexttile_opts):
-        nexttile, *nexttile_opts = nexttile_opts
-        adjs = tuple(grid_adjs(nextloc, bounds=((0, len(placements)), (0, SIDELEN))))
+        nexttile = nexttile_opts.pop()
 
         # Try all rotations and flips of the next tile
         for flip, rot in it.product((False, True), ROTS):
-            # Check if it works
-            rotworks = True
 
+            # Get the left and top side of the tile to be placed (after handling the
+            # rotation and flip) so that we can compare against the adjacent cells.
             left = getside(nexttile, rot, flip, "l")
             top = getside(nexttile, rot, flip, "t")
+            row, col = nextloc
 
-            # Check if it works. Only check top and left because grids!
-            for r, c in adjs:
-                if r >= len(placements) or c >= len(placements[r]):
-                    continue
-                adj = placements[r][c]
-                # is left
-                if r == nextloc[0] and c < nextloc[1]:
-                    if getside(*adj, "r") != left:
-                        rotworks = False
-                        break
-                # is above
-                if r < nextloc[0]:
-                    if getside(*adj, "b") != top:
-                        rotworks = False
-                        break
+            # Check if it works. Only check top and left because we are working from the
+            # top left to the bottom right, so we only will ever have to check to the
+            # top and left!
+            rotworks = True
+            if row > 0:
+                # Check above
+                adj = placements[row - 1][col]
+                if getside(*adj, "b") != top:
+                    rotworks = False
 
+            if rotworks and col > 0:
+                # Check left
+                adj = placements[row][col - 1]
+                if getside(*adj, "r") != left:
+                    rotworks = False
+
+            # This rotation works, recursively call solve with the new placements tuple.
+            # This is a fairly stupid way of doing things, but it works, and that's all
+            # that matters.
             if rotworks:
                 new_placements = [[p for p in r] for r in placements]
                 if nextloc[0] >= len(new_placements):
@@ -284,7 +256,8 @@ def dosolve() -> Placements:
     for tile_id in TILES:
         for rot in ROTS:
             for flip in (True, False):
-                print("TRY", tile_id, rot, flip)
+                if debug:
+                    print("TRY", tile_id, rot, flip)
                 s = solve((((tile_id, rot, flip),),), d=0)
                 if s is not None:
                     return s
@@ -293,7 +266,8 @@ def dosolve() -> Placements:
 
 
 assignments = dosolve()
-print_assignments(assignments)
+if debug:
+    print_assignments(assignments)
 
 ########################################################################################
 print(f"\n{'=' * 30}\n")
@@ -330,10 +304,16 @@ print("\nPart 2:")
 
 
 def part2() -> int:
+    """
+    I used a very inefficient and stupid algorithm for this. For each orientation, I am
+    just checking every single possible start (row, col) pair of a monster (which is
+    really highly unnecessary because monsters cannot overlap).
+    """
     sidelen = len(list(TILES.values())[0])
 
-    for row in assignments:
-        print(row)
+    if debug:
+        for row in assignments:
+            print(row)
 
     seamonster = [
         "                  # ",
@@ -343,6 +323,7 @@ def part2() -> int:
     seamonster_r = len(seamonster)
     seamonster_c = len(seamonster[0])
 
+    # This part just stitches together the picture. Making sure to delete the borders.
     alllines = []
     for row in assignments:
         rowlines = [[] for _ in range(sidelen - 2)]
@@ -357,19 +338,23 @@ def part2() -> int:
             for i, row in list(enumerate(pic[1:-1])):
                 rowlines[i].extend([".#"[int(x)] for x in row[1:-1]])
 
-        for row in rowlines:
-            print("".join(row))
+        if debug:
+            for row in rowlines:
+                print("".join(row))
 
         alllines.extend(rowlines)
 
     def turbulence(lines) -> Optional[int]:
-        lines = deepcopy(lines)
+        """
+        Returns the turbulence if there are monsters in this orientation. It's
+        guaranteed that there will be only one configuration that has monsters, so if
+        there are no monsters, then this is not the correct orientation.
+        """
         R = len(lines)
         C = len(lines[0])
         for r0 in range(R):
             for c0 in range(C):
                 is_seamonster = True
-                debug = r0 == 16 and c0 == 2 and False
 
                 for r, c in it.product(range(seamonster_r), range(seamonster_c)):
                     if debug:
@@ -380,6 +365,7 @@ def part2() -> int:
                     if seamonster[r][c] == "#" and lines[r0 + r][c0 + c] not in "#O":
                         is_seamonster = False
                         break
+
                 if is_seamonster:
                     for r, c in it.product(range(seamonster_r), range(seamonster_c)):
                         if seamonster[r][c] == "#":
@@ -393,15 +379,20 @@ def part2() -> int:
                     t += 1
                 if c == "O":
                     anyseamonster = True
+
+        if anyseamonster and debug:
+            print("SEAMONSTERS:")
+            for row in lines:
+                print("".join(row))
         return t if anyseamonster else None
 
     for rot, flip in it.product(ROTS, (True, False)):
         rotated = deepcopy(alllines)
         if flip:
-            rotated = [list(reversed(x)) for x in rotated]
+            rotated = [tuple(reversed(x)) for x in rotated]
         for _ in range(rot):
             rotated = list(zip(*rotated[::-1]))
-            rotated = [list(x) for x in rotated]
+        rotated = [list(x) for x in rotated]
 
         t = turbulence(rotated)
         if t:
