@@ -25,9 +25,12 @@ from typing import (
 )
 
 test = False
-if len(sys.argv) > 1:
-    if sys.argv[1] == "--test":
+debug = False
+for arg in sys.argv:
+    if arg == "--test":
         test = True
+    if arg == "--debug":
+        debug = True
 
 
 # Type variables
@@ -89,7 +92,7 @@ def grid_adjs(
                 if inclusive and not (low <= coord[i] + d <= high):
                     inbounds = False
                     break
-                elif not inclusive and not (low <= coord[i] + d <= high):
+                elif not inclusive and not (low < coord[i] + d < high):
                     inbounds = False
                     break
             if not inbounds:

@@ -59,13 +59,26 @@ let
     ${pkgs.watchexec}/bin/watchexec -r "${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt"
   '';
 
+  debugRunScript = pkgs.writeShellScriptBin "drun" ''
+    ${getDayScriptPart "run"}
+
+    ${pkgs.watchexec}/bin/watchexec -r "${pkgs.pypy3}/bin/pypy3 ./$day.py --debug <./inputs/$day.txt"
+  '';
+
   # Single run, don't watchexec
-  srunTestScript = pkgs.writeShellScriptBin "srun" ''
+  singleRunScript = pkgs.writeShellScriptBin "srun" ''
     ${getDayScriptPart "srun"}
 
     ${pkgs.pypy3}/bin/pypy3 ./$day.py <./inputs/$day.txt
   '';
 
+  debugSingleRunTestScript = pkgs.writeShellScriptBin "dsrun" ''
+    ${getDayScriptPart "srun"}
+
+    ${pkgs.pypy3}/bin/pypy3 ./$day.py --debug <./inputs/$day.txt
+  '';
+
+  # Write a test file
   mkTestScript = pkgs.writeShellScriptBin "mktest" ''
     ${getDayScriptPart "mktest"}
     ${pkgs.xsel}/bin/xsel --output > inputs/$day.test.txt
@@ -74,6 +87,11 @@ let
   runTestScript = pkgs.writeShellScriptBin "runtest" ''
     ${getDayScriptPart "runtest"}
     ${pkgs.pypy3}/bin/pypy3 ./$day.py --test <./inputs/$day.test.txt
+  '';
+
+  debugRunTestScript = pkgs.writeShellScriptBin "druntest" ''
+    ${getDayScriptPart "runtest"}
+    ${pkgs.pypy3}/bin/pypy3 ./$day.py --test --debug <./inputs/$day.test.txt
   '';
 
   # CoC Config
@@ -106,11 +124,14 @@ pkgs.mkShell {
     pypy3
 
     # Utilities
+    debugRunScript
+    debugRunTestScript
+    debugSingleRunTestScript
     getInputScript
     mkTestScript
     printStatsScript
     runScript
     runTestScript
-    srunTestScript
+    singleRunScript
   ];
 }
