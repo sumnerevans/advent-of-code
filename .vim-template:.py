@@ -260,7 +260,12 @@ assert ans_part2 not in tries2, "Same as an incorrect answer!"
 # assert test or ans_part2 == (<>)
 
 if debug:
-    print(f"Input parsing: {(input_end - input_start) * 1000}ms")
-    print(f"Shared: {(shared_end - shared_start) * 1000}ms")
-    print(f"Part 1: {(part1_end - part1_start) * 1000}ms")
-    print(f"Part 2: {(part2_end - part2_start) * 1000}ms")
+    input_parsing = input_end - input_start
+    shared = shared_end - shared_start
+    part1_time = part1_end - part1_start
+    part2_time = part2_end - part2_start
+    print(f"Input parsing: {input_parsing * 1000}ms")
+    print(f"Shared: {shared * 1000}ms")
+    print(f"Part 1: {part1_time * 1000}ms")
+    print(f"Part 2: {part2_time * 1000}ms")
+    print(f"TOTAL: {(input_parsing + shared + part1_time + part2_time) * 1000}ms")
