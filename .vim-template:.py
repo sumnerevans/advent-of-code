@@ -8,6 +8,7 @@ import operator
 import os
 import re
 import sys
+import time
 from copy import deepcopy
 from collections import defaultdict
 from enum import IntEnum
@@ -185,6 +186,7 @@ def run_harvard(tape: Tape, return_acc_if_loop: bool = True):
 
 
 # Input parsing
+input_start = time.time()
 lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
 # tape = decode_tape(lines)
 # seq = [int(x) for x in lines]
@@ -193,7 +195,17 @@ for line in lines:
     pass  # (<>)
 
 # (<>)
+input_end = time.time()
 
+# Shared
+########################################################################################
+shared_start = time.time()
+
+# (<>)
+
+shared_end = time.time()
+
+# Part 1
 ########################################################################################
 print(f"\n{'=' * 30}\n")
 print("Part 1:")
@@ -207,7 +219,9 @@ def part1() -> int:
     return ans
 
 
+part1_start = time.time()
 ans_part1 = part1()
+part1_end = time.time()
 print(ans_part1)
 
 # Store the attempts that failed here.
@@ -231,7 +245,9 @@ def part2() -> int:
     return ans
 
 
+part2_start = time.time()
 ans_part2 = part2()
+part2_end = time.time()
 print(ans_part2)
 
 # Store the attempts that failed here.
@@ -241,3 +257,9 @@ assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
 # assert test or ans_part2 == (<>)
+
+if debug:
+    print(f"Input parsing: {(input_end - input_start) * 1000}ms")
+    print(f"Shared: {(shared_end - shared_start) * 1000}ms")
+    print(f"Part 1: {(part1_end - part1_start) * 1000}ms")
+    print(f"Part 2: {(part2_end - part2_start) * 1000}ms")
