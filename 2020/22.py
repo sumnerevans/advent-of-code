@@ -42,6 +42,11 @@ print("Part 1:")
 
 
 def part1() -> int:
+    """
+    I decided to use lists for this instead of a queue, because I'm really unfamiliar
+    with the stdlib for queues in Python, so it is faster for me to think about lists.
+    Also, using a queue in Part 2 would have been a disaster.
+    """
     dp1 = deepcopy(DECKP1)
     dp2 = deepcopy(DECKP2)
 
