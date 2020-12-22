@@ -223,6 +223,7 @@ def run_harvard(tape: Tape, return_acc_if_loop: bool = True):
 
 # Input parsing
 input_start = time.time()
+
 lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
 # tape = decode_tape(lines)
 # seq = [int(x) for x in lines]
@@ -231,6 +232,7 @@ for line in lines:
     pass  # (<>)
 
 # (<>)
+
 input_end = time.time()
 
 # Shared

@@ -110,23 +110,16 @@ def play_game(deck1, deck2, depth=0) -> Tuple[int, Tuple[int, ...]]:
 
         c1, *dp1r = dp1
         c2, *dp2r = dp2
-        p1wins = False
 
         # Determine how we should decide this round. If there are enough cards to play a
         # subgame, then call this function recursively. Otherwise, we just determine it
         # like normal.
+        p1wins = False
         if len(dp1r) >= c1 and len(dp2r) >= c2:
             # Recursively call play_game to determine who wins the subgame.
-            w, _ = play_game(dp1r[:c1], dp2r[:c2], depth + 1)
-            if w == 1:
-                p1wins = True
+            p1wins = play_game(dp1r[:c1], dp2r[:c2], depth + 1)[0] == 1
         else:
-            if c1 < c2:
-                p1wins = False
-            elif c2 < c1:
-                p1wins = True
-            else:
-                assert False
+            p1wins = c1 > c2
 
         if p1wins:
             dp1 = tuple(dp1r) + (c1, c2)
