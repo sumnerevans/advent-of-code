@@ -4,13 +4,16 @@ import operator
 import re
 import sys
 from functools import reduce
-from typing import Iterable, List, Match, Optional
+from typing import Dict, Iterable, List, Match, Optional, Set, TypeVar
 
 test = False
 if len(sys.argv) > 1:
     if sys.argv[1] == "--test":
         test = True
 
+# Type variables
+K = TypeVar("K")
+V = TypeVar("V")
 
 # Utilities
 def prod(it: Iterable):
@@ -19,6 +22,40 @@ def prod(it: Iterable):
 
 def rematch(pattern: str, string: str) -> Optional[Match]:
     return re.fullmatch(pattern, string)
+
+
+def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]):
+    """
+    This goes through a dictionary of key to potential values and computes the true
+    value using simple inference where if a key can only be a single value, then it must
+    be that value. For example:
+
+        A -> {X, Y}
+        B -> {Y}
+        C -> {X, Z}
+
+    then B -> Y, which means that A cannot be Y, thus A must be X, and by the same logic
+    C must be Z.
+    """
+    inferred = {}
+    while len(possibles):
+        # Find the alergen that only has one ingredient associated with it and pull it
+        # out of the possibles dictionary, and remove the ingredient from all of the
+        # other sets.
+        for idx, possible_fields in possibles.items():
+            if len(possible_fields) == 1:
+                inferred[idx] = possible_fields.pop()
+                remove_idx = idx
+                break
+        else:  # nobreak
+            assert False, "No keys have a single possible value"
+
+        del possibles[remove_idx]
+        for x in possibles:
+            if inferred[remove_idx] in possibles[x]:
+                possibles[x].remove(inferred[remove_idx])
+
+    return inferred
 
 
 # Input parsing
@@ -136,21 +173,10 @@ def part2() -> int:
             possibles[i] = new_possibles
 
     # Calculate a mapping of the index to the field it must be.
-    truemap = {}
-    while len(possibles):
-        remove_idx = 0
-        for idx, possible_fields in possibles.items():
-            if len(possible_fields) == 1:
-                truemap[idx] = list(possible_fields)[0]
-                remove_idx = idx
-                break
-
-        del possibles[remove_idx]
-        for x in possibles:
-            possibles[x].remove(truemap[remove_idx])
+    inferred = infer_one_to_one_from_possibles(possibles)
 
     # Calculate the product of all of the ticket fields in my ticket.
-    return prod(yours[i] for i, f in truemap.items() if f.startswith("departure"))
+    return prod(yours[i] for i, f in inferred.items() if f.startswith("departure"))
 
 
 ans_part2 = part2()

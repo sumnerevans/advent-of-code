@@ -6,7 +6,7 @@ import sys
 import time
 from collections import defaultdict
 from copy import deepcopy
-from typing import List, Match, Optional
+from typing import Dict, List, Match, Optional, Set, TypeVar
 
 test = False
 debug = False
@@ -16,10 +16,48 @@ for arg in sys.argv:
     if arg == "--debug":
         debug = True
 
+# Type variables
+K = TypeVar("K")
+V = TypeVar("V")
+
 
 # Utilities
 def rematch(pattern: str, string: str) -> Optional[Match]:
     return re.fullmatch(pattern, string)
+
+
+def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]):
+    """
+    This goes through a dictionary of key to potential values and computes the true
+    value using simple inference where if a key can only be a single value, then it must
+    be that value. For example:
+
+        A -> {X, Y}
+        B -> {Y}
+        C -> {X, Z}
+
+    then B -> Y, which means that A cannot be Y, thus A must be X, and by the same logic
+    C must be Z.
+    """
+    inferred = {}
+    while len(possibles):
+        # Find the alergen that only has one ingredient associated with it and pull it
+        # out of the possibles dictionary, and remove the ingredient from all of the
+        # other sets.
+        for idx, possible_fields in possibles.items():
+            if len(possible_fields) == 1:
+                inferred[idx] = possible_fields.pop()
+                remove_idx = idx
+                break
+        else:  # nobreak
+            assert False, "No keys have a single possible value"
+
+        del possibles[remove_idx]
+        for x in possibles:
+            if inferred[remove_idx] in possibles[x]:
+                possibles[x].remove(inferred[remove_idx])
+
+    return inferred
 
 
 # Input parsing
@@ -100,25 +138,9 @@ def part2() -> str:
         if len(common_alergens) == 1:
             possibles[common_alergens.pop()] &= common_ingredients
 
-    truemap = {}
-    while len(possibles):
-        # Find the alergen that only has one ingredient associated with it and pull it
-        # out of the possibles dictionary, and remove the ingredient from all of the
-        # other sets.
-        remove_idx = 0
-        for idx, possible_fields in possibles.items():
-            if len(possible_fields) == 1:
-                truemap[idx] = possible_fields.pop()
-                remove_idx = idx
-                break
-
-        del possibles[remove_idx]
-        for x in possibles:
-            if truemap[remove_idx] in possibles[x]:
-                possibles[x].remove(truemap[remove_idx])
-
     # Sort by the key (which is the alergen name)
-    return ",".join(v for _, v in sorted(truemap.items()))
+    inferred = infer_one_to_one_from_possibles(possibles)
+    return ",".join(v for _, v in sorted(inferred.items()))
 
 
 part2_start = time.time()
