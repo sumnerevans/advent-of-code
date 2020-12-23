@@ -302,6 +302,8 @@ if debug:
     shared = shared_end - shared_start
     part1_time = part1_end - part1_start
     part2_time = part2_end - part2_start
+    print()
+    print("DEBUG:")
     print(f"Input parsing: {input_parsing * 1000}ms")
     print(f"Shared: {shared * 1000}ms")
     print(f"Part 1: {part1_time * 1000}ms")
