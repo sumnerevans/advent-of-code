@@ -17,11 +17,12 @@ channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 
 ## Results
 
-### 2020 (44*)
+### 2020 (46*)
 
 ```
       -------Part 1--------   -------Part 2--------
 Day       Time  Rank  Score       Time  Rank  Score
+ 23   00:22:30   613      0   02:26:58  1792      0
  22   00:06:49   439      0   00:33:54   573      0
  21   00:37:49  1489      0   00:58:18  1837      0
  20   04:32:46  4269      0   06:01:56  1760      0
