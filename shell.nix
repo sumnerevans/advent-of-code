@@ -23,6 +23,7 @@ let
     outfile=$1
     [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
 
+    mkdir -p inputs
     ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
 
     less inputs/$outfile.txt
