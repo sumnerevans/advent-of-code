@@ -4,7 +4,7 @@ These are my solutions to Advent of Code problems. If you want to join my
 leaderboard, the code is `540750-9589f56d`.
 
 When I solve for speed on the night when the problem opens, I solve using
-Python. I've gone back and solved a few problems in C as well.
+Python. I've gone back and solved a few problems in other languages as well.
 
 **Starting in 2020, I am streaming my solve sessions [on
 Twitch](https://www.twitch.tv/sumnerevans).** Go over there and follow to be

@@ -7,9 +7,9 @@ int main()
     long long ans1 = 0;
     long long ans2 = 0;
 
-    %HERE%
-
-    while (scanf("%lld", &num) >= 0) {
+    char **grid;
+    char *row;
+    while (scanf("%s", &row) >= 0) {
 
     }
 
