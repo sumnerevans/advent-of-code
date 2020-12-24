@@ -151,10 +151,9 @@ def part2() -> int:
         # currently flipped or is adjacent to a currently flipped tile needs to be
         # evaluated.
         looks = set()
-        for k, v in blacks.items():
-            if v:
-                looks = looks.union(set(adjs(*k)))
-                looks.add(k)
+        for k in (x[0] for x in blacks.items() if x[1]):
+            looks = looks.union(set(adjs(*k)))
+            looks.add(k)
 
         for l in looks:  # for each tile that needs to be evaluated...
             # Count number of active adjacent tiles.
