@@ -114,7 +114,7 @@ def part2():
     mapping.
     """
     MAX_2 = 1_000_000
-    cups = deepcopy(CUPS) + ([i for i in range(MAX_CUP + 1, MAX_2 + 1)])
+    cups = deepcopy(CUPS) + [i for i in range(MAX_CUP + 1, MAX_2 + 1)]
 
     # Initialize the "linked list" with the initial "pointers" from each cup to the next
     # one.
