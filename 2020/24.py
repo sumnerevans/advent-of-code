@@ -150,28 +150,31 @@ def part2() -> int:
         # Find the set of tiles that need to be evaluated. Any tile that is either
         # currently flipped or is adjacent to a currently flipped tile needs to be
         # evaluated.
-        looks = set()
-        for k in (x[0] for x in blacks.items() if x[1]):
-            looks = looks.union(set(adjs(*k)))
+        looked = set()
+        for k in [x[0] for x in blacks.items() if x[1]]:
+            looks = set(adjs(*k))
             looks.add(k)
 
-        for l in looks:  # for each tile that needs to be evaluated...
-            # Count number of active adjacent tiles.
-            active_adjs = 0
-            for ax, ay in adjs(*l):
-                if blacks[(ax, ay)]:
-                    active_adjs += 1
+            for l in looks:  # for each tile that needs to be evaluated...
+                if l in looked:
+                    continue
+                looked.add(l)
+                # Count number of active adjacent tiles.
+                active_adjs = 0
+                for ax, ay in adjs(*l):
+                    if blacks[(ax, ay)]:
+                        active_adjs += 1
 
-            if blacks[l]:  # black
-                # Any black tile with zero or more than 2 black tiles immediately
-                # adjacent to it is flipped to white.
-                if active_adjs == 0 or active_adjs > 2:
-                    newblacks[l] = False  # white
-            else:  # white
-                # Any white tile with exactly 2 black tiles immediately adjacent to it
-                # is flipped to black.
-                if active_adjs == 2:
-                    newblacks[l] = True
+                if blacks[l]:  # black
+                    # Any black tile with zero or more than 2 black tiles immediately
+                    # adjacent to it is flipped to white.
+                    if active_adjs == 0 or active_adjs > 2:
+                        newblacks[l] = False  # white
+                else:  # white
+                    # Any white tile with exactly 2 black tiles immediately adjacent to
+                    # it is flipped to black.
+                    if active_adjs == 2:
+                        newblacks[l] = True
 
         blacks = newblacks
 
