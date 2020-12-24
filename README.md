@@ -75,6 +75,7 @@ Day       Time   Rank  Score       Time   Rank  Score
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+  6       >24h  22692      0       >24h  21696      0
   5       >24h  25987      0       >24h  25088      0
   4       >24h  25671      0       >24h  24794      0
   3       >24h  35912      0       >24h  34109      0
