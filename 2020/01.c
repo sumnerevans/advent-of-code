@@ -53,8 +53,6 @@ int main()
         long_list_add(&numbers, num);
     }
 
-    print_long_list(numbers);
-
     long long ans1, ans2;
     for (int i = 0; i < numbers.length; i++) {
         for (int j = 0; j < numbers.length; j++) {
@@ -67,6 +65,7 @@ int main()
         }
     }
 
-    printf("Answer Part 1: %lld\n", ans1);
-    printf("Answer Part 2: %lld\n", ans2);
+    printf("Part 1:\n%lld\n", ans1);
+    printf("Part 2:\n%lld\n", ans2);
+    return 0;
 }
