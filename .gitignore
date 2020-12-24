@@ -2,3 +2,4 @@
 .session_token
 .vim/coc-settings.json
 __pycache__
+bin/

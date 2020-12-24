@@ -61,7 +61,7 @@ let
   '';
 
   debugRunScript = pkgs.writeShellScriptBin "drun" ''
-    ${getDayScriptPart "run"}
+    ${getDayScriptPart "drun"}
 
     ${pkgs.watchexec}/bin/watchexec -r "${pkgs.pypy3}/bin/pypy3 ./$day.py --debug <./inputs/$day.txt"
   '';
@@ -74,7 +74,7 @@ let
   '';
 
   debugSingleRunTestScript = pkgs.writeShellScriptBin "dsrun" ''
-    ${getDayScriptPart "srun"}
+    ${getDayScriptPart "dsrun"}
 
     ${pkgs.pypy3}/bin/pypy3 ./$day.py --debug <./inputs/$day.txt
   '';
@@ -91,8 +91,22 @@ let
   '';
 
   debugRunTestScript = pkgs.writeShellScriptBin "druntest" ''
-    ${getDayScriptPart "runtest"}
+    ${getDayScriptPart "druntest"}
     ${pkgs.pypy3}/bin/pypy3 ./$day.py --test --debug <./inputs/$day.test.txt
+  '';
+
+  cRunScript = pkgs.writeShellScriptBin "crun" ''
+    ${getDayScriptPart "crun"}
+    mkdir -p bin
+    gcc -o bin/$day $day.c
+    ./bin/$day <./inputs/$day.txt
+  '';
+
+  cRunTestScript = pkgs.writeShellScriptBin "cruntest" ''
+    ${getDayScriptPart "cruntest"}
+    mkdir -p bin
+    gcc -o bin/$day $day.c
+    ./bin/$day <./inputs/$day.test.txt
   '';
 
   # CoC Config
@@ -103,6 +117,7 @@ let
       "python.linting.mypyEnabled" = true;
       "python.linting.pylintEnabled" = false;
       "python.pythonPath" = "${py3WithPackages}/bin/python";
+      "clangd.path" = "${pkgs.clang-tools}/bin/clangd";
     }
   );
 in
@@ -116,7 +131,15 @@ pkgs.mkShell {
 
   buildInputs = with pkgs; [
     # Core
+    coreutils
+    gnumake
     rnix-lsp
+
+    # C/C++
+    clang
+    gcc
+    gdb
+    valgrind
 
     # Python
     py3WithPackages
@@ -125,6 +148,8 @@ pkgs.mkShell {
     pypy3
 
     # Utilities
+    cRunScript
+    cRunTestScript
     debugRunScript
     debugRunTestScript
     debugSingleRunTestScript
