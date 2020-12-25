@@ -1,31 +1,8 @@
 #! /usr/bin/env python3
 
-import functools as ft
-import itertools as it
-import heapq
-import math
-import operator
-import os
-import re
-import string
 import sys
 import time
-from copy import deepcopy
-from collections import defaultdict
-from enum import IntEnum
-from typing import (
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Match,
-    Optional,
-    Set,
-    Sized,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import List
 
 test = False
 debug = False
@@ -80,16 +57,22 @@ def part1() -> int:
             ls1 = eprime
         elif c == PK2:
             ls2 = eprime
-        if ls1 > 0 and ls2 > 0:
+        if ls1 > 0 or ls2 > 0:
             break
 
     # Doing the base algorithm to find the answer here
     c = 1
     eprime = 0
-    while eprime < ls2:
-        eprime += 1
-        c = (PK1 * c) % 20201227
-    return c
+    if ls1 > 0:
+        while eprime < ls1:
+            eprime += 1
+            c = (PK2 * c) % 20201227
+        return c
+    else:
+        while eprime < ls2:
+            eprime += 1
+            c = (PK1 * c) % 20201227
+        return c
 
 
 part1_start = time.time()
