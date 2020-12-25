@@ -16,6 +16,20 @@ channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 * [2020 Playlist](https://www.youtube.com/playlist?list=PLpnr_TeIrBtB56VmuG8PIn5TU3wxkDtHE)
 * [2019 Playlist](https://www.youtube.com/playlist?list=PLpnr_TeIrBtB97QK1Bx97mu5CPZVvXHPb)
 
+## A few random links
+
+**Other streamers:**
+
+* [Joshua Wise](https://www.youtube.com/user/joshuawise)
+* [Jonathan Paulson](https://www.youtube.com/channel/UCuWLIm0l4sDpEe28t41WITA/featured)
+* [Anthony Sottile](https://www.twitch.tv/anthonywritescode)
+* [lizthegrey](https://www.twitch.tv/lizthegrey)
+* [where_is_x](https://www.twitch.tv/where_is_x)
+
+**Why I'm not good at this:**
+
+* [Why you probably won't get better at pool](https://jenniferbarretta.wordpress.com/2016/02/16/why-you-probably-wont-get-better-at-pool/)
+
 ## Results
 
 ### 2020 (50*)
