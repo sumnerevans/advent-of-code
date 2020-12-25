@@ -228,13 +228,7 @@ print(f"\n{'=' * 30}\n")
 input_start = time.time()
 
 lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
-# tape = decode_tape(lines)
-# seq = [int(x) for x in lines]
-%HERE%
-for line in lines:
-    pass  # (<>)
-
-# (<>)
+seq = [int(x) for x in lines[0].split()]
 
 input_end = time.time()
 
@@ -242,7 +236,43 @@ input_end = time.time()
 ########################################################################################
 shared_start = time.time()
 
-# (<>)
+"""
+I'm using nested tuples to represent the tree. The first index of each tuple is a tuple
+containing the children nodes. The second index of each tuple is a tuple containing the
+metadata.
+"""
+
+# Nodes contain a tuple of sub-nodes and a tuple of metadata.
+Node = Tuple[Tuple["Node", ...], Tuple[int, ...]]
+
+
+def read_node(i, d=0) -> Tuple[Node, int]:
+    """
+    Read in the node starting at index `i`. This is a recursive function that returns
+    the node and the index that should be processed next (the one right after the last
+    index we processed).
+    """
+    N, M = seq[i], seq[i + 1]  # number of children nodes and number of metadata items
+    i += 2
+
+    # Read in the children
+    children = []
+    for _ in range(N):
+        node, i = read_node(i, d + 1)
+        children.append(node)
+
+    # Read in the metadata
+    metadata = []
+    for _ in range(M):
+        metadata.append(seq[i])
+        i += 1
+
+    # Conver to tuples and return along with the index that we processed up to.
+    return ((tuple(children), tuple(metadata)), i)
+
+
+TREE, i = read_node(0)
+assert i == len(seq)  # make sure we read the entire thing
 
 shared_end = time.time()
 
@@ -252,11 +282,20 @@ print("Part 1:")
 
 
 def part1() -> int:
-    ans = 0
+    """
+    Part 1 requires you to sum all of the metadata objects. I do this with the recursive
+    traverse_sum function.
+    """
 
-    # (<>)
+    def traverse_sum(node):
+        """
+        Compute the sum of a given node by summing all of all of the metadata values and
+        adding the sum of all of the recursive calls to traverse_sum for all of the
+        child nodes.
+        """
+        return sum(node[1]) + sum(map(traverse_sum, node[0]))
 
-    return ans
+    return traverse_sum(TREE)
 
 
 part1_start = time.time()
@@ -271,7 +310,7 @@ assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
 # Regression Test
-# assert test or ans_part1 == (<>)
+assert test or ans_part1 == 45210
 
 # Part 2
 ########################################################################################
@@ -279,11 +318,36 @@ print("\nPart 2:")
 
 
 def part2() -> int:
-    ans = 0
+    """
+    Part 2 requires is very similar, but has a few different rules for the sum
+    calculation.
+    """
 
-    # (<>)
+    def traverse_sum(node):
+        s = 0
+        if len(node[0]) == 0:
+            # If a node has no child nodes, its value is the sum of its metadata
+            # entries.
+            return sum(node[1])
+        else:
+            # However, if a node does have child nodes, the metadata entries become
+            # indexes which refer to those child nodes. A metadata entry of 1 refers to
+            # the first child node, 2 to the second, 3 to the third, and so on. The
+            # value of this node is the sum of the values of the child nodes referenced
+            # by the metadata entries. If a referenced child node does not exist, that
+            # reference is skipped. A child node can be referenced multiple time and
+            # counts each time it is referenced. A metadata entry of 0 does not refer to
+            # any child node.
 
-    return ans
+            # Go thorugh all of the metadata IDs, and if they are valid for this node,
+            # add them to the sum.
+            for mid in node[1]:
+                if 0 < mid <= len(node[0]):
+                    s += traverse_sum(node[0][mid - 1])
+
+        return s
+
+    return traverse_sum(TREE)
 
 
 part2_start = time.time()
