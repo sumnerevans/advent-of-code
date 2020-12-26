@@ -3,6 +3,7 @@
 import functools as ft
 import sys
 from collections import defaultdict
+from typing import List
 
 test = False
 if len(sys.argv) > 1:
@@ -16,7 +17,9 @@ def cache():  # Python 3.9 compat
 
 
 # Input parsing
-lines = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/10.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
 seq = sorted([int(x) for x in lines])
 
 ########################################################################################

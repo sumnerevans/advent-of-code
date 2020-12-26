@@ -1,21 +1,23 @@
 #! /usr/bin/env python3
 
-import sys
+from typing import List
 
-rows = [l.strip() for l in sys.stdin.readlines()]
-n = len(rows)
-cols = len(rows[0])
+with open("inputs/03.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
+n = len(lines)
+cols = len(lines[0])
 
 ########################################################################################
 
-print('Part 1:')
+print("Part 1:")
 
 
 def part1(dx, dy):
     col = 0
     t = 0
     for row in range(0, n, dy):
-        if rows[row][col % cols] == '#':
+        if lines[row][col % cols] == "#":
             t += 1
 
         col += dx
@@ -25,7 +27,7 @@ def part1(dx, dy):
 print(part1(3, 1))
 
 ########################################################################################
-print('\nPart 2:')
+print("\nPart 2:")
 
 
 def part2():

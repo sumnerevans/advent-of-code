@@ -16,7 +16,9 @@ def rematch(pattern: str, string: str) -> Optional[Match]:
 
 
 # Input parsing
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/19.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
 
 RULES = {}
 strs = []

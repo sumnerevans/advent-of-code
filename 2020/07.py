@@ -3,6 +3,7 @@
 import re
 import sys
 from collections import defaultdict
+from typing import List
 
 test = False
 if len(sys.argv) > 1:
@@ -16,8 +17,9 @@ def rematch(pattern, string):
 
 
 # Input parsing
+with open("inputs/07.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
-lines = [l.strip() for l in sys.stdin.readlines()]
 dependencies = defaultdict(list)
 dependencies2 = defaultdict(list)
 # light red bags contain 1 bright white bag, 2 muted yellow bags.

@@ -29,11 +29,16 @@ from typing import (
 
 test = False
 debug = False
+INFILE_NAME = "inputs/%FILE%.txt"
 for arg in sys.argv:
     if arg == "--test":
         test = True
+        INFILE_NAME = "inputs/%FILE%.test.txt"
     if arg == "--debug":
         debug = True
+    if arg == "--stdin":
+        test = True
+        INFILE_NAME = sys.stdin
 
 
 # Type variables
@@ -44,6 +49,22 @@ V = TypeVar("V")
 # Utilities
 def cache():  # Python 3.9 compat
     return ft.lru_cache(maxsize=None)
+
+
+def chunk(iterable, n):
+    if n < 1:
+        raise Exception('not allowed')
+    itertype = type(iterable) if type(iterable) in (list, set, tuple) else list
+
+    container = []
+    for x in iterable:
+        container.append(x)
+        if len(container) == n:
+            yield itertype(container)
+            container = []
+
+    if len(container) > 0:
+        yield itertype(container)
 
 
 def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
@@ -178,56 +199,13 @@ def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]):
     return inferred
 
 
-# Harvard-Architecture Machine
-class OC(IntEnum):
-    """Opcodes for the Harvard-architecture machine."""
-
-    jmp = 0  # jump relative to PC+1
-    acc = 1  # update accumulator
-    nop = 2  # do nothing
-    trm = 3  # terminate program
-
-
-# Change if you add instructions
-assert len(OC) == 4
-Tape = List[Tuple[OC, Tuple[int, ...]]]
-
-
-def decode_tape(lines: List[str]) -> Tape:
-    return [(OC[c], tuple(int(v) for v in vals)) for c, *vals in map(str.split, lines)]
-
-
-def run_harvard(tape: Tape, return_acc_if_loop: bool = True):
-    a = 0
-    pc = 0
-    seen = set()
-    while True:
-        if pc in seen:
-            return a if return_acc_if_loop else None
-
-        seen.add(pc)
-
-        oc, vs = tape[pc]
-        if oc == OC.trm:
-            return a
-        elif oc == OC.jmp:
-            pc += vs[0] - 1
-        elif oc == OC.acc:
-            a += vs[0]
-        elif oc == OC.nop:
-            pass
-
-        pc += 1
-
-    return a
-
-
 print(f"\n{'=' * 30}\n")
 
 # Input parsing
 input_start = time.time()
 
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open(INFILE_NAME) as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 # tape = decode_tape(lines)
 # seq = [int(x) for x in lines]
 %HERE%

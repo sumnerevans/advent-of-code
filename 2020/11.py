@@ -2,6 +2,7 @@
 
 import copy
 import sys
+from typing import List
 
 test = False
 if len(sys.argv) > 1:
@@ -34,7 +35,9 @@ def grid_adjs(row, col, max_row, max_col, dirs=GRID_DIRS):
 
 
 # Input parsing
-lines = [[x for x in l.strip()] for l in sys.stdin.readlines()]
+with open("inputs/11.txt") as f:
+    lines = [[x for x in l.strip()] for l in f.readlines()]
+
 C = len(lines[0])
 R = len(lines)
 

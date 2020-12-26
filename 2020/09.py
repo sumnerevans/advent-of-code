@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import sys
+from typing import List
 
 test = False
 P = 25
@@ -11,7 +12,9 @@ if len(sys.argv) > 1:
 
 
 # Input parsing
-lines = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/09.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
 seq = [int(x) for x in lines]
 
 ########################################################################################

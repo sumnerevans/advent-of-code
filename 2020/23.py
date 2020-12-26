@@ -16,8 +16,9 @@ for arg in sys.argv:
 
 # Input parsing
 input_start = time.time()
+with open("inputs/23.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
 CUPS = [int(x) for x in lines[0]]
 MIN_CUP, MAX_CUP = min(CUPS), max(CUPS)
 

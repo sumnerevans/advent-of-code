@@ -10,7 +10,9 @@ if len(sys.argv) > 1:
         test = True
 
 # Input parsing
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/15.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
 nums = list(map(int, lines[0].split(",")))
 
 

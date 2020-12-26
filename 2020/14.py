@@ -3,7 +3,7 @@
 import itertools as it
 import re
 import sys
-from typing import Generator, Iterable, Match, Optional, Tuple
+from typing import Generator, Iterable, List, Match, Optional, Tuple
 
 test = False
 if len(sys.argv) > 1:
@@ -26,7 +26,8 @@ def sizezip(*iterables: Iterable) -> Generator[Tuple, None, None]:
 
 
 # Input parsing
-lines = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/14.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 # Here's a bit of code that I wrote after solving to figure out the bounds of my input.
 max_mem_loc = 0

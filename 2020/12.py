@@ -27,7 +27,9 @@ def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:
 
 
 # Input parsing
-lines = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/12.txt") as f:
+    lines = [l.strip() for l in f.readlines()]
+
 actions = []
 for line in lines:
     actions.append((line[0], int(line[1:])))

@@ -31,8 +31,8 @@ for arg in sys.argv:
 
 # Input parsing
 input_start = time.time()
-
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/24.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 # Take each string and turn it in to a list of directions that correspond to the dx, dy
 # motions necessary.

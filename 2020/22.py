@@ -16,7 +16,8 @@ for arg in sys.argv:
 
 # Input parsing
 input_start = time.time()
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/22.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 DECKP1 = []
 DECKP2 = []

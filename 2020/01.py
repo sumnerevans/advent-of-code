@@ -1,8 +1,11 @@
 #! /usr/bin/env python3
 
-import sys
+from typing import List
 
-expenses = sorted(int(l) for l in sys.stdin.readlines())
+with open("inputs/01.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
+expenses = sorted(int(l) for l in lines)
 L = len(expenses)
 
 print("Part 1:")

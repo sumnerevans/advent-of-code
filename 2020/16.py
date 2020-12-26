@@ -15,6 +15,7 @@ if len(sys.argv) > 1:
 K = TypeVar("K")
 V = TypeVar("V")
 
+
 # Utilities
 def prod(it: Iterable):
     return reduce(operator.mul, it, 1)
@@ -63,7 +64,8 @@ def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]):
 # ways of doing this, but this is what came to mind immediately.
 # Generally, if you have an input with a few different distinct parts, a state machine
 # like this is reasonable.
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/16.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 # Keep track of where we are in the file.
 endrules = False

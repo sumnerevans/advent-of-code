@@ -1,10 +1,12 @@
 #! /usr/bin/env python3
 
-import sys
+from typing import List
 
 passwords = []
 
-lines = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/02.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
 for line in lines:
     bounds, letter, password = line.split()
     lower, upper = map(int, bounds.split("-"))

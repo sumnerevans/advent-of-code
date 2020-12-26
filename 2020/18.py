@@ -52,7 +52,8 @@ if len(sys.argv) > 1:
 
 
 # Input parsing
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/18.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 
 def tokenize(l):

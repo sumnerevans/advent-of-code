@@ -17,8 +17,8 @@ print(f"\n{'=' * 30}\n")
 
 # Input parsing
 input_start = time.time()
-
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/25.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 PK1 = int(lines[0])
 PK2 = int(lines[1])

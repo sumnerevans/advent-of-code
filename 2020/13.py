@@ -2,6 +2,7 @@
 
 import math
 import sys
+from typing import List
 
 test = False
 if len(sys.argv) > 1:
@@ -12,7 +13,8 @@ if len(sys.argv) > 1:
 INF = float("inf")
 
 # Input parsing
-lines = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/13.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 
 ########################################################################################
@@ -191,7 +193,11 @@ def part2_2():
         advantage=sum(gaps[indexes[0] : indexes[1] + 1]),
     )
     jmp = lcm([busses[indexes[0]], busses[indexes[1]]])
-    i = arrow_alignment(red_len=busses[0], green_len=busses[1], advantage=gaps[1],)
+    i = arrow_alignment(
+        red_len=busses[0],
+        green_len=busses[1],
+        advantage=gaps[1],
+    )
     jmp = lcm([busses[0], busses[1]])
 
     assert jmp != 0

@@ -3,6 +3,7 @@
 import math
 import re
 import sys
+from typing import List
 
 test = False
 if len(sys.argv) > 1:
@@ -16,8 +17,8 @@ def rematch(pattern, string):
 
 
 # Input parsing
-
-lines = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/05.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 ########################################################################################
 print("Part 1:")

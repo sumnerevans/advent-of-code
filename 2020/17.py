@@ -51,7 +51,9 @@ def seqminmax(sequence: Iterable[int]) -> Tuple[int, int]:
 
 
 # Input parsing
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/17.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
 grid = [[x == "#" for x in l] for l in lines]
 
 ########################################################################################

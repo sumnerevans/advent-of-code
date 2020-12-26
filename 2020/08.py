@@ -19,6 +19,7 @@ def rematch(pattern, string):
 # Crazy Machine
 class OC(IntEnum):
     """Opcodes for the Harvard-architecture machine."""
+
     jmp = 0  # jump relative to PC+1
     acc = 1  # update accumulator
     nop = 2  # do nothing
@@ -60,7 +61,10 @@ def run_harvard(tape: Tape, return_acc_if_loop: bool = True):
 
 
 # Input parsing
-tape = decode_tape([l.strip() for l in sys.stdin.readlines()])
+with open("inputs/08.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
+
+tape = decode_tape(lines)
 
 
 ########################################################################################

@@ -62,7 +62,8 @@ def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]):
 
 # Input parsing
 input_start = time.time()
-lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+with open("inputs/21.txt") as f:
+    lines: List[str] = [l.strip() for l in f.readlines()]
 
 FOODS = []  # list of all the foods
 ALL_INGREDIENTS = set()
