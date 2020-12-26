@@ -20,13 +20,45 @@ for k, v in leaderboard.items():
                 part = int(part)
                 rankings[(day, part)].append((int(val["get_star_ts"]), name))
 
-scores = defaultdict(int)
+user_cumulative_scores = defaultdict(int)
+user_scores_per_day = defaultdict(list)
 
-for day, v in sorted(rankings.items()):
-    for rank, (_, name) in enumerate(sorted(v, reverse=True), start=1):
-        scores[name] += rank
+for (day, part), v in sorted(rankings.items()):
+    for rank, (_, name) in enumerate(sorted(v), start=1):
+        if day != 1:
+            user_cumulative_scores[name] += len(rankings) - rank
+        user_scores_per_day[name].append(rank)
 
-max_name = max(map(len, scores.keys()))
+max_name = max(map(len, user_cumulative_scores.keys()))
 
-for name, score in sorted(scores.items(), key=lambda kv: kv[1], reverse=True):
-    print(name.ljust(max_name + 2), score)
+print("Name".ljust(max_name + 2), "Total", *(f"  {d+1:02} " for d in range(25)))
+print(" " * (max_name + 2), "Part:", *(" 1  2" for _ in range(25)))
+print("=" * (max_name + 2), "=" * 5, *("=====" for _ in range(25)))
+
+
+def colorize(rank):
+    GOLD = "\033[1;32m"
+    SILVER = "\033[1;33m"
+    BRONZE = "\033[1;31m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    ENDC = "\033[0m"
+    if rank == 1:
+        return GOLD + BOLD + UNDERLINE + str(rank) + ENDC
+    elif rank == 2:
+        return SILVER + BOLD + UNDERLINE + str(rank) + ENDC
+    elif rank == 3:
+        return BRONZE + BOLD + UNDERLINE + str(rank) + ENDC
+    else:
+        return str(rank)
+
+
+for name, score in sorted(
+    user_cumulative_scores.items(), key=lambda kv: kv[1], reverse=True
+):
+    print(
+        name.ljust(max_name + 2),
+        str(score).rjust(5),
+        "",
+        "  ".join((colorize(dr) for dr in user_scores_per_day[name])),
+    )

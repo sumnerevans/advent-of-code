@@ -3,3 +3,4 @@
 .vim/coc-settings.json
 __pycache__
 bin/
+leaderboard-analysis/*.json
