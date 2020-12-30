@@ -29,16 +29,16 @@ from typing import (
 
 test = False
 debug = False
-INFILE_NAME = "inputs/%FILE%.txt"
+stdin = False
+INFILENAME = "inputs/15.txt"
 for arg in sys.argv:
     if arg == "--test":
         test = True
-        INFILE_NAME = "inputs/%FILE%.test.txt"
+        INFILENAME = "inputs/15.test.txt"
     if arg == "--debug":
         debug = True
     if arg == "--stdin":
-        test = True
-        INFILE_NAME = sys.stdin
+        stdin = True
 
 
 # Type variables
@@ -93,8 +93,8 @@ def prod(it: Iterable):
     return ft.reduce(operator.mul, it, 1)
 
 
-def rematch(pattern: str, string: str) -> Optional[Match]:
-    return re.fullmatch(pattern, string)
+def rematch(pattern: str, s: str) -> Optional[Match]:
+    return re.fullmatch(pattern, s)
 
 
 def grid_adjs(
@@ -203,10 +203,12 @@ print(f"\n{'=' * 30}\n")
 
 # Input parsing
 input_start = time.time()
+if stdin:
+    lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+else:
+    with open(INFILENAME) as f:
+        lines: List[str] = [l.strip() for l in f.readlines()]
 
-with open(INFILE_NAME) as f:
-    lines: List[str] = [l.strip() for l in f.readlines()]
-# tape = decode_tape(lines)
 # seq = [int(x) for x in lines]
 %HERE%
 for line in lines:

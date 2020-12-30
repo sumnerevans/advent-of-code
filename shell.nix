@@ -85,6 +85,7 @@ let
     ${pkgs.xsel}/bin/xsel --output > inputs/$day.test.txt
   '';
 
+  # Run with --test flag
   runTestScript = pkgs.writeShellScriptBin "runtest" ''
     ${getDayScriptPart "runtest"}
     ${pkgs.pypy3}/bin/pypy3 ./$day.py --test
@@ -95,6 +96,13 @@ let
     ${pkgs.pypy3}/bin/pypy3 ./$day.py --test --debug
   '';
 
+  # Run with --stdin flag
+  runStdinScript = pkgs.writeShellScriptBin "runstdin" ''
+    ${getDayScriptPart "runstdin"}
+    ${pkgs.pypy3}/bin/pypy3 ./$day.py --stdin
+  '';
+
+  # Compile and run the C version.
   cRunScript = pkgs.writeShellScriptBin "crun" ''
     ${getDayScriptPart "crun"}
     mkdir -p bin
@@ -134,6 +142,8 @@ pkgs.mkShell {
     coreutils
     gnumake
     rnix-lsp
+    sloccount
+    tokei
 
     # C/C++
     clang
@@ -157,6 +167,7 @@ pkgs.mkShell {
     mkTestScript
     printStatsScript
     runScript
+    runStdinScript
     runTestScript
     singleRunScript
   ];
