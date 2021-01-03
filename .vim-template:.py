@@ -51,7 +51,7 @@ def cache():  # Python 3.9 compat
     return ft.lru_cache(maxsize=None)
 
 
-def chunk(iterable, n):
+def chunks(iterable, n):
     if n < 1:
         raise Exception('not allowed')
     itertype = type(iterable) if type(iterable) in (list, set, tuple) else list
@@ -82,9 +82,8 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
         cost, el = heapq.heappop(Q)
         if cost < D.get(el, math.inf):
             D[el] = cost
-
-        for c, x in G[el]:
-            heapq.heappush(Q, (cost + c, x))
+            for c, x in G[el]:
+                heapq.heappush(Q, (cost + c, x))
 
     return D[end]
 
