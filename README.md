@@ -29,6 +29,14 @@ channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 
 * [Why you probably won't get better at pool](https://jenniferbarretta.wordpress.com/2016/02/16/why-you-probably-wont-get-better-at-pool/)
 
+## Workflow
+
+This project uses [direnv](https://direnv.net/) and the Nix package manager to
+manage the environment. The `shell.nix` file defines the Nix shell environment
+and includes all of the necessary development dependencies. It also adds a bunch
+of helper scripts to help with things such as running tests and getting the
+input using `curl`.
+
 ## Results
 
 ### 2020 (50*)
