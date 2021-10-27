@@ -20,7 +20,7 @@ let
     [[ ! $(echo $year | ${rg} "\d{4}") ]] && echo "Not a year dir" && exit 1
 
     outfile=$1
-    [[ $(echo "$1 < 10" | bc) == "1" ]] && outfile="0$outfile"
+    [[ $(echo "$1 < 10" | ${pkgs.bc}/bin/bc) == "1" ]] && outfile="0$outfile"
 
     mkdir -p inputs
     ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
@@ -50,7 +50,7 @@ let
     [[ ! $(echo $day | ${rg} "\d+") ]] && echo "Not a valid day" && exit 1
 
     # Zero-pad day
-    [[ $(echo "$1 < 10" | bc) == "1" ]] && day="0$day"
+    [[ $(echo "$1 < 10" | ${pkgs.bc}/bin/bc) == "1" ]] && day="0$day"
   '';
 
   runScript = pkgs.writeShellScriptBin "run" ''

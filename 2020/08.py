@@ -1,19 +1,13 @@
 #! /usr/bin/env python3
 
-import re
 import sys
 from enum import IntEnum
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 test = False
 if len(sys.argv) > 1:
     if sys.argv[1] == "--test":
         test = True
-
-
-# Utilities
-def rematch(pattern, string):
-    return re.fullmatch(pattern, string)
 
 
 # Crazy Machine
@@ -35,7 +29,7 @@ def decode_tape(lines: List[str]) -> Tape:
     return [(OC[c], tuple(int(v) for v in vals)) for c, *vals in map(str.split, lines)]
 
 
-def run_harvard(tape: Tape, return_acc_if_loop: bool = True):
+def run_harvard(tape: Tape, return_acc_if_loop: bool = True) -> Optional[int]:
     a = 0
     pc = 0
     seen = set()
@@ -56,8 +50,6 @@ def run_harvard(tape: Tape, return_acc_if_loop: bool = True):
             pass
 
         pc += 1
-
-    return a
 
 
 # Input parsing
