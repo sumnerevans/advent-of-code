@@ -6,7 +6,6 @@ let
       flake8
       graphviz
       pynvim
-      python-language-server
     ]
   );
 
