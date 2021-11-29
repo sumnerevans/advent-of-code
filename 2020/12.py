@@ -12,7 +12,8 @@ if len(sys.argv) > 1:
 # Utilities
 def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:
     """
-    Rotate an integer point by `deg` around the `origin`. Only works when deg % 90 == 0.
+    Rotate an integer point ``(x, y)`` by ``deg`` around the ``origin``. Only works when
+    ``deg % 90 == 0``.
     """
     transformed_x = x - origin[0]
     transformed_y = y - origin[1]

@@ -18,8 +18,8 @@ nums = list(map(int, lines[0].split(",")))
 
 def solve(n: int) -> int:
     """
-    This function solves both parts in O(n) time, but O(n^2) space. I tried doing some
-    optimizations for it, but honestly, this is fast enough.
+    This function solves both parts in ``O(n)`` time, but ``O(n^2)`` space. I tried
+    doing some optimizations for it, but honestly, this is fast enough.
     """
     spokens = defaultdict(list)  # keep track of all the times you said every number
     prev = 0

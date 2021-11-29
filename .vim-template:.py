@@ -148,7 +148,8 @@ def rot(
 
 def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:
     """
-    Rotate an integer point by `deg` around the `origin`. Only works when deg % 90 == 0.
+    Rotate an integer point ``(x, y)`` by ``deg`` around the ``origin``. Only works when
+    ``deg % 90 == 0``.
     """
     transformed_x = x - origin[0]
     transformed_y = y - origin[1]
@@ -158,7 +159,22 @@ def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[in
     return (transformed_x + origin[0], transformed_y + origin[1])
 
 
+def seqminmax(sequence: Iterable[int]) -> Tuple[int, int]:
+    """
+    Returns a tuple containing the minimum and maximum element of the ``sequence``.
+    """
+    min_, max_ = math.inf, -math.inf
+    for x in sequence:
+        min_ = min(min_, x)
+        max_ = max(max_, x)
+    return int(min_), int(max_)
+
+
 def sizezip(*iterables: Union[List, Set]) -> Generator[Tuple, None, None]:
+    """
+    Same as the :class:`zip` function, but verifies that the lengths of the
+    :class:`list`s or :class:`set`s are the same.
+    """
     assert len(set(len(x) for x in iterables)) == 1
     yield from zip(*iterables)
 
@@ -243,7 +259,9 @@ part1_end = time.time()
 print(ans_part1)
 
 # Store the attempts that failed here.
-tries = []
+tries = [
+    # (<>)
+]
 print("Tries Part 1:", tries)
 assert ans_part1 not in tries, "Same as an incorrect answer!"
 
@@ -270,7 +288,9 @@ part2_end = time.time()
 print(ans_part2)
 
 # Store the attempts that failed here.
-tries2 = []
+tries2 = [
+    # (<>)
+]
 print("Tries Part 2:", tries2)
 assert ans_part2 not in tries2, "Same as an incorrect answer!"
 

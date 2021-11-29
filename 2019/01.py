@@ -1,9 +1,5 @@
 #! /usr/bin/env python3
 
-import re
-from collections import defaultdict
-from typing import Dict, List, Tuple
-
 masses = []
 
 with open('01.txt') as f:

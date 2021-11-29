@@ -43,6 +43,9 @@ def grid_adjs(
 
 
 def seqminmax(sequence: Iterable[int]) -> Tuple[int, int]:
+    """
+    Returns a tuple containing the minimum and maximum element of the ``sequence``.
+    """
     min_, max_ = math.inf, -math.inf
     for x in sequence:
         min_ = min(min_, x)
@@ -73,7 +76,8 @@ def print_grid(actives, rrange, crange, zrange):
 
 def part1() -> int:
     """
-    Each of the 6 iterations is O(n^3) where n is the max dimension in any direction.
+    Each of the 6 iterations is ``O(n^3)`` where n is the max dimension in any
+    direction.
     """
     actives = set()
     for r in range(len(grid)):

@@ -1,9 +1,6 @@
 #! /usr/bin/env python3
 
 import re
-from collections import defaultdict
-from typing import Dict, List, Tuple
-import itertools
 from functools import partial
 
 with open('03.txt') as f:

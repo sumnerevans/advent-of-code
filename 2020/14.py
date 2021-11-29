@@ -21,6 +21,10 @@ def pbits(num: int, pad: int = 32) -> str:
 
 
 def sizezip(*iterables: Iterable) -> Generator[Tuple, None, None]:
+    """
+    Same as the :class:`zip` function, but verifies that the lengths of the
+    :class:`list`s or :class:`set`s are the same.
+    """
     assert len(set(len(x) for x in iterables)) == 1  # type: ignore
     yield from zip(*iterables)
 
