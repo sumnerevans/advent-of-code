@@ -21,7 +21,6 @@ from typing import (
     Match,
     Optional,
     Set,
-    Sized,
     Tuple,
     TypeVar,
     Union,
@@ -30,11 +29,11 @@ from typing import (
 test = False
 debug = False
 stdin = False
-INFILENAME = "inputs/15.txt"
+INFILENAME = "inputs/%FILE%.txt"
 for arg in sys.argv:
     if arg == "--test":
         test = True
-        INFILENAME = "inputs/15.test.txt"
+        INFILENAME = "inputs/%FILE%.test.txt"
     if arg == "--debug":
         debug = True
     if arg == "--stdin":
@@ -159,41 +158,41 @@ def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[in
     return (transformed_x + origin[0], transformed_y + origin[1])
 
 
-def sizezip(*iterables: Iterable) -> Generator[Tuple, None, None]:
-    assert len(set(len(x) for x in iterables)) == 1  # type: ignore
+def sizezip(*iterables: Union[List, Set]) -> Generator[Tuple, None, None]:
+    assert len(set(len(x) for x in iterables)) == 1
     yield from zip(*iterables)
 
 
-def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]):
+def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]) -> Dict[K, V]:
     """
     This goes through a dictionary of key to potential values and computes the true
     value using simple inference where if a key can only be a single value, then it must
-    be that value. For example:
+    be that value. For example::
 
         A -> {X, Y}
         B -> {Y}
         C -> {X, Z}
 
-    then B -> Y, which means that A cannot be Y, thus A must be X, and by the same logic
-    C must be Z.
+    then ``B`` must be ``Y``, which means that ``A`` cannot be ``Y``, thus ``A`` must be
+    ``X``, and by the same logic ``C`` must be ``Z``.
     """
     inferred = {}
     while len(possibles):
-        # Find the alergen that only has one ingredient associated with it and pull it
-        # out of the possibles dictionary, and remove the ingredient from all of the
-        # other sets.
-        for idx, possible_fields in possibles.items():
+        # Find the item that only has one possibility associated with it and pull it out
+        # of the possibles dictionary, and remove the ingredient from all of the other
+        # sets.
+        for key, possible_fields in possibles.items():
             if len(possible_fields) == 1:
-                inferred[idx] = possible_fields.pop()
-                remove_idx = idx
+                inferred[key] = possible_fields.pop()
+                remove_item = inferred[key]
+                del possibles[key]
                 break
         else:  # nobreak
             assert False, "No keys have a single possible value"
 
-        del possibles[remove_idx]
         for x in possibles:
-            if inferred[remove_idx] in possibles[x]:
-                possibles[x].remove(inferred[remove_idx])
+            if remove_item in possibles[x]:
+                possibles[x].remove(remove_item)
 
     return inferred
 

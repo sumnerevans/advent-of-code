@@ -9,8 +9,7 @@ let
     ]
   );
 
-  sessionToken = pkgs.lib.removeSuffix "\n" (builtins.readFile ./.session_token);
-  curl = ''${pkgs.curl}/bin/curl -f --cookie "session=${sessionToken}"'';
+  curl = ''${pkgs.curl}/bin/curl -f --cookie "session=$sessionToken"'';
   rg = "${pkgs.ripgrep}/bin/rg --color never";
   getInputScript = pkgs.writeShellScriptBin "getinput" ''
     [[ $1 == "" ]] && echo "Usage: getinput <day>" && exit 1
@@ -23,6 +22,7 @@ let
     [[ $(echo "$1 < 10" | ${pkgs.bc}/bin/bc) == "1" ]] && outfile="0$outfile"
 
     mkdir -p inputs
+    sessionToken=$(cat ${builtins.getEnv "PWD"}/.session_token)
     ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
 
     less inputs/$outfile.txt
@@ -34,6 +34,7 @@ let
     # Skip if not a year dir
     [[ ! $(echo $year | ${rg} "\d{4}") ]] && exit 0
 
+    sessionToken=$(cat ${builtins.getEnv "PWD"}/.session_token)
     ${curl} -s https://adventofcode.com/$year/leaderboard/self |
       ${pkgs.html-xml-utils}/bin/hxselect -c pre |
       ${pkgs.gnused}/bin/sed "s/<[^>]*>//g" |
