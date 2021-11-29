@@ -1,5 +1,19 @@
 let
-  pkgs = import <nixpkgs> {};
+  pkgs = import <nixpkgs> {
+    overlays = [
+      (self: super: {
+        pypy3 = super.pypy3.override {
+          sourceVersion = {
+            major = "7";
+            minor = "3";
+            patch = "7";
+          };
+          sha256 = "sha256-Ia4zn09QFtbKcwAwXz47VUNzg1yzw5qQQf4w5oEcgMY=";
+          pythonVersion = "3.8";
+        };
+      })
+    ];
+  };
   py3WithPackages = pkgs.python3.withPackages (
     ps: with ps; [
       black
