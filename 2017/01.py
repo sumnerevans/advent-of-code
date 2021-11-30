@@ -2,6 +2,7 @@
 
 import sys
 import time
+from typing import List
 
 test = False
 debug = False
@@ -22,10 +23,10 @@ print(f"\n{'=' * 30}\n")
 # Input parsing
 input_start = time.time()
 if stdin:
-    lines: list[str] = [l.strip() for l in sys.stdin.readlines()]
+    lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
 else:
     with open(INFILENAME) as f:
-        lines: list[str] = [l.strip() for l in f.readlines()]
+        lines: List[str] = [l.strip() for l in f.readlines()]
 
 chars = [int(x) for x in lines[0]]
 

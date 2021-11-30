@@ -110,10 +110,16 @@ let
     ${pkgs.pypy3}/bin/pypy3 ./$day.py --test --debug
   '';
 
-  # Run with --stdin flag
+  # Run with --stdin and --test flags
   runStdinScript = pkgs.writeShellScriptBin "runstdin" ''
     ${getDayScriptPart "runstdin"}
-    ${pkgs.pypy3}/bin/pypy3 ./$day.py --stdin
+    ${pkgs.pypy3}/bin/pypy3 ./$day.py --stdin --test
+  '';
+
+  # Run with --stdin and --test flags, and pull from clipboard.
+  runStdinClipScript = pkgs.writeShellScriptBin "runstdinclip" ''
+    ${getDayScriptPart "runstdin"}
+    ${pkgs.xsel}/bin/xsel --output | ${pkgs.pypy3}/bin/pypy3 ./$day.py --stdin --test
   '';
 
   # Compile and run the C version.
@@ -181,6 +187,7 @@ pkgs.mkShell {
     mkTestScript
     printStatsScript
     runScript
+    runStdinClipScript
     runStdinScript
     runTestScript
     singleRunScript
