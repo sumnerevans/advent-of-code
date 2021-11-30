@@ -1,4 +1,7 @@
-# Advent of Code
+[![Advent of Code](./advent-of-code.jpg)](https://adventofcode.com)
+
+[![MIT License](https://img.shields.io/github/license/sumnerevans/advent-of-code)](https://github.com/sumnerevans/advent-of-code/blob/master/LICENSE)
+[![LiberaPay Donation Status](https://img.shields.io/liberapay/receives/sumner.svg?logo=liberapay)](https://liberapay.com/sumner/donate)
 
 These are my solutions to Advent of Code problems. If you want to join my
 leaderboard, the code is `540750-9589f56d`.
