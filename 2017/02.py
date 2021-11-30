@@ -92,22 +92,18 @@ print("\nPart 2:")
 def part2() -> int:
     ans = 0
 
-    def x(r) -> int:
+    def divide_evenly_disible_in_sequence(r) -> int:
         # Find the only two numbers in each row where one evenly divides the other -
         # that is, where the result of the division operation is a whole number. Then
         # return the division of the largest over the smallest.
         for i, x1 in enumerate(r):
             for j, x2 in enumerate(r):
-                if i != j:
-                    if x1 % x2 == 0 or x2 % x1 == 0:
-                        if x1 > x2:
-                            return x1 // x2
-                        else:
-                            return x2 // x1
+                if i != j and x1 % x2 == 0:
+                    return x1 // x2
         assert False
 
     for r in S:
-        ans += x(r)
+        ans += divide_evenly_disible_in_sequence(r)
 
     return ans
 
