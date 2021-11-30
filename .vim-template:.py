@@ -87,6 +87,20 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
     return D[end]
 
 
+def invert_dict(d: Dict[K, V]) -> Dict[V, K]:
+    return {v: k for k, v in d.items()}
+
+
+def invert_graph(graph: Dict[K, Iterable[V]]) -> Dict[V, Set[K]]:
+    new_graph = {}
+    for k, vals in graph.items():
+        for v in vals:
+            if v not in new_graph:
+                new_graph[v] = set()
+            new_graph[v].add(k)
+    return new_graph
+
+
 def prod(it: Iterable):
     return ft.reduce(operator.mul, it, 1)
 
