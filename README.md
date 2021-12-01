@@ -42,6 +42,14 @@ input using `curl`.
 
 ## Results
 
+### 2021 (2*)
+
+```
+      -------Part 1--------   -------Part 2--------
+Day       Time  Rank  Score       Time  Rank  Score
+  1   00:00:49    38     63   00:02:22    66     35
+```
+
 ### 2020 (50*)
 
 ```
