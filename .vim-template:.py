@@ -87,28 +87,6 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
     return D[end]
 
 
-def invert_dict(d: Dict[K, V]) -> Dict[V, K]:
-    return {v: k for k, v in d.items()}
-
-
-def invert_graph(graph: Dict[K, Iterable[V]]) -> Dict[V, Set[K]]:
-    new_graph = {}
-    for k, vals in graph.items():
-        for v in vals:
-            if v not in new_graph:
-                new_graph[v] = set()
-            new_graph[v].add(k)
-    return new_graph
-
-
-def prod(it: Iterable):
-    return ft.reduce(operator.mul, it, 1)
-
-
-def rematch(pattern: str, s: str) -> Optional[Match]:
-    return re.fullmatch(pattern, s)
-
-
 def grid_adjs(
     coord: Tuple[int, ...],
     bounds: Tuple[Tuple[int, int], ...] = None,
@@ -136,61 +114,6 @@ def grid_adjs(
                 continue
 
         yield tuple(c + d for c, d in zip(coord, delta))
-
-
-def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:
-    return abs(x2 - x1) + abs(y2 - y1)
-
-
-def pbits(num: int, pad: int = 32) -> str:
-    """Return the bits of `num` in binary with the given padding."""
-    return bin(num)[2:].zfill(pad)
-
-
-def rot(
-    x: float, y: float, deg: float, origin: Tuple[float, float] = (0, 0)
-) -> Tuple[float, float]:
-    """
-    Rotate a point by `deg` around the `origin`. This does floating-point math, so
-    you may encounter precision errors.
-    """
-    theta = deg * math.pi / 180
-    x2 = (x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta)
-    y2 = (x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta)
-    return (x2 + origin[0], y2 + origin[1])
-
-
-def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:
-    """
-    Rotate an integer point ``(x, y)`` by ``deg`` around the ``origin``. Only works when
-    ``deg % 90 == 0``.
-    """
-    transformed_x = x - origin[0]
-    transformed_y = y - origin[1]
-    assert deg % 90 == 0
-    for _ in range((deg // 90) % 4):
-        transformed_x, transformed_y = -transformed_y, transformed_x
-    return (transformed_x + origin[0], transformed_y + origin[1])
-
-
-def seqminmax(sequence: Iterable[int]) -> Tuple[int, int]:
-    """
-    Returns a tuple containing the minimum and maximum element of the ``sequence``.
-    """
-    min_, max_ = math.inf, -math.inf
-    for x in sequence:
-        min_ = min(min_, x)
-        max_ = max(max_, x)
-    return int(min_), int(max_)
-
-
-def sizezip(*iterables: Union[List, Set]) -> Generator[Tuple, None, None]:
-    """
-    Same as the :class:`zip` function, but verifies that the lengths of the
-    :class:`list`s or :class:`set`s are the same.
-    """
-    assert len(set(len(x) for x in iterables)) == 1
-    yield from zip(*iterables)
 
 
 def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]) -> Dict[K, V]:
@@ -225,6 +148,83 @@ def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]) -> Dict[K, V]:
                 possibles[x].remove(remove_item)
 
     return inferred
+
+
+def invert_dict(d: Dict[K, V]) -> Dict[V, K]:
+    return {v: k for k, v in d.items()}
+
+
+def invert_graph(graph: Dict[K, Iterable[V]]) -> Dict[V, Set[K]]:
+    new_graph = {}
+    for k, vals in graph.items():
+        for v in vals:
+            if v not in new_graph:
+                new_graph[v] = set()
+            new_graph[v].add(k)
+    return new_graph
+
+
+def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:
+    """
+    Rotate an integer point ``(x, y)`` by ``deg`` around the ``origin``. Only works when
+    ``deg % 90 == 0``.
+    """
+    transformed_x = x - origin[0]
+    transformed_y = y - origin[1]
+    assert deg % 90 == 0
+    for _ in range((deg // 90) % 4):
+        transformed_x, transformed_y = -transformed_y, transformed_x
+    return (transformed_x + origin[0], transformed_y + origin[1])
+
+
+def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:
+    return abs(x2 - x1) + abs(y2 - y1)
+
+
+def pbits(num: int, pad: int = 32) -> str:
+    """Return the bits of `num` in binary with the given padding."""
+    return bin(num)[2:].zfill(pad)
+
+
+def prod(it: Iterable):
+    return ft.reduce(operator.mul, it, 1)
+
+
+def rematch(pattern: str, s: str) -> Optional[Match]:
+    return re.fullmatch(pattern, s)
+
+
+def rot(
+    x: float, y: float, deg: float, origin: Tuple[float, float] = (0, 0)
+) -> Tuple[float, float]:
+    """
+    Rotate a point by `deg` around the `origin`. This does floating-point math, so
+    you may encounter precision errors.
+    """
+    theta = deg * math.pi / 180
+    x2 = (x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta)
+    y2 = (x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta)
+    return (x2 + origin[0], y2 + origin[1])
+
+
+def seqminmax(sequence: Iterable[int]) -> Tuple[int, int]:
+    """
+    Returns a tuple containing the minimum and maximum element of the ``sequence``.
+    """
+    min_, max_ = math.inf, -math.inf
+    for x in sequence:
+        min_ = min(min_, x)
+        max_ = max(max_, x)
+    return int(min_), int(max_)
+
+
+def sizezip(*iterables: Union[List, Set]) -> Generator[Tuple, None, None]:
+    """
+    Same as the :class:`zip` function, but verifies that the lengths of the
+    :class:`list`s or :class:`set`s are the same.
+    """
+    assert len(set(len(x) for x in iterables)) == 1
+    yield from zip(*iterables)
 
 
 print(f"\n{'=' * 30}\n")
