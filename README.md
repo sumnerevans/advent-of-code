@@ -27,6 +27,7 @@ channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 * [Anthony Sottile](https://www.twitch.tv/anthonywritescode)
 * [lizthegrey](https://www.twitch.tv/lizthegrey)
 * [where_is_x](https://www.twitch.tv/where_is_x)
+* [Rhymu](https://www.twitch.tv/rhymu)
 
 **Why I'm not good at this:**
 
