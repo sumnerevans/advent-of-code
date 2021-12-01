@@ -14,8 +14,8 @@ from copy import deepcopy
 from collections import defaultdict
 from enum import IntEnum
 from typing import (
+    Callable,
     Dict,
-    Generator,
     Iterable,
     List,
     Match,
@@ -91,7 +91,7 @@ def grid_adjs(
     coord: Tuple[int, ...],
     bounds: Tuple[Tuple[int, int], ...] = None,
     inclusive: bool = True,
-) -> Generator[Tuple[int, ...], None, None]:
+) -> Iterable[Tuple[int, ...]]:
     # Iterate through all of the deltas for the N dimensions of the coord. A delta is
     # -1, 0, or 1 indicating that the adjacent cell is one lower, same level, or higher
     # than the given coordinate.
@@ -181,6 +181,10 @@ def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:
     return abs(x2 - x1) + abs(y2 - y1)
 
 
+def maplist(fn: Callable[[K], V], l: Iterable[K]) -> List[V]:
+    return list(map(fn, l))
+
+
 def pbits(num: int, pad: int = 32) -> str:
     """Return the bits of `num` in binary with the given padding."""
     return bin(num)[2:].zfill(pad)
@@ -218,13 +222,21 @@ def seqminmax(sequence: Iterable[int]) -> Tuple[int, int]:
     return int(min_), int(max_)
 
 
-def sizezip(*iterables: Union[List, Set]) -> Generator[Tuple, None, None]:
+def sizezip(*iterables: Union[List, Set]) -> Iterable[Tuple]:
     """
     Same as the :class:`zip` function, but verifies that the lengths of the
     :class:`list`s or :class:`set`s are the same.
     """
     assert len(set(len(x) for x in iterables)) == 1
     yield from zip(*iterables)
+
+
+def window(iterable: List[K], n: int) -> Iterable[Tuple[K, ...]]:
+    """
+    Return a sliding window of size ``n`` of the given iterable.
+    """
+    for start_idx in range(len(iterable) - n + 1):
+        yield tuple(iterable[start_idx + idx] for idx in range(n))
 
 
 print(f"\n{'=' * 30}\n")

@@ -2,7 +2,7 @@
 
 import sys
 import time
-from typing import List
+from typing import Callable, Iterable, List, Tuple, TypeVar
 
 test = False
 debug = False
@@ -16,6 +16,21 @@ for arg in sys.argv:
         debug = True
     if arg == "--stdin":
         stdin = True
+
+K = TypeVar("K")
+V = TypeVar("V")
+
+
+def maplist(fn: Callable[[K], V], l: Iterable[K]) -> List[V]:
+    return list(map(fn, l))
+
+
+def window(iterable: List[K], n: int) -> Iterable[Tuple[K, ...]]:
+    """
+    Return a sliding window of size ``n`` of the given iterable.
+    """
+    for start_idx in range(len(iterable) - n + 1):
+        yield tuple(iterable[start_idx + idx] for idx in range(n))
 
 
 print(f"\n{'=' * 30}\n")
@@ -75,8 +90,7 @@ print("\nPart 2:")
 def part2() -> int:
     ans = 0
 
-    windows = [i + j + k for i, j, k in zip(seq, seq[1:], seq[2:])]
-
+    windows = maplist(sum, window(seq, 3))
     for i, j in zip(windows, windows[1:]):
         if j > i:
             ans += 1
