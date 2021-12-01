@@ -75,9 +75,7 @@ print("\nPart 2:")
 def part2() -> int:
     ans = 0
 
-    windows = []
-    for i, j, k in zip(seq, seq[1:], seq[2:]):
-        windows.append(i + j + k)
+    windows = [i + j + k for i, j, k in zip(seq, seq[1:], seq[2:])]
 
     for i, j in zip(windows, windows[1:]):
         if j > i:
