@@ -17,17 +17,26 @@ I then upload the VODs to [my YouTube
 channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 
 * [2020 Playlist](https://www.youtube.com/playlist?list=PLpnr_TeIrBtB56VmuG8PIn5TU3wxkDtHE)
+* [2021 Playlist](https://www.youtube.com/playlist?list=PLpnr_TeIrBtAXS6uWQijhF-2JjsArzFz7)
 
 ## A few random links
 
-**Other streamers:**
+**Other solutions that I take a look at:**
 
-* [Joshua Wise](https://www.youtube.com/user/joshuawise)
-* [Jonathan Paulson](https://www.youtube.com/channel/UCuWLIm0l4sDpEe28t41WITA/featured)
+* [Adam Sandstedt](https://github.com/AdamSandstedt/AdventOfCode)
+* [Colin Siles](https://github.com/sColin16/AoC)
+* [Jordan Newport](https://sr.ht/~talos/advent-of-code/)
+* [Kelly Dance](https://github.com/mcbobby123/AdventOfCode2020)
+* [Sam Sartor](https://gitlab.com/samsartor/aoc-2021/)
+
+**Other streamers I like watching:**
+
 * [Anthony Sottile](https://www.twitch.tv/anthonywritescode)
+* [Jonathan Paulson](https://www.youtube.com/channel/UCuWLIm0l4sDpEe28t41WITA/featured)
+* [Joshua Wise](https://www.youtube.com/user/joshuawise)
 * [lizthegrey](https://www.twitch.tv/lizthegrey)
-* [where_is_x](https://www.twitch.tv/where_is_x)
 * [Rhymu](https://www.twitch.tv/rhymu)
+* [where_is_x](https://www.twitch.tv/where_is_x)
 
 **Why I'm not good at this:**
 
@@ -43,7 +52,7 @@ input using `curl`.
 
 ## Results
 
-### 2021 (2*)
+### 2021 (2*, 98 points on global leaderboard)
 
 ```
       -------Part 1--------   -------Part 2--------
