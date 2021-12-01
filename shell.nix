@@ -132,6 +132,12 @@ let
       "python.linting.pylintEnabled" = false;
       "python.pythonPath" = "${py3WithPackages}/bin/python";
       "clangd.path" = "${pkgs.clang-tools}/bin/clangd";
+      "languageserver" = {
+        "ocaml-lsp" = {
+          command = "ocamllsp";
+          filetypes = [ "ocaml" "reason" ];
+        };
+      };
     }
   );
 in
@@ -156,6 +162,13 @@ pkgs.mkShell {
     gcc
     gdb
     valgrind
+
+    # OCaml
+    ocaml
+    ocamlformat
+    ocamlPackages.ocaml-lsp
+    ocamlPackages.ocaml_extlib
+    ocamlPackages.utop
 
     # Python
     py3WithPackages
