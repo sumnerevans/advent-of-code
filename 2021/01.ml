@@ -27,10 +27,7 @@ let part2 nums =
     | [a; b] -> []
     | a :: b :: c :: more -> (a, b, c) :: windows3 (b :: c :: more)
   in
-  List.fold_left
-    (fun n (x, y) -> n + if y > x then 1 else 0)
-    0
-    (pairs (List.map (fun (a, b, c) -> a + b + c) (windows3 nums)))
+  part1 (List.map (fun (a, b, c) -> a + b + c) (windows3 nums))
 
 (* Run the program *)
 let () =
