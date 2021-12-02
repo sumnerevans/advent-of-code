@@ -1,6 +1,9 @@
 let
-  pkgs = import <nixpkgs> {};
-  py3WithPackages = pkgs.python3.withPackages (
+  pkgs = import <nixpkgs> { };
+in
+with pkgs;
+let
+  py3WithPackages = python3.withPackages (
     ps: with ps; [
       black
       flake8
@@ -10,8 +13,8 @@ let
   );
 
   curl = ''${pkgs.curl}/bin/curl -f --cookie "session=$sessionToken"'';
-  rg = "${pkgs.ripgrep}/bin/rg --color never";
-  getInputScript = pkgs.writeShellScriptBin "getinput" ''
+  rg = "${ripgrep}/bin/rg --color never";
+  getInputScript = writeShellScriptBin "getinput" ''
     [[ $1 == "" ]] && echo "Usage: getinput <day>" && exit 1
     year=$(basename $(pwd))
 
@@ -19,7 +22,7 @@ let
     [[ ! $(echo $year | ${rg} "\d{4}") ]] && echo "Not a year dir" && exit 1
 
     outfile=$1
-    [[ $(echo "$1 < 10" | ${pkgs.bc}/bin/bc) == "1" ]] && outfile="0$outfile"
+    [[ $(echo "$1 < 10" | ${bc}/bin/bc) == "1" ]] && outfile="0$outfile"
 
     mkdir -p inputs
     sessionToken=$(cat ${builtins.getEnv "PWD"}/.session_token)
@@ -28,7 +31,7 @@ let
     less inputs/$outfile.txt
   '';
 
-  printStatsScript = pkgs.writeShellScriptBin "printstats" ''
+  printStatsScript = writeShellScriptBin "printstats" ''
     year=$(basename $(pwd))
 
     # Skip if not a year dir
@@ -36,10 +39,10 @@ let
 
     sessionToken=$(cat ${builtins.getEnv "PWD"}/.session_token)
     ${curl} -s https://adventofcode.com/$year/leaderboard/self |
-      ${pkgs.html-xml-utils}/bin/hxselect -c pre |
-      ${pkgs.gnused}/bin/sed "s/<[^>]*>//g" |
+      ${html-xml-utils}/bin/hxselect -c pre |
+      ${gnused}/bin/sed "s/<[^>]*>//g" |
       ${rg} "^\s*(Day\s+Time|-+Part|\d+\s+(&gt;24h|\d{2}:\d{2}:\d{2}))" |
-      ${pkgs.gnused}/bin/sed "s/&gt;/>/g"
+      ${gnused}/bin/sed "s/&gt;/>/g"
   '';
 
   getDayScriptPart = scriptName: ''
@@ -51,72 +54,72 @@ let
     [[ ! $(echo $day | ${rg} "\d+") ]] && echo "Not a valid day" && exit 1
 
     # Zero-pad day
-    [[ $(echo "$1 < 10" | ${pkgs.bc}/bin/bc) == "1" ]] && day="0$day"
+    [[ $(echo "$1 < 10" | ${bc}/bin/bc) == "1" ]] && day="0$day"
   '';
 
-  runScript = pkgs.writeShellScriptBin "run" ''
+  runScript = writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
 
-    ${pkgs.watchexec}/bin/watchexec -r "${pkgs.pypy3}/bin/pypy3 ./$day.py"
+    ${watchexec}/bin/watchexec -r "${pypy3}/bin/pypy3 ./$day.py"
   '';
 
-  debugRunScript = pkgs.writeShellScriptBin "drun" ''
+  debugRunScript = writeShellScriptBin "drun" ''
     ${getDayScriptPart "drun"}
 
-    ${pkgs.watchexec}/bin/watchexec -r "${pkgs.pypy3}/bin/pypy3 ./$day.py --debug"
+    ${watchexec}/bin/watchexec -r "${pypy3}/bin/pypy3 ./$day.py --debug"
   '';
 
   # Single run, don't watchexec
-  singleRunScript = pkgs.writeShellScriptBin "srun" ''
+  singleRunScript = writeShellScriptBin "srun" ''
     ${getDayScriptPart "srun"}
 
-    ${pkgs.pypy3}/bin/pypy3 ./$day.py
+    ${pypy3}/bin/pypy3 ./$day.py
   '';
 
-  debugSingleRunTestScript = pkgs.writeShellScriptBin "dsrun" ''
+  debugSingleRunTestScript = writeShellScriptBin "dsrun" ''
     ${getDayScriptPart "dsrun"}
 
-    ${pkgs.pypy3}/bin/pypy3 ./$day.py --debug
+    ${pypy3}/bin/pypy3 ./$day.py --debug
   '';
 
   # Write a test file
-  mkTestScript = pkgs.writeShellScriptBin "mktest" ''
+  mkTestScript = writeShellScriptBin "mktest" ''
     ${getDayScriptPart "mktest"}
-    ${pkgs.xsel}/bin/xsel --output > inputs/$day.test.txt
+    ${xsel}/bin/xsel --output > inputs/$day.test.txt
   '';
 
   # Run with --test flag
-  runTestScript = pkgs.writeShellScriptBin "runtest" ''
+  runTestScript = writeShellScriptBin "runtest" ''
     ${getDayScriptPart "runtest"}
-    ${pkgs.pypy3}/bin/pypy3 ./$day.py --test
+    ${pypy3}/bin/pypy3 ./$day.py --test
   '';
 
-  debugRunTestScript = pkgs.writeShellScriptBin "druntest" ''
+  debugRunTestScript = writeShellScriptBin "druntest" ''
     ${getDayScriptPart "druntest"}
-    ${pkgs.pypy3}/bin/pypy3 ./$day.py --test --debug
+    ${pypy3}/bin/pypy3 ./$day.py --test --debug
   '';
 
   # Run with --stdin and --test flags
-  runStdinScript = pkgs.writeShellScriptBin "runstdin" ''
+  runStdinScript = writeShellScriptBin "runstdin" ''
     ${getDayScriptPart "runstdin"}
-    ${pkgs.pypy3}/bin/pypy3 ./$day.py --stdin --test
+    ${pypy3}/bin/pypy3 ./$day.py --stdin --test
   '';
 
   # Run with --stdin and --test flags, and pull from clipboard.
-  runStdinClipScript = pkgs.writeShellScriptBin "runstdinclip" ''
+  runStdinClipScript = writeShellScriptBin "runstdinclip" ''
     ${getDayScriptPart "runstdin"}
-    ${pkgs.xsel}/bin/xsel --output | ${pkgs.pypy3}/bin/pypy3 ./$day.py --stdin --test
+    ${xsel}/bin/xsel --output | ${pypy3}/bin/pypy3 ./$day.py --stdin --test
   '';
 
   # Compile and run the C version.
-  cRunScript = pkgs.writeShellScriptBin "crun" ''
+  cRunScript = writeShellScriptBin "crun" ''
     ${getDayScriptPart "crun"}
     mkdir -p bin
     gcc -o bin/$day $day.c
     ./bin/$day
   '';
 
-  cRunTestScript = pkgs.writeShellScriptBin "cruntest" ''
+  cRunTestScript = writeShellScriptBin "cruntest" ''
     ${getDayScriptPart "cruntest"}
     mkdir -p bin
     gcc -o bin/$day $day.c
@@ -124,24 +127,24 @@ let
   '';
 
   # CoC Config
-  cocConfig = pkgs.writeText "coc-settings.json" (
+  cocConfig = writeText "coc-settings.json" (
     builtins.toJSON {
       "python.formatting.provider" = "black";
       "python.linting.flake8Enabled" = true;
       "python.linting.mypyEnabled" = true;
       "python.linting.pylintEnabled" = false;
       "python.pythonPath" = "${py3WithPackages}/bin/python";
-      "clangd.path" = "${pkgs.clang-tools}/bin/clangd";
+      "clangd.path" = "${clang-tools}/bin/clangd";
       "languageserver" = {
         "ocaml-lsp" = {
-          command = "ocamllsp";
+          command = "${ocamlPackages.ocaml-lsp}/bin/ocamllsp";
           filetypes = [ "ocaml" "reason" ];
         };
       };
     }
   );
 in
-pkgs.mkShell {
+mkShell {
   shellHook = ''
     mkdir -p .vim
     ln -sf ${cocConfig} .vim/coc-settings.json
@@ -149,7 +152,7 @@ pkgs.mkShell {
 
   POST_CD_COMMAND = "${printStatsScript}/bin/printstats";
 
-  buildInputs = with pkgs; [
+  buildInputs = [
     # Core
     coreutils
     gnumake
