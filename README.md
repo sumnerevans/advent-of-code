@@ -25,6 +25,7 @@ channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 
 * [Adam Sandstedt](https://github.com/AdamSandstedt/AdventOfCode)
 * [Colin Siles](https://github.com/sColin16/AoC)
+* [Jack Garner](https://gitlab.com/jhgarner/advent2021)
 * [Jordan Newport](https://sr.ht/~talos/advent-of-code/)
 * [Kelly Dance](https://github.com/mcbobby123/AdventOfCode2020)
 * [Sam Sartor](https://gitlab.com/samsartor/aoc-2021/)
@@ -57,6 +58,7 @@ input using `curl`.
 ```
       -------Part 1--------   -------Part 2--------
 Day       Time  Rank  Score       Time  Rank  Score
+  2   00:03:03  1045      0   00:04:57   856      0
   1   00:00:49    38     63   00:02:22    66     35
 ```
 
