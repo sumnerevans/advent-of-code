@@ -53,7 +53,7 @@ input using `curl`.
 
 ## Results
 
-### 2021 (2*, 98 points on global leaderboard)
+### 2021 (4*, 98 points on global leaderboard)
 
 ```
       -------Part 1--------   -------Part 2--------
