@@ -79,7 +79,7 @@ def part1() -> int:
 
     # Store the bitmap as a list of integers. If there are more zeros than ones, then
     # that index is 0, otherwise, that index should be 1.
-    gamma = [0 if zeros > ones else 1 for (zeros, ones) in zip(freq0, freq1)]
+    gamma = [0 if zeros > ones else 1 for zeros, ones in zip(freq0, freq1)]
 
     # Epsilon is just the complement of gamma
     epsilon = [1 if x == 0 else 0 for x in gamma]
