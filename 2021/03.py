@@ -1,30 +1,9 @@
 #! /usr/bin/env python3
 
-import functools as ft
-import itertools as it
-import heapq
-import math
-import operator
-import os
-import re
-import string
 import sys
 import time
 from copy import deepcopy
-from collections import defaultdict
-from enum import IntEnum
-from typing import (
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Match,
-    Optional,
-    Set,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import List, Tuple, TypeVar, Union
 
 test = False
 debug = False
@@ -71,6 +50,23 @@ input_end = time.time()
 ########################################################################################
 shared_start = time.time()
 
+
+def calculate_frequencies(candidates: List[str]) -> Tuple[List[int], List[int]]:
+    """
+    Calculate the frequencies of ``0``s and ``1``s at each index of each of the elements
+    in the input.
+    """
+    zeros = [0] * len(candidates[0])
+    ones = [0] * len(candidates[0])
+    for candidate in candidates:
+        for i, c in enumerate(candidate):
+            if c == "0":
+                zeros[i] += 1
+            else:
+                ones[i] += 1
+    return zeros, ones
+
+
 shared_end = time.time()
 
 # Part 1
@@ -79,18 +75,10 @@ print("Part 1:")
 
 
 def part1() -> int:
-    # Calculate frequencies of the lines
-    freq0 = [0] * len(lines[0])
-    freq1 = [0] * len(lines[0])
+    freq0, freq1 = calculate_frequencies(lines)
 
-    for line in lines:
-        for i, c in enumerate(line):
-            if c == "0":
-                freq0[i] += 1
-            else:
-                freq1[i] += 1
-
-    # Store the bitmap as a list of integers
+    # Store the bitmap as a list of integers. If there are more zeros than ones, then
+    # that index is 0, otherwise, that index should be 1.
     gamma = [0 if zeros > ones else 1 for (zeros, ones) in zip(freq0, freq1)]
 
     # Epsilon is just the complement of gamma
@@ -120,79 +108,43 @@ print("\nPart 2:")
 
 
 def part2() -> int:
-    xs = deepcopy(lines)
-    ys = deepcopy(lines)
+    def keep(candidates: List[str], i: int, val: str) -> List[str]:
+        """
+        Returns a new list with only the candidates that have ``val`` at index ``i``.
+        """
+        new_candidates = []
+        for candidate in candidates:
+            if candidate[i] == val:
+                new_candidates.append(candidate)
+        return new_candidates
 
-    I = 0
+    oxygen_candidates = deepcopy(lines)
+    co2_candidates = deepcopy(lines)
 
-    while I < 100:
-        print("===================" * 2)
-        print("===================" * 2)
-        print(I)
-        print("===================" * 2)
-        print("===================" * 2)
-        print("===================" * 2)
-        print(xs)
-        print(ys)
-        freq0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        freq1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        freq0y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        freq1y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for i in range(len(lines)):
+        if len(oxygen_candidates) == 1 == len(co2_candidates):
+            return bitstrtoint(oxygen_candidates[0]) * bitstrtoint(co2_candidates[0])
 
-        for line in xs:
-            for i, c in enumerate(line):
-                if c == "0":
-                    freq0[i] += 1
-                else:
-                    freq1[i] += 1
+        freq0_oxygen, freq1_oxygen = calculate_frequencies(oxygen_candidates)
+        freq0_co2, freq1_co2 = calculate_frequencies(co2_candidates)
 
-        for line in ys:
-            for i, c in enumerate(line):
-                if c == "0":
-                    freq0y[i] += 1
-                else:
-                    freq1y[i] += 1
-
-        def x(y, i):
-            new_y = []
-
-            if freq0[i] <= freq1[i]:  # 1
-                for w in y:
-                    if w[i] == "1":
-                        new_y.append(w)
-            else:
-                for w in y:
-                    if w[i] == "0":
-                        new_y.append(w)
-            return new_y
-
-        def y(y, i):
-            print("i", i)
-            new_y = []
-            if freq0y[i] <= freq1y[i]:  # 1
-                print("USE 1")
-                for w in y:
-                    if w[i] == "0":
-                        new_y.append(w)
-            else:
-                for w in y:
-                    if w[i] == "1":
-                        new_y.append(w)
-            return new_y
-
-        if len(xs) > 1:
-            xs = x(xs, I)
-
-        if len(ys) > 1:
-            ys = y(ys, I)
-        I += 1
-
-        if len(xs) == 1 == len(ys):
-            print(int("".join(map(str, xs[0])), 2))
-            print(int("".join(map(str, ys[0])), 2))
-            return (int("".join(map(str, xs[0])), 2)) * (
-                int("".join(map(str, ys[0])), 2)
+        if len(oxygen_candidates) > 1:
+            oxygen_candidates = keep(
+                oxygen_candidates,
+                i,
+                # Keep 1s if there are more ones than zeros
+                "1" if freq0_oxygen[i] <= freq1_oxygen[i] else "0",
             )
+
+        if len(co2_candidates) > 1:
+            co2_candidates = keep(
+                co2_candidates,
+                i,
+                # Keep 0s if there are more ones than zeros (we want the complement)
+                "0" if freq0_co2[i] <= freq1_co2[i] else "1",
+            )
+
+    assert False
 
 
 part2_start = time.time()
