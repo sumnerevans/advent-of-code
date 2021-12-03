@@ -24,6 +24,8 @@ let
     outfile=$1
     [[ $(echo "$1 < 10" | ${bc}/bin/bc) == "1" ]] && outfile="0$outfile"
 
+    [[ -f inputs/$outfile.txt ]] && less inputs/$outfile.txt && exit 0
+
     mkdir -p inputs
     sessionToken=$(cat ${builtins.getEnv "PWD"}/.session_token)
     ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
