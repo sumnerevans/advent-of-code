@@ -293,7 +293,9 @@ assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
 # Regression Test
-# assert test or ans_part1 == (<>)
+expected = None # (<>)
+if expected is not None:
+    assert test or ans_part1 == expected
 
 # Part 2
 ########################################################################################
@@ -321,7 +323,9 @@ print("Tries Part 2:", tries2)
 assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-# assert test or ans_part2 == (<>)
+expected = None # (<>)
+if expected is not None:
+    assert test or ans_part2 == expected
 
 if debug:
     input_parsing = input_end - input_start
