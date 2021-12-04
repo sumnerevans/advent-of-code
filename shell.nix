@@ -78,7 +78,7 @@ let
     ${pypy3}/bin/pypy3 ./$day.py
   '';
 
-  debugSingleRunTestScript = writeShellScriptBin "dsrun" ''
+  debugSingleRunScript = writeShellScriptBin "dsrun" ''
     ${getDayScriptPart "dsrun"}
 
     ${pypy3}/bin/pypy3 ./$day.py --debug
@@ -90,27 +90,27 @@ let
     ${xsel}/bin/xsel --output > inputs/$day.test.txt
   '';
 
-  # Run with --test flag
-  runTestScript = writeShellScriptBin "runtest" ''
-    ${getDayScriptPart "runtest"}
-    ${pypy3}/bin/pypy3 ./$day.py --test
+  # Run with --notest flag
+  runNoTestScript = writeShellScriptBin "rntest" ''
+    ${getDayScriptPart "rntest"}
+    ${pypy3}/bin/pypy3 ./$day.py --notest
   '';
 
-  debugRunTestScript = writeShellScriptBin "druntest" ''
+  debugRunNoTestScript = writeShellScriptBin "drntest" ''
     ${getDayScriptPart "druntest"}
-    ${pypy3}/bin/pypy3 ./$day.py --test --debug
+    ${pypy3}/bin/pypy3 ./$day.py --notest --debug
   '';
 
-  # Run with --stdin and --test flags
+  # Run with --stdin and --notest flags
   runStdinScript = writeShellScriptBin "runstdin" ''
     ${getDayScriptPart "runstdin"}
-    ${pypy3}/bin/pypy3 ./$day.py --stdin --test
+    ${pypy3}/bin/pypy3 ./$day.py --stdin --notest
   '';
 
-  # Run with --stdin and --test flags, and pull from clipboard.
+  # Run with --stdin and --notest flags, and pull from clipboard.
   runStdinClipScript = writeShellScriptBin "runstdinclip" ''
     ${getDayScriptPart "runstdin"}
-    ${xsel}/bin/xsel --output | ${pypy3}/bin/pypy3 ./$day.py --stdin --test
+    ${xsel}/bin/xsel --output | ${pypy3}/bin/pypy3 ./$day.py --stdin --notest
   '';
 
   # Compile and run the C version.
@@ -185,15 +185,15 @@ mkShell {
     cRunScript
     cRunTestScript
     debugRunScript
-    debugRunTestScript
-    debugSingleRunTestScript
+    debugRunNoTestScript
+    debugSingleRunScript
     getInputScript
     mkTestScript
     printStatsScript
     runScript
     runStdinClipScript
     runStdinScript
-    runTestScript
+    runNoTestScript
     singleRunScript
   ];
 }

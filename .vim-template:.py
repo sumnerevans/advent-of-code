@@ -26,18 +26,30 @@ from typing import (
     Union,
 )
 
-test = False
+test = True
 debug = False
 stdin = False
 INFILENAME = "inputs/%FILE%.txt"
+TESTFILENAME = "inputs/%FILE%.test.txt"
 for arg in sys.argv:
-    if arg == "--test":
-        test = True
-        INFILENAME = "inputs/%FILE%.test.txt"
+    if arg == "--notest":
+        test = False
     if arg == "--debug":
         debug = True
     if arg == "--stdin":
         stdin = True
+
+
+class bcolors:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
 
 # Type variables
@@ -46,6 +58,15 @@ V = TypeVar("V")
 
 
 # Utilities
+def bitstrtoint(s: Union[str, List[Union[int, str, bool]]]) -> int:
+    if isinstance(s, list):
+        if isinstance(s[0], bool):
+            s = list(map(int, s))
+
+        s = "".join(map(str, s))
+    return int(s, 2)
+
+
 def cache():  # Python 3.9 compat
     return ft.lru_cache(maxsize=None)
 
@@ -241,59 +262,77 @@ def window(iterable: List[K], n: int) -> Iterable[Tuple[K, ...]]:
 
 print(f"\n{'=' * 30}\n")
 
-# Input parsing
-input_start = time.time()
+# Read the input
 if stdin:
-    lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+    input_lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
 else:
     with open(INFILENAME) as f:
-        lines: List[str] = [l.strip() for l in f.readlines()]
+        input_lines: List[str] = [l.strip() for l in f.readlines()]
 
-# seq = [int(x) for x in lines]
-%HERE%
-for line in lines:
-    pass  # (<>)
+# Try and read in the test file.
+try:
+    with open(TESTFILENAME) as f:
+        test_lines: List[str] = [l.strip() for l in f.readlines()]
+except Exception:
+    test_lines = []
 
-# (<>)
-
-input_end = time.time()
 
 # Shared
 ########################################################################################
-shared_start = time.time()
 
-# (<>)
-
-shared_end = time.time()
 
 # Part 1
 ########################################################################################
 print("Part 1:")
 
 
-def part1() -> int:
+def part1(lines: List[str]) -> int:
     ans = 0
 
-    # (<>)
+    # seq = [int(x) for x in lines]
+    "(<>)"
+    for line in lines:
+        "(<>)"
+
+    "(<>)"
 
     return ans
 
 
-part1_start = time.time()
-ans_part1 = part1()
-part1_end = time.time()
-print(ans_part1)
+# Run test on part 1
+if test:
+    print("Running test... ", end="")
+    if not test_lines:
+        print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
+    else:
+        test_ans_part1 = part1(test_lines)
+        expected = %HERE%
+        if expected is None:
+            print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
+        elif test_ans_part1 == expected:
+            print(f"{bcolors.OKGREEN}PASS{bcolors.ENDC}")
+        else:
+            print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
 
-# Store the attempts that failed here.
+        print("Result:", test_ans_part1)
+        print()
+
+part1_start = time.time()
+print("Running input...")
+ans_part1 = part1(input_lines)
+part1_end = time.time()
+print("Result:", ans_part1)
+
 tries = [
-    # (<>)
+    # Store the attempts that failed here.
 ]
-print("Tries Part 1:", tries)
-assert ans_part1 not in tries, "Same as an incorrect answer!"
+if tries:
+    print("Tries Part 1:", tries)
+    assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
 # Regression Test
-expected = None # (<>)
+expected = None
 if expected is not None:
     assert test or ans_part1 == expected
 
@@ -302,40 +341,55 @@ if expected is not None:
 print("\nPart 2:")
 
 
-def part2() -> int:
+def part2(lines: List[str]) -> int:
     ans = 0
 
-    # (<>)
+    "(<>)"
 
     return ans
 
 
-part2_start = time.time()
-ans_part2 = part2()
-part2_end = time.time()
-print(ans_part2)
+# Run test on part 2
+if test:
+    print("Running test... ", end="")
+    if not test_lines:
+        print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
+    else:
+        test_ans_part2 = part2(test_lines)
+        expected = None  # (<>)
+        if expected is None:
+            print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
+        elif test_ans_part2 == expected:
+            print(f"{bcolors.OKGREEN}PASS{bcolors.ENDC}")
+        else:
+            print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
 
-# Store the attempts that failed here.
+        print("Result:", test_ans_part2)
+        print()
+
+part2_start = time.time()
+print("Running input...")
+ans_part2 = part2(input_lines)
+part2_end = time.time()
+print("Result:", ans_part2)
+
 tries2 = [
-    # (<>)
+    # Store the attempts that failed here.
 ]
-print("Tries Part 2:", tries2)
-assert ans_part2 not in tries2, "Same as an incorrect answer!"
+if tries2:
+    print("Tries Part 2:", tries2)
+    assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-expected = None # (<>)
+expected = None
 if expected is not None:
     assert test or ans_part2 == expected
 
 if debug:
-    input_parsing = input_end - input_start
-    shared = shared_end - shared_start
     part1_time = part1_end - part1_start
     part2_time = part2_end - part2_start
     print()
     print("DEBUG:")
-    print(f"Input parsing: {input_parsing * 1000}ms")
-    print(f"Shared: {shared * 1000}ms")
     print(f"Part 1: {part1_time * 1000}ms")
     print(f"Part 2: {part2_time * 1000}ms")
-    print(f"TOTAL: {(input_parsing + shared + part1_time + part2_time) * 1000}ms")
+    print(f"TOTAL: {(part1_time + part2_time) * 1000}ms")
