@@ -313,6 +313,7 @@ if test:
             print(f"{bcolors.OKGREEN}PASS{bcolors.ENDC}")
         else:
             print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
+            assert False
 
         print("Result:", test_ans_part1)
         print()
@@ -363,6 +364,7 @@ if test:
             print(f"{bcolors.OKGREEN}PASS{bcolors.ENDC}")
         else:
             print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
+            assert False
 
         print("Result:", test_ans_part2)
         print()
