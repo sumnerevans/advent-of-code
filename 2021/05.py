@@ -4,7 +4,7 @@ import re
 import sys
 import time
 from collections import defaultdict
-from typing import Iterable, List, Match, Optional, Tuple
+from typing import Generator, Iterable, List, Match, Optional, Tuple
 
 test = True
 debug = False
@@ -33,6 +33,29 @@ class bcolors:
 
 
 # Utilities
+def dirange(start, end=None, step=1) -> Generator[int, None, None]:
+    """
+    Directional, inclusive range. This range function is an inclusive version of
+    :class:`range` that figures out the correct step direction to make sure that it goes
+    from `start` to `end`, even if `end` is before `start`.
+
+    >>> dirange(2, -2)
+    [2, 1, 0, -1, -2]
+    >>> dirange(-2)
+    [0, -1, -2]
+    >>> dirange(2)
+    [0, 1, 2]
+    """
+    assert step > 0
+    if end is None:
+        start, end = 0, start
+
+    if end >= start:
+        yield from range(start, end + 1, step)
+    else:
+        yield from range(start, end - 1, step=-step)
+
+
 def rematch(pattern: str, s: str) -> Optional[Match]:
     return re.fullmatch(pattern, s)
 
@@ -61,7 +84,7 @@ except Exception:
 def parselines(lines: List[str]) -> Iterable[Tuple[Tuple[int, int], Tuple[int, int]]]:
     for line in lines:
         x1, y1, x2, y2 = map(int, rematch(r"(\d+),(\d+) -> (\d+),(\d+)", line).groups())
-        yield tuple(sorted(((x1, y1), (x2, y2))))
+        yield (x1, y1), (x2, y2)
 
 
 # Part 1
@@ -82,8 +105,8 @@ def part1(lines: List[str]) -> int:
             # making the range based for loop work better later).
             continue
 
-        for x in range(x1, x2 + 1):
-            for y in range(y1, y2 + 1):
+        for x in dirange(x1, x2):
+            for y in dirange(y1, y2):
                 G[(x, y)] += 1
 
     return sum([1 for x in G.values() if x > 1])
@@ -137,14 +160,12 @@ def part2(lines: List[str]) -> int:
     for (x1, y1), (x2, y2) in parselines(lines):
         if x1 == x2 or y1 == y2:
             # Horizontal or vertical
-            for x in range(x1, x2 + 1):
-                for y in range(y1, y2 + 1):
+            for x in dirange(x1, x2):
+                for y in dirange(y1, y2):
                     G[(x, y)] += 1
         else:
-            # Must calculate scope because math. Basic algebra that I literally forgot.
-            slope = 1 if y2 > y1 else -1
-            for i in range(abs(x1 - x2) + 1):
-                G[(x1 + i, y1 + (i * slope))] += 1
+            for x, y in zip(dirange(x1, x2), dirange(y1, y2)):
+                G[(x, y)] += 1
 
     return sum([1 for x in G.values() if x > 1])
 
@@ -163,9 +184,11 @@ if test:
             print(f"{bcolors.OKGREEN}PASS{bcolors.ENDC}")
         else:
             print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}Result: {test_ans_part2}{bcolors.ENDC}")
             assert False
 
         print("Result:", test_ans_part2)
+        print()
 
 part2_start = time.time()
 print("Running input...")

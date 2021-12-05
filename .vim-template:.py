@@ -108,6 +108,29 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
     return D[end]
 
 
+def dirange(start, end=None, step=1) -> Generator[int, None, None]:
+    """
+    Directional, inclusive range. This range function is an inclusive version of
+    :class:`range` that figures out the correct step direction to make sure that it goes
+    from `start` to `end`, even if `end` is before `start`.
+
+    >>> dirange(2, -2)
+    [2, 1, 0, -1, -2]
+    >>> dirange(-2)
+    [0, -1, -2]
+    >>> dirange(2)
+    [0, 1, 2]
+    """
+    assert step > 0
+    if end is None:
+        start, end = 0, start
+
+    if end >= start:
+        yield from range(start, end + 1, step)
+    else:
+        yield from range(start, end - 1, step=-step)
+
+
 def grid_adjs(
     coord: Tuple[int, ...],
     bounds: Tuple[Tuple[int, int], ...] = None,
@@ -183,6 +206,13 @@ def invert_graph(graph: Dict[K, Iterable[V]]) -> Dict[V, Set[K]]:
                 new_graph[v] = set()
             new_graph[v].add(k)
     return new_graph
+
+
+def irange(start, end=None, step=1) -> Generator[int, None, None]:
+    """Inclusive range function."""
+    if end is None:
+        start, end = 0, start
+    yield from range(start, end + 1, step=step)
 
 
 def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:
@@ -313,6 +343,7 @@ if test:
             print(f"{bcolors.OKGREEN}PASS{bcolors.ENDC}")
         else:
             print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}Result: {test_ans_part1}{bcolors.ENDC}")
             assert False
 
         print("Result:", test_ans_part1)
@@ -364,6 +395,7 @@ if test:
             print(f"{bcolors.OKGREEN}PASS{bcolors.ENDC}")
         else:
             print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}Result: {test_ans_part2}{bcolors.ENDC}")
             assert False
 
         print("Result:", test_ans_part2)
