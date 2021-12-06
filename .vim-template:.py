@@ -57,6 +57,7 @@ class bcolors:
 K = TypeVar("K")
 V = TypeVar("V")
 
+
 # Modified range functions
 def irange(start, end=None, step=1) -> Generator[int, None, None]:
     """Inclusive range function."""
