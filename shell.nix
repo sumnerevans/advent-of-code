@@ -12,6 +12,8 @@ let
     ]
   );
 
+  PROJECT_ROOT = builtins.getEnv "PWD";
+
   curl = ''${pkgs.curl}/bin/curl -f --cookie "session=$sessionToken"'';
   rg = "${ripgrep}/bin/rg --color never";
   getInputScript = writeShellScriptBin "getinput" ''
@@ -27,7 +29,7 @@ let
     [[ -f inputs/$outfile.txt ]] && less inputs/$outfile.txt && exit 0
 
     mkdir -p inputs
-    sessionToken=$(cat ${builtins.getEnv "PWD"}/.session_token)
+    sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
     ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
 
     less inputs/$outfile.txt
@@ -39,7 +41,7 @@ let
     # Skip if not a year dir
     [[ ! $(echo $year | ${rg} "\d{4}") ]] && exit 0
 
-    sessionToken=$(cat ${builtins.getEnv "PWD"}/.session_token)
+    sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
     ${curl} -s https://adventofcode.com/$year/leaderboard/self |
       ${html-xml-utils}/bin/hxselect -c pre |
       ${gnused}/bin/sed "s/<[^>]*>//g" |
@@ -149,7 +151,7 @@ in
 mkShell {
   shellHook = ''
     mkdir -p .vim
-    ln -sf ${cocConfig} .vim/coc-settings.json
+    ln -sf ${cocConfig} ${PROJECT_ROOT}/.vim/coc-settings.json
   '';
 
   POST_CD_COMMAND = "${printStatsScript}/bin/printstats";
