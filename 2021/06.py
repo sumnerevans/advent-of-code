@@ -24,13 +24,14 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
+    Generator,
 )
 
 test = True
 debug = False
 stdin = False
-INFILENAME = "inputs/%FILE%.txt"
-TESTFILENAME = "inputs/%FILE%.test.txt"
+INFILENAME = "inputs/06.txt"
+TESTFILENAME = "inputs/06.test.txt"
 for arg in sys.argv:
     if arg == "--notest":
         test = False
@@ -103,7 +104,7 @@ def cache():  # Python 3.9 compat
 
 def chunks(iterable, n):
     if n < 1:
-        raise Exception('not allowed')
+        raise Exception("not allowed")
     itertype = type(iterable) if type(iterable) in (list, set, tuple) else list
 
     container = []
@@ -344,17 +345,19 @@ print("Part 1:")
 
 
 def part1(lines: List[str]) -> int:
-    ans = 0
+    seq = [int(x) for x in lines[0].split(",")]
 
-    # seq = [int(x) for x in lines]
-    # seq = [int(x) for x in lines[0].split(",")]
-    "(<>)"
-    for line in lines:
-        "(<>)"
+    for _ in range(80):
+        ns = []
+        for x in seq:
+            if x == 0:
+                ns.append(8)
+                ns.append(6)
+            else:
+                ns.append(x - 1)
+        seq = ns
 
-    "(<>)"
-
-    return ans
+    return len(seq)
 
 
 # Run test on part 1
@@ -364,7 +367,7 @@ if test:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part1 = part1(test_lines)
-        expected = %HERE%
+        expected = 5934
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part1 == expected:
@@ -392,7 +395,7 @@ if tries:
 
 
 # Regression Test
-expected = None  # (<>)
+expected = 372984
 if expected is not None:
     assert test or ans_part1 == expected
 
@@ -402,11 +405,23 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str]) -> int:
-    ans = 0
+    seq = [int(x) for x in lines[0].split(",")]
 
-    "(<>)"
+    n = defaultdict(int)
+    for x in seq:
+        n[x] += 1
 
-    return ans
+    for _ in range(256):
+        nn = defaultdict(int)
+        for k, v in n.items():
+            if k == 0:
+                nn[8] += v
+                nn[6] += v
+            else:
+                nn[k - 1] += v
+        n = nn
+
+    return sum(n.values())
 
 
 # Run test on part 2
@@ -416,7 +431,7 @@ if test:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part2 = part2(test_lines)
-        expected = None  # (<>)
+        expected = 26984457539
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part2 == expected:
@@ -443,7 +458,7 @@ if tries2:
     assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-expected = None  # (<>)
+expected = 1681503251694
 if expected is not None:
     assert test or ans_part2 == expected
 
