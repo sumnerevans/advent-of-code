@@ -53,6 +53,15 @@ except Exception:
 
 
 def calculate_lanternfish(start_seq: List[int], iterations: int) -> int:
+    """
+    This calculate function aggregates all of the lanternfish at the same stage in life
+    together to keep track of them.
+
+    Each day, all lanternfish at ``0`` days before they create a new lanternfish become
+    a ``6`` and starts a new lanternfish initialized at ``8`` to the end of the list,
+    while each other number decreases by ``1`` if it was present at the start of the
+    day.
+    """
     number_of_laternfish = defaultdict(int)
     for x in start_seq:
         number_of_laternfish[x] += 1
@@ -61,6 +70,8 @@ def calculate_lanternfish(start_seq: List[int], iterations: int) -> int:
         new_number_of_lanternfish = defaultdict(int)
         for k, v in number_of_laternfish.items():
             if k == 0:
+                # v lanternfishes is at 0, make `v` new lanternfishes, and reset all of
+                # the lanternfish at 0 to 6.
                 new_number_of_lanternfish[8] += v
                 new_number_of_lanternfish[6] += v
             else:
