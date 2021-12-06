@@ -56,6 +56,36 @@ class bcolors:
 K = TypeVar("K")
 V = TypeVar("V")
 
+# Modified range functions
+def irange(start, end=None, step=1) -> Generator[int, None, None]:
+    """Inclusive range function."""
+    if end is None:
+        start, end = 0, start
+    yield from range(start, end + 1, step=step)
+
+
+def dirange(start, end=None, step=1) -> Generator[int, None, None]:
+    """
+    Directional, inclusive range. This range function is an inclusive version of
+    :class:`range` that figures out the correct step direction to make sure that it goes
+    from `start` to `end`, even if `end` is before `start`.
+
+    >>> dirange(2, -2)
+    [2, 1, 0, -1, -2]
+    >>> dirange(-2)
+    [0, -1, -2]
+    >>> dirange(2)
+    [0, 1, 2]
+    """
+    assert step > 0
+    if end is None:
+        start, end = 0, start
+
+    if end >= start:
+        yield from irange(start, end, step)
+    else:
+        yield from range(start, end - 1, step=-step)
+
 
 # Utilities
 def bitstrtoint(s: Union[str, List[Union[int, str, bool]]]) -> int:
@@ -106,29 +136,6 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
                 heapq.heappush(Q, (cost + c, x))
 
     return D[end]
-
-
-def dirange(start, end=None, step=1) -> Generator[int, None, None]:
-    """
-    Directional, inclusive range. This range function is an inclusive version of
-    :class:`range` that figures out the correct step direction to make sure that it goes
-    from `start` to `end`, even if `end` is before `start`.
-
-    >>> dirange(2, -2)
-    [2, 1, 0, -1, -2]
-    >>> dirange(-2)
-    [0, -1, -2]
-    >>> dirange(2)
-    [0, 1, 2]
-    """
-    assert step > 0
-    if end is None:
-        start, end = 0, start
-
-    if end >= start:
-        yield from range(start, end + 1, step)
-    else:
-        yield from range(start, end - 1, step=-step)
 
 
 def grid_adjs(
@@ -194,6 +201,33 @@ def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]) -> Dict[K, V]:
     return inferred
 
 
+def int_points_between(
+    start: Tuple[int, int], end: Tuple[int, int]
+) -> Generator[Tuple[int, int], None, None]:
+    """
+    Return a generator of all of the integer points between two given points. Note that
+    you are *not* guaranteed that the points will be given from `start` to `end`, but
+    all points will be included.
+    """
+    x1, y1 = start
+    x2, y2 = end
+    if x1 == x2:
+        yield from ((x1, y) for y in dirange(y1, y2))
+    elif y1 == y2:
+        yield from ((x, y1) for x in dirange(x1, x2))
+    else:
+        # If `x1 > x2`, that means that `start` is to the right of `end`, so we need to
+        # switch the points around so iteration always goes in the positive `x`
+        # direction.
+        if x1 > x2:
+            x1, x2, y1, y2 = x2, x1, y2, y1
+        dy = y2 - y1
+        dx = x2 - x1
+        slope = Fraction(dy, dx)
+        for i in irange(dy // slope.numerator):
+            yield (x1 + (i * slope.denominator), y1 + (i * slope.numerator))
+
+
 def invert_dict(d: Dict[K, V]) -> Dict[V, K]:
     return {v: k for k, v in d.items()}
 
@@ -206,13 +240,6 @@ def invert_graph(graph: Dict[K, Iterable[V]]) -> Dict[V, Set[K]]:
                 new_graph[v] = set()
             new_graph[v].add(k)
     return new_graph
-
-
-def irange(start, end=None, step=1) -> Generator[int, None, None]:
-    """Inclusive range function."""
-    if end is None:
-        start, end = 0, start
-    yield from range(start, end + 1, step=step)
 
 
 def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:

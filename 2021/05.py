@@ -4,6 +4,7 @@ import re
 import sys
 import time
 from collections import defaultdict
+from fractions import Fraction
 from typing import Generator, Iterable, List, Match, Optional, Tuple
 
 test = True
@@ -32,7 +33,14 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
-# Utilities
+# Modified range functions
+def irange(start, end=None, step=1) -> Generator[int, None, None]:
+    """Inclusive range function."""
+    if end is None:
+        start, end = 0, start
+    yield from range(start, end + 1, step=step)
+
+
 def dirange(start, end=None, step=1) -> Generator[int, None, None]:
     """
     Directional, inclusive range. This range function is an inclusive version of
@@ -51,9 +59,37 @@ def dirange(start, end=None, step=1) -> Generator[int, None, None]:
         start, end = 0, start
 
     if end >= start:
-        yield from range(start, end + 1, step)
+        yield from irange(start, end, step)
     else:
         yield from range(start, end - 1, step=-step)
+
+
+# Utilities
+def int_points_between(
+    start: Tuple[int, int], end: Tuple[int, int]
+) -> Generator[Tuple[int, int], None, None]:
+    """
+    Return a generator of all of the integer points between two given points. Note that
+    you are *not* guaranteed that the points will be given from `start` to `end`, but
+    all points will be included.
+    """
+    x1, y1 = start
+    x2, y2 = end
+    if x1 == x2:
+        yield from ((x1, y) for y in dirange(y1, y2))
+    elif y1 == y2:
+        yield from ((x, y1) for x in dirange(x1, x2))
+    else:
+        # If `x1 > x2`, that means that `start` is to the right of `end`, so we need to
+        # switch the points around so iteration always goes in the positive `x`
+        # direction.
+        if x1 > x2:
+            x1, x2, y1, y2 = x2, x1, y2, y1
+        dy = y2 - y1
+        dx = x2 - x1
+        slope = Fraction(dy, dx)
+        for i in irange(dy // slope.numerator):
+            yield (x1 + (i * slope.denominator), y1 + (i * slope.numerator))
 
 
 def rematch(pattern: str, s: str) -> Optional[Match]:
@@ -105,9 +141,8 @@ def part1(lines: List[str]) -> int:
             # making the range based for loop work better later).
             continue
 
-        for x in dirange(x1, x2):
-            for y in dirange(y1, y2):
-                G[(x, y)] += 1
+        for x, y in int_points_between((x1, y1), (x2, y2)):
+            G[(x, y)] += 1
 
     return sum([1 for x in G.values() if x > 1])
 
@@ -157,15 +192,9 @@ print("\nPart 2:")
 
 def part2(lines: List[str]) -> int:
     G = defaultdict(int)
-    for (x1, y1), (x2, y2) in parselines(lines):
-        if x1 == x2 or y1 == y2:
-            # Horizontal or vertical
-            for x in dirange(x1, x2):
-                for y in dirange(y1, y2):
-                    G[(x, y)] += 1
-        else:
-            for x, y in zip(dirange(x1, x2), dirange(y1, y2)):
-                G[(x, y)] += 1
+    for p1, p2 in parselines(lines):
+        for x, y in int_points_between(p1, p2):
+            G[(x, y)] += 1
 
     return sum([1 for x in G.values() if x > 1])
 
