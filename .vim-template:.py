@@ -16,6 +16,7 @@ from enum import IntEnum
 from typing import (
     Callable,
     Dict,
+    Generator,
     Iterable,
     List,
     Match,
