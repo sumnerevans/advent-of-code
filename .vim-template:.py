@@ -13,6 +13,7 @@ import time
 from copy import deepcopy
 from collections import defaultdict
 from enum import IntEnum
+from fractions import Fraction
 from typing import (
     Callable,
     Dict,
