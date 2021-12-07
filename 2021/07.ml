@@ -48,5 +48,7 @@ let () =
   Printf.printf "\n" ;
   Printf.printf "Part 2:\n" ;
   print_int
-    (calculator (fun x y -> List.fold_left ( + ) 0 (range 1 (abs (x - y))))) ;
+    (calculator (fun x y ->
+         let d = abs (x - y) in
+         d * (d + 1) / 2 ) ) ;
   print_newline ()
