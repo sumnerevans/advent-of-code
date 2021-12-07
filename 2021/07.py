@@ -130,7 +130,7 @@ print("\nPart 2:")
 
 def part2(lines: List[str]) -> int:
     seq = [int(x) for x in lines[0].split(",")]
-    return calc_best_alignment(seq, lambda a, b: sum(range(1, abs(a - b) + 1)))
+    return calc_best_alignment(seq, lambda a, b: sum(irange(1, abs(a - b))))
 
 
 # Run test on part 2
