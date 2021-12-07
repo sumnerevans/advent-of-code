@@ -71,11 +71,7 @@ except Exception:
 # Shared
 ########################################################################################
 def calc_best_alignment(seq: List[int], cost_fn: Callable[[int, int], int]) -> int:
-    best = 2 ** 1000
-    for v in irange(*seqminmax(seq)):
-        cost = sum(cost_fn(v, k) for k in seq)
-        best = min(cost, best)
-    return best
+    return min(sum(cost_fn(v, k) for k in seq) for v in irange(*seqminmax(seq)))
 
 
 # Part 1
