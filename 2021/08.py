@@ -1,32 +1,9 @@
 #! /usr/bin/env python3
 
-import functools as ft
-import itertools as it
-import heapq
-import math
-import operator
-import os
-import re
-import string
 import sys
 import time
-from copy import deepcopy
 from collections import defaultdict
-from enum import IntEnum
-from fractions import Fraction
-from typing import (
-    Callable,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Match,
-    Optional,
-    Set,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import Counter, Dict, List, Set, TypeVar
 
 test = True
 debug = False
@@ -59,117 +36,7 @@ K = TypeVar("K")
 V = TypeVar("V")
 
 
-# Modified range functions
-def irange(start, end=None, step=1) -> Generator[int, None, None]:
-    """Inclusive range function."""
-    if end is None:
-        start, end = 0, start
-    yield from range(start, end + 1, step=step)
-
-
-def dirange(start, end=None, step=1) -> Generator[int, None, None]:
-    """
-    Directional, inclusive range. This range function is an inclusive version of
-    :class:`range` that figures out the correct step direction to make sure that it goes
-    from `start` to `end`, even if `end` is before `start`.
-
-    >>> dirange(2, -2)
-    [2, 1, 0, -1, -2]
-    >>> dirange(-2)
-    [0, -1, -2]
-    >>> dirange(2)
-    [0, 1, 2]
-    """
-    assert step > 0
-    if end is None:
-        start, end = 0, start
-
-    if end >= start:
-        yield from irange(start, end, step)
-    else:
-        yield from range(start, end - 1, step=-step)
-
-
 # Utilities
-def bitstrtoint(s: Union[str, List[Union[int, str, bool]]]) -> int:
-    if isinstance(s, list):
-        if isinstance(s[0], bool):
-            s = list(map(int, s))
-
-        s = "".join(map(str, s))
-    return int(s, 2)
-
-
-def cache():  # Python 3.9 compat
-    return ft.lru_cache(maxsize=None)
-
-
-def chunks(iterable, n):
-    if n < 1:
-        raise Exception("not allowed")
-    itertype = type(iterable) if type(iterable) in (list, set, tuple) else list
-
-    container = []
-    for x in iterable:
-        container.append(x)
-        if len(container) == n:
-            yield itertype(container)
-            container = []
-
-    if len(container) > 0:
-        yield itertype(container)
-
-
-def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
-    """
-    A simple implementation of Dijkstra's shortest path algorithm for finding the
-    shortest path from ``start`` to ``end`` in ``G``.
-    """
-    Q = []
-    for k in G:
-        heapq.heappush(Q, (math.inf, k))
-    heapq.heappush(Q, (0, start))
-
-    D = {}
-    while Q:
-        cost, el = heapq.heappop(Q)
-        if cost < D.get(el, math.inf):
-            D[el] = cost
-            for c, x in G[el]:
-                heapq.heappush(Q, (cost + c, x))
-
-    return D[end]
-
-
-def grid_adjs(
-    coord: Tuple[int, ...],
-    bounds: Tuple[Tuple[int, int], ...] = None,
-    inclusive: bool = True,
-) -> Iterable[Tuple[int, ...]]:
-    # Iterate through all of the deltas for the N dimensions of the coord. A delta is
-    # -1, 0, or 1 indicating that the adjacent cell is one lower, same level, or higher
-    # than the given coordinate.
-    for delta in it.product((-1, 0, 1), repeat=len(coord)):
-        if all(d == 0 for d in delta):
-            # This is the coord itself, skip.
-            continue
-
-        # Check the bounds
-        if bounds is not None:
-            inbounds = True
-            for i, (d, (low, high)) in enumerate(zip(delta, bounds)):
-                if inclusive and not (low <= coord[i] + d <= high):
-                    inbounds = False
-                    break
-                elif not inclusive and not (low < coord[i] + d < high):
-                    inbounds = False
-                    break
-            if not inbounds:
-                continue
-
-        yield tuple(c + d for c, d in zip(coord, delta))
-
-
 def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]) -> Dict[K, V]:
     """
     This goes through a dictionary of key to potential values and computes the true
@@ -204,122 +71,6 @@ def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]) -> Dict[K, V]:
     return inferred
 
 
-def int_points_between(
-    start: Tuple[int, int], end: Tuple[int, int]
-) -> Generator[Tuple[int, int], None, None]:
-    """
-    Return a generator of all of the integer points between two given points. Note that
-    you are *not* guaranteed that the points will be given from `start` to `end`, but
-    all points will be included.
-    """
-    x1, y1 = start
-    x2, y2 = end
-    if x1 == x2:
-        yield from ((x1, y) for y in dirange(y1, y2))
-    elif y1 == y2:
-        yield from ((x, y1) for x in dirange(x1, x2))
-    else:
-        # If `x1 > x2`, that means that `start` is to the right of `end`, so we need to
-        # switch the points around so iteration always goes in the positive `x`
-        # direction.
-        if x1 > x2:
-            x1, x2, y1, y2 = x2, x1, y2, y1
-        dy = y2 - y1
-        dx = x2 - x1
-        slope = Fraction(dy, dx)
-        for i in irange(dy // slope.numerator):
-            yield (x1 + (i * slope.denominator), y1 + (i * slope.numerator))
-
-
-def invert_dict(d: Dict[K, V]) -> Dict[V, K]:
-    return {v: k for k, v in d.items()}
-
-
-def invert_graph(graph: Dict[K, Iterable[V]]) -> Dict[V, Set[K]]:
-    new_graph = {}
-    for k, vals in graph.items():
-        for v in vals:
-            if v not in new_graph:
-                new_graph[v] = set()
-            new_graph[v].add(k)
-    return new_graph
-
-
-def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:
-    """
-    Rotate an integer point ``(x, y)`` by ``deg`` around the ``origin``. Only works when
-    ``deg % 90 == 0``.
-    """
-    transformed_x = x - origin[0]
-    transformed_y = y - origin[1]
-    assert deg % 90 == 0
-    for _ in range((deg // 90) % 4):
-        transformed_x, transformed_y = -transformed_y, transformed_x
-    return (transformed_x + origin[0], transformed_y + origin[1])
-
-
-def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:
-    return abs(x2 - x1) + abs(y2 - y1)
-
-
-def maplist(fn: Callable[[K], V], l: Iterable[K]) -> List[V]:
-    return list(map(fn, l))
-
-
-def pbits(num: int, pad: int = 32) -> str:
-    """Return the bits of `num` in binary with the given padding."""
-    return bin(num)[2:].zfill(pad)
-
-
-def prod(it: Iterable):
-    return ft.reduce(operator.mul, it, 1)
-
-
-def rematch(pattern: str, s: str) -> Optional[Match]:
-    return re.fullmatch(pattern, s)
-
-
-def rot(
-    x: float, y: float, deg: float, origin: Tuple[float, float] = (0, 0)
-) -> Tuple[float, float]:
-    """
-    Rotate a point by `deg` around the `origin`. This does floating-point math, so
-    you may encounter precision errors.
-    """
-    theta = deg * math.pi / 180
-    x2 = (x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta)
-    y2 = (x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta)
-    return (x2 + origin[0], y2 + origin[1])
-
-
-def seqminmax(sequence: Iterable[int]) -> Tuple[int, int]:
-    """
-    Returns a tuple containing the minimum and maximum element of the ``sequence``.
-    """
-    min_, max_ = math.inf, -math.inf
-    for x in sequence:
-        min_ = min(min_, x)
-        max_ = max(max_, x)
-    return int(min_), int(max_)
-
-
-def sizezip(*iterables: Union[List, Set]) -> Iterable[Tuple]:
-    """
-    Same as the :class:`zip` function, but verifies that the lengths of the
-    :class:`list`s or :class:`set`s are the same.
-    """
-    assert len(set(len(x) for x in iterables)) == 1
-    yield from zip(*iterables)
-
-
-def window(iterable: List[K], n: int) -> Iterable[Tuple[K, ...]]:
-    """
-    Return a sliding window of size ``n`` of the given iterable.
-    """
-    for start_idx in range(len(iterable) - n + 1):
-        yield tuple(iterable[start_idx + idx] for idx in range(n))
-
-
 print(f"\n{'=' * 30}\n")
 
 # Read the input
@@ -351,8 +102,8 @@ def part1(lines: List[str]) -> int:
     ans = 0
     unique_lengths = {2, 4, 3, 7}
     for line in lines:
-        _, output = line.split("| ")
-        ans += sum(1 for number in output.split() if len(number) in unique_lengths)
+        _, output = map(str.split, line.split("|"))
+        ans += sum(1 for number in output if len(number) in unique_lengths)
 
     return ans
 
@@ -405,82 +156,44 @@ def part2(lines: List[str]) -> int:
     ans = 0
 
     for line in lines:
-        n, x = line.split("| ")
-        seq, output = n.split(), x.split()
+        seq, output = map(str.split, line.split("|"))
 
         possibles = defaultdict(lambda: set("abcdefg"))
-        for x in seq:
-            if len(x) == 2:
-                for c in x:
-                    possibles[c] &= set("cf")
-            elif len(x) == 4:
-                for c in x:
-                    possibles[c] &= set("bcdf")
-            elif len(x) == 3:
-                for c in x:
-                    possibles[c] &= set("acf")
-            elif len(x) == 7:
-                for c in x:
-                    possibles[c] &= set("abcdefg")
 
-        counts = defaultdict(int)
+        # Narrow down using the sequence on the left of the |. The unique-length
+        # elements tell us what those characters could map to.
         for x in seq:
-            for c in x:
-                counts[c] += 1
+            possibilities = {2: "cf", 4: "bcdf", 3: "acf", 7: "abcdefg"}.get(len(x))
+            if possibilities:
+                for c in x:
+                    possibles[c] &= set(possibilities)
+
+        counts = Counter("".join(seq))
         for k, v in counts.items():
-            if v == 8:
-                possibles[k] = possibles[k].intersection(set("ac"))
-            elif v == 7:
-                possibles[k] = possibles[k].intersection(set("gd"))
-            elif v == 6:
-                possibles[k] = possibles[k].intersection(set("b"))
-            elif v == 4:
-                possibles[k] = possibles[k].intersection(set("e"))
-            elif v == 9:
-                possibles[k] = possibles[k].intersection(set("f"))
+            possibilities = {8: "ac", 7: "gd", 6: "b", 4: "e", 9: "f"}.get(v)
+            if possibilities:
+                possibles[k] &= set(possibilities)
 
         inferences = infer_one_to_one_from_possibles(possibles)
 
-        #   0:      1:      2:      3:      4:
-        # aaaa    ....    aaaa    aaaa    ....
-        # b    c  .    c  .    c  .    c  b    c
-        # b    c  .    c  .    c  .    c  b    c
-        # ....    ....    dddd    dddd    dddd
-        # e    f  .    f  e    .  .    f  .    f
-        # e    f  .    f  e    .  .    f  .    f
-        # gggg    ....    gggg    gggg    ....
-
-        #  5:      6:      7:      8:      9:
-        # aaaa    aaaa    aaaa    aaaa    aaaa
-        # b    .  b    .  .    c  b    c  b    c
-        # b    .  b    .  .    c  b    c  b    c
-        # dddd    dddd    ....    dddd    dddd
-        # .    f  e    f  .    f  e    f  .    f
-        # .    f  e    f  .    f  e    f  .    f
-        # gggg    gggg    ....    gggg    gggg
-
-        m = {
-            0: "abcefg",
-            1: "cf",
-            2: "acdeg",
-            3: "acdfg",
-            4: "bcdf",
-            5: "abdfg",
-            6: "abdefg",
-            7: "acf",
-            8: "abcdefg",
-            9: "abcdfg",
+        segments_to_number = {
+            "abcefg": 0,
+            "cf": 1,
+            "acdeg": 2,
+            "acdfg": 3,
+            "bcdf": 4,
+            "abdfg": 5,
+            "abdefg": 6,
+            "acf": 7,
+            "abcdefg": 8,
+            "abcdfg": 9,
         }
-        mm = invert_dict(m)
-        num = ""
-        for x in output:
-            nc = ""
-            for c in x:
-                nc += inferences[c]
-            num += str(mm["".join(sorted(nc))])
-            print("oheaqohea", num)
-
-        ans += int(num)
+        ans += int(
+            "".join(
+                str(segments_to_number["".join(sorted(inferences[c] for c in x))])
+                for x in output
+            )
+        )
 
     return ans
 
@@ -492,7 +205,7 @@ if test:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part2 = part2(test_lines)
-        expected = None
+        expected = 61229
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part2 == expected:
