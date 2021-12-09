@@ -12,7 +12,7 @@ import sys
 import time
 from copy import deepcopy
 from collections import defaultdict
-from enum import IntEnum
+from enum import Enum, IntEnum
 from fractions import Fraction
 from typing import (
     Callable,
@@ -57,6 +57,33 @@ class bcolors:
 # Type variables
 K = TypeVar("K")
 V = TypeVar("V")
+
+
+# Enums
+class BoundsType(Enum):
+    """
+    Different types of bounds to use while computing adjacencies.
+
+    RANGE:      [low, high)
+    INCLUSIVE:  [low, high]
+    EXCLUSIVE:  (low, high)
+    """
+
+    RANGE = "range"
+    INCLUSIVE = "inclusive"
+    EXCLUSIVE = "exclusive"
+
+
+class AdjacenciesType(Enum):
+    """
+    Different types of bounds to use while computing adjacencies.
+
+    COMPASS: only directions where a single dimension changes (without diagonals)
+    ALL:     all adjacencies including diagonals
+    """
+
+    COMPASS = "compass"
+    ALL = "all"
 
 
 # Modified range functions
@@ -144,8 +171,19 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
 def grid_adjs(
     coord: Tuple[int, ...],
     bounds: Tuple[Tuple[int, int], ...] = None,
-    inclusive: bool = True,
+    adjs_type: AdjacenciesType = AdjacenciesType.COMPASS,
+    bounds_type: BoundsType = BoundsType.RANGE,
 ) -> Iterable[Tuple[int, ...]]:
+    """
+    Compute the compass adjacencies for a given :math:`n`-dimensional point. Bounds can
+    be specified, and only adjacent coordinates within those bounds will be returned.
+    Bounds can be specified as any one of the :class:`BoundsType`s.
+
+    :param coord: coordinate to calculate the adjacencies of
+    :param bounds: ``(high, low)`` tuples for each of the dimensions
+    :param adjs_type: the :class:`AdjacenciesType` to use
+    :param bounds_type: the :class:`BoundsType` to use
+    """
     # Iterate through all of the deltas for the N dimensions of the coord. A delta is
     # -1, 0, or 1 indicating that the adjacent cell is one lower, same level, or higher
     # than the given coordinate.
@@ -154,19 +192,26 @@ def grid_adjs(
             # This is the coord itself, skip.
             continue
 
-        # Check the bounds
-        if bounds is not None:
-            inbounds = True
-            for i, (d, (low, high)) in enumerate(zip(delta, bounds)):
-                if inclusive and not (low <= coord[i] + d <= high):
-                    inbounds = False
-                    break
-                elif not inclusive and not (low < coord[i] + d < high):
-                    inbounds = False
-                    break
-            if not inbounds:
+        if adjs_type == AdjacenciesType.COMPASS:
+            if sum(map(abs, delta)) > 1:
+                # For compass adjacencies, we only care when there's only one dimension
+                # different than the coordinate.
                 continue
 
+        if bounds is not None:
+            in_bounds = True
+            for i, (d, (low, high)) in enumerate(zip(delta, bounds)):
+                if bounds_type == BoundsType.RANGE:
+                    in_bounds &= low <= coord[i] + d < high
+                elif bounds_type == BoundsType.INCLUSIVE:
+                    in_bounds &= low <= coord[i] + d <= high
+                elif bounds_type == BoundsType.EXCLUSIVE:
+                    in_bounds &= low < coord[i] + d < high
+                if not in_bounds:
+                    continue
+
+            if not in_bounds:
+                continue
         yield tuple(c + d for c, d in zip(coord, delta))
 
 
