@@ -127,7 +127,7 @@ if tries:
 # Regression Test
 expected = 372984
 if expected is not None:
-    assert test or ans_part1 == expected
+    assert ans_part1 == expected
 
 # Part 2
 ########################################################################################
@@ -174,7 +174,7 @@ if tries2:
 # Regression Test
 expected = 1681503251694
 if expected is not None:
-    assert test or ans_part2 == expected
+    assert ans_part2 == expected
 
 if debug:
     part1_time = part1_end - part1_start

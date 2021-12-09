@@ -396,6 +396,7 @@ def part1(lines: List[str]) -> int:
 
     # seq = [int(x) for x in lines]
     # seq = [int(x) for x in lines[0].split(",")]
+    # L = [[int(x) for x in l] for l in lines]
     "(<>)"
     for line in lines:
         "(<>)"
@@ -442,7 +443,7 @@ if tries:
 # Regression Test
 expected = None  # (<>)
 if expected is not None:
-    assert test or ans_part1 == expected
+    assert ans_part1 == expected
 
 # Part 2
 ########################################################################################
@@ -493,7 +494,7 @@ if tries2:
 # Regression Test
 expected = None  # (<>)
 if expected is not None:
-    assert test or ans_part2 == expected
+    assert ans_part2 == expected
 
 if debug:
     part1_time = part1_end - part1_start
