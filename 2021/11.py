@@ -161,7 +161,7 @@ def part1(lines: List[str]) -> int:
             if len(flashed_this_time) == 0:
                 break
 
-        ans += sum(1 for r in ns for c in r if c > 9)
+        ans += len(flashed)
         seq = [[0 if x > 9 else x for x in r] for r in ns]
 
     return ans
