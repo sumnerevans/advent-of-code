@@ -389,8 +389,7 @@ def part1(lines: List[str]) -> int:
     ans = 0
 
     seq = [[int(c) for c in x] for x in lines]
-    for i in range(100):
-        print("i=", i)
+    for _ in range(100):
         ns = [[(x + 1) for x in r] for r in seq]
 
         flashed = set()
@@ -414,15 +413,8 @@ def part1(lines: List[str]) -> int:
             if len(flashed_this_time) == 0:
                 break
 
-        for r in ns:
-            for c in r:
-                if c > 9:
-                    ans += 1
-
+        ans += sum(1 for r in ns for c in r if c > 9)
         seq = [[0 if x > 9 else x for x in r] for r in ns]
-
-        for r in seq:
-            print(r)
 
     return ans
 
@@ -564,12 +556,9 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str]) -> int:
-    ans = 0
-
     seq = [[int(c) for c in x] for x in lines]
     i = 0
     while True:
-        print("i=", i)
         i += 1
         ns = [[(x + 1) for x in r] for r in seq]
 
@@ -591,16 +580,12 @@ def part2(lines: List[str]) -> int:
                         ):
                             ns[r][c] += 1
 
-            if len(flashed_this_time) == 0:
+            if not len(flashed_this_time):
                 break
 
+        # If everything flashed, this is the iteration.
         if len(flashed) == len(seq) * len(seq[0]):
             return i
-
-        for r in ns:
-            for c in r:
-                if c > 9:
-                    ans += 1
 
         seq = [[0 if x > 9 else x for x in r] for r in ns]
 
