@@ -419,29 +419,25 @@ def part1(lines: List[str]) -> int:
     return ans
 
 
-def part1_bad(lines: List[str]) -> int:
+def part_1_original_approach(lines: List[str]) -> int:
+    """
+    This was my original approach. I missed a few critical details that really bit me in
+    the ass.
+
+    1. Operator precedence for modulo.
+    """
     ans = 0
 
     seq = [[int(c) for c in x] for x in lines]
-    for i in range(2):
+    for _ in range(100):
+        ns = [[(a + 1) % 10 for a in r] for r in seq]
 
-        ns = []
-        for r in seq:
-            ns.append([(a + 1) % 9 for a in r])
-
-        print()
-        # print("\n".join("".join(map(str, x)) for x in ns))
         to_flash = {
             (r, c) for r in range(len(seq)) for c in range(len(seq[0])) if ns[r][c] == 0
         }
-        print(to_flash)
         flashed = set()
         while to_flash:
-            print("1" * 100)
-            for r in ns:
-                print(r)
             f = to_flash.pop()
-            print("ohea", f)
 
             if f in flashed:
                 continue
@@ -453,59 +449,16 @@ def part1_bad(lines: List[str]) -> int:
             ):
                 to_inc.add((r, c))
 
-            print("ti", to_inc)
             for r, c in to_inc:
-                ns[r][c] = 0 if ns[r][c] == 0 else ns[r][c] + 1
+                # Here was my operator precedence error. I originally had
+                # ns[r][c] = 0 if ns[r][c] == 0 else ns[r][c] + 1 % 10
+                # which is wrong since % binds tighter than +
+                ns[r][c] = 0 if ns[r][c] == 0 else (ns[r][c] + 1) % 10
                 if ns[r][c] == 0:
                     to_flash.add((r, c))
 
-            for r in ns:
-                print(r)
-
-        # if i == 2:
-        #     break
-
-        # to_inc = {
-        #     (r, c)
-        #     for r in range(len(seq))
-        #     for c in range(len(seq[0]))
-        #     if seq[r][c] == 9
-        # }
-        # print(to_inc)
-        # prev = len(to_inc)
-        # while True:
-        #     for x in to_inc:
-        #         for r1, c1 in grid_adjs(x, ((0, len(seq)), (0, len(seq[0])))):
-        #             ns[r1][c1] += 1
-
-        #     to_inc = {
-        #         (r, c)
-        #         for r in range(len(seq))
-        #         for c in range(len(seq[0]))
-        #         if seq[r][c] == 9
-        #     }
-        #     if len(to_inc) == 0:
-        #         break
-
-        # for r in range(len(seq)):
-        #     for c in range(len(seq[0])):
-        #         if seq[r][c] > 9:
-        #             for a in grid_adjs((r, c), ((0, len(seq)), (0, len(seq[0])))):
-        #                 print("ohea", a)
-
-        print(f"step == {i}")
-        for r in seq:
-            print(r)
-        print(f"step == {i}")
-        for r in ns:
-            print(r)
-            for c in r:
-                if c == 0:
-                    ans += 1
+        ans += sum(1 for r in ns for c in r if c == 0)
         seq = ns
-        print(ans)
-
-    "(<>)"
 
     return ans
 
@@ -517,6 +470,7 @@ if test:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part1 = part1(test_lines)
+        assert test_ans_part1 == part_1_original_approach(test_lines)
         expected = 1656
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
@@ -533,7 +487,7 @@ if test:
 part1_start = time.time()
 print("Running input...")
 ans_part1 = part1(input_lines)
-# ans_part1 = part1_bad(input_lines)
+assert ans_part1 == part_1_original_approach(input_lines)
 part1_end = time.time()
 print("Result:", ans_part1)
 
