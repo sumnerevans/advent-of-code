@@ -173,7 +173,7 @@ def part2(lines: List[str]) -> int:
                     continue
                 nv = (*nv, a)
 
-            count += paths(a, nv)
+            count += paths(a, tuple(sorted(nv)))
 
         return count
 
