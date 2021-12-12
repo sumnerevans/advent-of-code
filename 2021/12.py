@@ -158,12 +158,12 @@ def part2(lines: List[str]) -> int:
         G[y].add(x)
 
     @cache()
-    def paths(k, visited: Tuple[str]) -> int:
-        if k == "end":
+    def paths(key, visited: Tuple[str]) -> int:
+        if key == "end":
             return 1
 
-        c = 0
-        for a in G[k]:
+        count = 0
+        for a in G[key]:
             if a == "start":
                 continue
 
@@ -173,9 +173,9 @@ def part2(lines: List[str]) -> int:
                     continue
                 nv = (*nv, a)
 
-            c += paths(a, nv)
+            count += paths(a, nv)
 
-        return c
+        return count
 
     return paths("start", tuple())
 
