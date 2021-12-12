@@ -11,11 +11,12 @@ import string
 import sys
 import time
 from copy import deepcopy
-from collections import defaultdict
+from collections import Counter, defaultdict
 from enum import Enum, IntEnum
 from fractions import Fraction
 from typing import (
     Callable,
+    DefaultDict,
     Dict,
     Generator,
     Iterable,
@@ -31,8 +32,8 @@ from typing import (
 test = True
 debug = False
 stdin = False
-INFILENAME = "inputs/%FILE%.txt"
-TESTFILENAME = "inputs/%FILE%.test.txt"
+INFILENAME = "inputs/12.txt"
+TESTFILENAME = "inputs/12.test.txt"
 for arg in sys.argv:
     if arg == "--notest":
         test = False
@@ -133,7 +134,7 @@ def cache():  # Python 3.9 compat
 
 def chunks(iterable, n):
     if n < 1:
-        raise Exception('not allowed')
+        raise Exception("not allowed")
     itertype = type(iterable) if type(iterable) in (list, set, tuple) else list
 
     container = []
@@ -392,18 +393,33 @@ print("Part 1:")
 
 
 def part1(lines: List[str]) -> int:
-    ans = 0
+    # So, all paths you find should visit small caves at most once, and can visit big
+    # caves any number of times.
 
-    # seq = [int(x) for x in lines]
-    # seq = [int(x) for x in lines[0].split(",")]
-    # L = [[int(x) for x in l] for l in lines]
-    "(<>)"
+    G: DefaultDict[str, Set[str]] = defaultdict(set)
+
     for line in lines:
-        "(<>)"
+        x, y = rematch("(.*)-(.*)", line).groups()
+        G[x].add(y)
+        G[y].add(x)
 
-    "(<>)"
+    def paths(key, visited: Set[str]) -> int:
+        if key == "end":
+            return 1
 
-    return ans
+        count = 0
+        for a in G[key]:
+            if a == "start":
+                continue
+            if a.islower() and a in visited:
+                # This is a small cave, and we've only been here once.
+                continue
+
+            count += paths(a, {*visited, a})
+
+        return count
+
+    return paths("start", set())
 
 
 # Run test on part 1
@@ -413,14 +429,14 @@ if test:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part1 = part1(test_lines)
-        expected = %HERE%
+        expected = 10
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part1 == expected:
             print(f"{bcolors.OKGREEN}PASS{bcolors.ENDC}")
         else:
             print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
-            print(f"{bcolors.FAIL}Result: {test_ans_part1} != {expected}{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}Result: {test_ans_part1}{bcolors.ENDC}")
             assert False
 
         print("Result:", test_ans_part1)
@@ -441,7 +457,7 @@ if tries:
 
 
 # Regression Test
-expected = None  # (<>)
+expected = 4970
 if expected is not None:
     assert ans_part1 == expected
 
@@ -451,11 +467,37 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str]) -> int:
-    ans = 0
+    # So, all paths you find should visit small caves at most once, and can visit big
+    # caves any number of times.
 
-    "(<>)"
+    G = defaultdict(set)
 
-    return ans
+    for line in lines:
+        x, y = rematch("(.*)-(.*)", line).groups()
+        G[x].add(y)
+        G[y].add(x)
+
+    @cache()
+    def paths(k, visited: Tuple[str]) -> int:
+        if k == "end":
+            return 1
+
+        c = 0
+        for a in G[k]:
+            nv = visited
+            if a == "start":
+                continue
+            if a.islower():
+                if any(x >= 2 for x in Counter(visited).values()):
+                    if a in visited:
+                        continue
+                nv = (*nv, a)
+
+            c += paths(a, nv)
+
+        return c
+
+    return paths("start", tuple())
 
 
 # Run test on part 2
@@ -465,7 +507,7 @@ if test:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part2 = part2(test_lines)
-        expected = None  # (<>)
+        expected = 36
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part2 == expected:
@@ -485,6 +527,7 @@ part2_end = time.time()
 print("Result:", ans_part2)
 
 tries2 = [
+    4970
     # Store the attempts that failed here.
 ]
 if tries2:
@@ -492,7 +535,7 @@ if tries2:
     assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-expected = None  # (<>)
+expected = 137948
 if expected is not None:
     assert ans_part2 == expected
 
