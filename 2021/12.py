@@ -177,7 +177,9 @@ def part2(lines: List[str]) -> int:
 
         return count
 
-    return paths("start", tuple())
+    result = paths("start", tuple())
+    print(paths.cache_info())
+    return result
 
 
 # Run test on part 2
