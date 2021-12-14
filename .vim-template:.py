@@ -357,7 +357,10 @@ def sizezip(*iterables: Union[List, Set]) -> Iterable[Tuple]:
     yield from zip(*iterables)
 
 
-def window(iterable: List[K], n: int) -> Iterable[Tuple[K, ...]]:
+def window(
+    iterable: Union[List[K], str],
+    n: int,
+) -> Iterable[Tuple[Union[K, str], ...]]:
     """
     Return a sliding window of size ``n`` of the given iterable.
     """
