@@ -160,20 +160,17 @@ def part2(lines: List[str]) -> int:
     insertion_rules = {a: b for a, b in map(lambda line: line.split(" -> "), lines[2:])}
 
     @cache()
-    def count_between_keys(a, b, d) -> Dict[str, int]:
+    def count_between_keys(a, b, d) -> Counter:
         """
         This really bit me in the ass because I forgot that when I return dictionaries,
         I have to actually deepcopy them before using or else it modifies the cache.
         """
-        counts = Counter()
-        counts[insertion_rules[a + b]] += 1
+        counts = Counter(insertion_rules[a + b])
         if d == 1:
             return counts
 
-        for k, v in count_between_keys(a, insertion_rules[a + b], d - 1).items():
-            counts[k] += v
-        for k, v in count_between_keys(insertion_rules[a + b], b, d - 1).items():
-            counts[k] += v
+        counts += count_between_keys(a, insertion_rules[a + b], d - 1)
+        counts += count_between_keys(insertion_rules[a + b], b, d - 1)
         return counts
 
     # Add the counts for all of the elements in the actual initial template.
@@ -182,8 +179,7 @@ def part2(lines: List[str]) -> int:
     # Calculate the counts of characters between each of the sliding-window pairs in the
     # template.
     for a, b in window(template, 2):
-        for k, v in count_between_keys(a, b, 40).items():
-            counts[k] += v
+        counts += count_between_keys(a, b, 40)
 
     print(count_between_keys.cache_info())
     min_, max_ = seqminmax(counts.values())
