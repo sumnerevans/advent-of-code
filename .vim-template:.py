@@ -153,16 +153,18 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
     shortest path from ``start`` to ``end`` in ``G``.
     """
     Q = []
-    for k in G:
-        heapq.heappush(Q, (math.inf, k))
-    heapq.heappush(Q, (0, start))
-
     D = {}
+    heapq.heappush(Q, (0, start))
+    seen = set()
+
     while Q:
         cost, el = heapq.heappop(Q)
-        if cost < D.get(el, math.inf):
-            D[el] = cost
-            for c, x in G[el]:
+        if el in seen:
+            continue
+        seen.add(el)
+        for c, x in G[el]:
+            if cost + c < D.get(x, math.inf):
+                D[x] = cost + c
                 heapq.heappush(Q, (cost + c, x))
 
     return D[end]
