@@ -1,33 +1,13 @@
 #! /usr/bin/env python3
 
-import functools as ft
 import itertools as it
 import heapq
 import math
-import operator
-import os
-import re
-import string
 import sys
 import time
-from copy import deepcopy
 from collections import defaultdict
-from enum import Enum, IntEnum
-from fractions import Fraction
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Match,
-    Optional,
-    Set,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from enum import Enum
+from typing import Dict, Iterable, List, Tuple, TypeVar
 
 test = True
 debug = False
@@ -88,70 +68,8 @@ class AdjacenciesType(Enum):
     ALL = "all"
 
 
-# Modified range functions
-def irange(start, end=None, step=1) -> Generator[int, None, None]:
-    """Inclusive range function."""
-    if end is None:
-        start, end = 0, start
-    yield from range(start, end + 1, step=step)
-
-
-def dirange(start, end=None, step=1) -> Generator[int, None, None]:
-    """
-    Directional, inclusive range. This range function is an inclusive version of
-    :class:`range` that figures out the correct step direction to make sure that it goes
-    from `start` to `end`, even if `end` is before `start`.
-
-    >>> dirange(2, -2)
-    [2, 1, 0, -1, -2]
-    >>> dirange(-2)
-    [0, -1, -2]
-    >>> dirange(2)
-    [0, 1, 2]
-    """
-    assert step > 0
-    if end is None:
-        start, end = 0, start
-
-    if end >= start:
-        yield from irange(start, end, step)
-    else:
-        yield from range(start, end - 1, step=-step)
-
-
 # Utilities
-def bitstrtoint(s: Union[str, List[Union[int, str, bool]]]) -> int:
-    if isinstance(s, list):
-        if isinstance(s[0], bool):
-            s = list(map(int, s))
-
-        s = "".join(map(str, s))
-    return int(s, 2)
-
-
-def cache():  # Python 3.9 compat
-    return ft.lru_cache(maxsize=None)
-
-
-def chunks(iterable, n):
-    if n < 1:
-        raise Exception("not allowed")
-    itertype = type(iterable) if type(iterable) in (list, set, tuple) else list
-
-    container = []
-    for x in iterable:
-        container.append(x)
-        if len(container) == n:
-            yield itertype(container)
-            container = []
-
-    if len(container) > 0:
-        yield itertype(container)
-
-
-def dijkstra(
-    G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K
-) -> Tuple[int, Any, Any]:
+def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
     """
     A simple implementation of Dijkstra's shortest path algorithm for finding the
     shortest path from ``start`` to ``end`` in ``G``.
@@ -171,7 +89,7 @@ def dijkstra(
             for c, x in G[el]:
                 heapq.heappush(Q, (cost + c, x, el))
 
-    return D[end], D, P
+    return D[end]
 
 
 def grid_adjs(
@@ -221,159 +139,6 @@ def grid_adjs(
         yield tuple(c + d for c, d in zip(coord, delta))
 
 
-def infer_one_to_one_from_possibles(possibles: Dict[K, Set[V]]) -> Dict[K, V]:
-    """
-    This goes through a dictionary of key to potential values and computes the true
-    value using simple inference where if a key can only be a single value, then it must
-    be that value. For example::
-
-        A -> {X, Y}
-        B -> {Y}
-        C -> {X, Z}
-
-    then ``B`` must be ``Y``, which means that ``A`` cannot be ``Y``, thus ``A`` must be
-    ``X``, and by the same logic ``C`` must be ``Z``.
-    """
-    inferred = {}
-    while len(possibles):
-        # Find the item that only has one possibility associated with it and pull it out
-        # of the possibles dictionary, and remove the ingredient from all of the other
-        # sets.
-        for key, possible_fields in possibles.items():
-            if len(possible_fields) == 1:
-                inferred[key] = possible_fields.pop()
-                remove_item = inferred[key]
-                del possibles[key]
-                break
-        else:  # nobreak
-            assert False, "No keys have a single possible value"
-
-        for x in possibles:
-            if remove_item in possibles[x]:
-                possibles[x].remove(remove_item)
-
-    return inferred
-
-
-def int_points_between(
-    start: Tuple[int, int], end: Tuple[int, int]
-) -> Generator[Tuple[int, int], None, None]:
-    """
-    Return a generator of all of the integer points between two given points. Note that
-    you are *not* guaranteed that the points will be given from `start` to `end`, but
-    all points will be included.
-    """
-    x1, y1 = start
-    x2, y2 = end
-    if x1 == x2:
-        yield from ((x1, y) for y in dirange(y1, y2))
-    elif y1 == y2:
-        yield from ((x, y1) for x in dirange(x1, x2))
-    else:
-        # If `x1 > x2`, that means that `start` is to the right of `end`, so we need to
-        # switch the points around so iteration always goes in the positive `x`
-        # direction.
-        if x1 > x2:
-            x1, x2, y1, y2 = x2, x1, y2, y1
-        dy = y2 - y1
-        dx = x2 - x1
-        slope = Fraction(dy, dx)
-        for i in irange(dy // slope.numerator):
-            yield (x1 + (i * slope.denominator), y1 + (i * slope.numerator))
-
-
-def invert_dict(d: Dict[K, V]) -> Dict[V, K]:
-    return {v: k for k, v in d.items()}
-
-
-def invert_graph(graph: Dict[K, Iterable[V]]) -> Dict[V, Set[K]]:
-    new_graph = {}
-    for k, vals in graph.items():
-        for v in vals:
-            if v not in new_graph:
-                new_graph[v] = set()
-            new_graph[v].add(k)
-    return new_graph
-
-
-def irot(x: int, y: int, deg: int, origin: Tuple[int, int] = (0, 0)) -> Tuple[int, int]:
-    """
-    Rotate an integer point ``(x, y)`` by ``deg`` around the ``origin``. Only works when
-    ``deg % 90 == 0``.
-    """
-    transformed_x = x - origin[0]
-    transformed_y = y - origin[1]
-    assert deg % 90 == 0
-    for _ in range((deg // 90) % 4):
-        transformed_x, transformed_y = -transformed_y, transformed_x
-    return (transformed_x + origin[0], transformed_y + origin[1])
-
-
-def manhattan(x1: int, y1: int, x2: int = 0, y2: int = 0) -> int:
-    return abs(x2 - x1) + abs(y2 - y1)
-
-
-def maplist(fn: Callable[[K], V], l: Iterable[K]) -> List[V]:
-    return list(map(fn, l))
-
-
-def pbits(num: int, pad: int = 32) -> str:
-    """Return the bits of `num` in binary with the given padding."""
-    return bin(num)[2:].zfill(pad)
-
-
-def prod(it: Iterable):
-    return ft.reduce(operator.mul, it, 1)
-
-
-def rematch(pattern: str, s: str) -> Optional[Match]:
-    return re.fullmatch(pattern, s)
-
-
-def rot(
-    x: float, y: float, deg: float, origin: Tuple[float, float] = (0, 0)
-) -> Tuple[float, float]:
-    """
-    Rotate a point by `deg` around the `origin`. This does floating-point math, so
-    you may encounter precision errors.
-    """
-    theta = deg * math.pi / 180
-    x2 = (x - origin[0]) * math.cos(theta) - (y - origin[1]) * math.sin(theta)
-    y2 = (x - origin[0]) * math.sin(theta) + (y - origin[1]) * math.cos(theta)
-    return (x2 + origin[0], y2 + origin[1])
-
-
-def seqminmax(sequence: Iterable[int]) -> Tuple[int, int]:
-    """
-    Returns a tuple containing the minimum and maximum element of the ``sequence``.
-    """
-    min_, max_ = math.inf, -math.inf
-    for x in sequence:
-        min_ = min(min_, x)
-        max_ = max(max_, x)
-    return int(min_), int(max_)
-
-
-def sizezip(*iterables: Union[List, Set]) -> Iterable[Tuple]:
-    """
-    Same as the :class:`zip` function, but verifies that the lengths of the
-    :class:`list`s or :class:`set`s are the same.
-    """
-    assert len(set(len(x) for x in iterables)) == 1
-    yield from zip(*iterables)
-
-
-def window(
-    iterable: Union[List[K], str],
-    n: int,
-) -> Iterable[Tuple[Union[K, str], ...]]:
-    """
-    Return a sliding window of size ``n`` of the given iterable.
-    """
-    for start_idx in range(len(iterable) - n + 1):
-        yield tuple(iterable[start_idx + idx] for idx in range(n))
-
-
 print(f"\n{'=' * 30}\n")
 
 # Read the input
@@ -403,15 +168,20 @@ print("Part 1:")
 def part1(lines: List[str]) -> int:
     G = defaultdict(set)
 
-    # seq = [int(x) for x in lines]
-    # seq = [int(x) for x in lines[0].split(",")]
-    # L = [[int(x) for x in l] for l in lines]
     for r, line in enumerate(lines):
         for c, char in enumerate(line):
             for r1, c1 in grid_adjs((r, c), ((0, len(lines)), (0, len(lines[0])))):
-                G[(r, c)].add((int(char), (r1, c1)))
+                if (r, c) == (0, 0):
+                    G[(r, c)].add((0, (r1, c1)))
+                else:
+                    G[(r, c)].add((int(char), (r1, c1)))
 
-    return dijkstra(G, (0, 0), (len(lines) - 1, len(lines[0]) - 1))[0]
+    x = int(lines[-1][-1])
+    if x > 9:
+        x = 1 + (x - 10)
+
+    G[(len(lines) - 1, len(lines[0]) - 1)].add((x, (2 ** 40, 2 ** 40)))
+    return dijkstra(G, (0, 0), (2 ** 40, 2 ** 40))
 
 
 # Run test on part 1
@@ -449,7 +219,7 @@ if tries:
 
 
 # Regression Test
-expected = None  # (<>)
+expected = 363
 if expected is not None:
     assert ans_part1 == expected
 
@@ -457,125 +227,28 @@ if expected is not None:
 ########################################################################################
 print("\nPart 2:")
 
-# # Try and read in the test file.
-# try:
-#     with open("inputs/15.test.2.txt") as f:
-#         test_lines: List[str] = [l.strip() for l in f.readlines()]
-# except Exception:
-#     test_lines = []
-
-
-def part2_2(lines: List[str]) -> int:
-    G = defaultdict(set)
-
 
 def part2(lines: List[str]) -> int:
-    ans = 0
-
-    "(<>)"
     G = defaultdict(set)
 
-    # seq = [int(x) for x in lines]
-    # seq = [int(x) for x in lines[0].split(",")]
-    # L = [[int(x) for x in l] for l in lines]
     for shift_r in range(5):
         for shift_c in range(5):
             for r, line in enumerate(lines, start=len(lines) * shift_r):
                 for c, char in enumerate(line, start=len(lines[0]) * shift_c):
-                    for r1, c1 in grid_adjs(
-                        (r, c),
-                        ((0, len(lines) * 5), (0, len(lines[0]) * 5)),
-                    ):
-                        # if r == 20 and c == 10:
+                    for r1, c1 in grid_adjs((r, c)):
+                        if r == c == 0:
+                            cost = 0
+                        else:
+                            cost = int(char) + shift_r + shift_c
+                            cost = 1 + (cost - 10) if cost > 9 else cost
+                        G[(r, c)].add((cost, (r1, c1)))
 
-                        #     print(r, c)
-                        #     print(shift_c, shift_r)
-                        #     print(
-                        #         (
-                        #             (int(char) + shift_r + shift_c) % 10,
-                        #             (r1, c1),
-                        #         )
-                        #     )
-
-                        # G[(r, c)].add((int(char), (r1, c1)))
-                        x = int(char) + shift_r + shift_c
-                        if x > 9:
-                            x = 1 + (x - 10)
-                        G[(r, c)].add((x, (r1, c1)))
-
-    # print(G)
-    # print(G[(0, len(lines[0]))])
-    # print(G[(0, len(lines[0]) + 2)])
-    # print(G[(20, 10)])
-    # print(G[(10, 0)])
-    print()
-    for i in range(13):
-        print(G[(i, 0)])
-    # print(G[(2, 0)])
-    # print(G[(49, 49)])
-    # print(G[(5, 10)])
-    # print(G[(5, 9)])
-    print()
-    # print
-    # print(G, (0, 0), (len(lines) * 5 - 1, len(lines[0]) * 5 - 1))
     x = int(lines[-1][-1]) + 8
     if x > 9:
         x = 1 + (x - 10)
-    # ohea
 
     G[(len(lines) * 5 - 1, len(lines[0]) * 5 - 1)].add((x, (2 ** 40, 2 ** 40)))
-    # a, D, P = dijkstra(G, (0, 0), (len(lines) * 5 - 1, len(lines[0]) * 5 - 1))
-    a, D, P = dijkstra(G, (0, 0), (2 ** 40, 2 ** 40))
-
-    def backtrack(x, y) -> List:
-        if x == 0 and y == 0:
-            return [(0, 0)]
-        return backtrack(*P[(x, y)]) + [(x, y)]
-
-    b = backtrack(len(lines) * 5 - 1, len(lines[0]) * 5 - 1)
-    print(b)
-
-    max_r = max(x[0] for x in G.keys())
-    max_c = max(x[1] for x in G.keys())
-
-    max_r = len(lines) * 5 - 1
-    max_c = len(lines[0]) * 5 - 1
-
-    for r in irange(max_r):
-        for c in irange(max_c):
-            if (r, c) in b:
-                print(bcolors.FAIL, end="")
-
-            if len(set(x[0] for x in G[r, c])) != 1:
-                # print(G[r, c])
-                # print()
-                # print(r,c)
-                assert False
-
-            print(list(G[(r, c)])[0][0], end="")
-            if (r, c) in b:
-                print(bcolors.ENDC, end="")
-        print()
-
-    # for BB in b:
-    #     print('='*10)
-    #     print(BB)
-
-    #     print(D[BB])
-
-    #     input()
-
-    # print(D[(3, 0)])
-    # print(D[(13, 0)])
-    # print(P[(49, 48)])
-    # print(P[(48, 48)])
-    for i in range(13):
-        print(D[(i, 0)])
-    print(D[(12, 1)])
-    print(D[(12, 2)])
-    print(D[(13, 2)])
-
-    return a - 1
+    return dijkstra(G, (0, 0), (2 ** 40, 2 ** 40))
 
 
 # Run test on part 2
