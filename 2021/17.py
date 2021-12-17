@@ -3,7 +3,7 @@
 import re
 import sys
 import time
-from typing import Generator, List, Match, Optional
+from typing import Generator, Iterator, List, Match, Optional
 
 test = True
 debug = False
@@ -40,6 +40,13 @@ def irange(start, end=None, step=1) -> Generator[int, None, None]:
 
 
 # Utilities
+def allints(s: str) -> Iterator[int]:
+    """
+    Returns a list of all of the integers in the string.
+    """
+    return map(lambda m: int(m.group(0)), re.finditer(r"-?\d+", s))
+
+
 def rematch(pattern: str, s: str) -> Match:
     match = re.fullmatch(pattern, s)
     assert match is not None
@@ -109,11 +116,7 @@ print("Part 1:")
 def part1(lines: List[str]) -> int:
     ans = 0
 
-    x1, x2, y1, y2 = map(
-        int,
-        rematch(r".*x=([-\d]+)..([-\d]+), y=([-\d]+)..([-\d]+)", lines[0]).groups(),
-    )
-
+    x1, x2, y1, y2 = allints(lines[0])
     for initial_x_vel in irange(0, x2):
         for initial_y_vel in range(0, abs(y1)):
             sim_result = simulate(initial_x_vel, initial_y_vel, x1, x2, y1, y2)
@@ -172,11 +175,7 @@ print("\nPart 2:")
 def part2(lines: List[str]) -> int:
     ans = 0
 
-    x1, x2, y1, y2 = map(
-        int,
-        rematch(r".*x=([-\d]+)..([-\d]+), y=([-\d]+)..([-\d]+)", lines[0]).groups(),
-    )
-
+    x1, x2, y1, y2 = allints(lines[0])
     for initial_x_vel in irange(0, x2):
         for initial_y_vel in range(y1, abs(y1)):
             sim_result = simulate(initial_x_vel, initial_y_vel, x1, x2, y1, y2)

@@ -118,6 +118,13 @@ def dirange(start, end=None, step=1) -> Generator[int, None, None]:
 
 
 # Utilities
+def allints(s: str) -> Iterator[int]:
+    """
+    Returns a list of all of the integers in the string.
+    """
+    return map(lambda m: int(m.group(0)), re.finditer(r"-?\d+", s))
+
+
 def bitstrtoint(s: Union[str, List[Union[int, str, bool]]]) -> int:
     if isinstance(s, list):
         if isinstance(s[0], bool):
