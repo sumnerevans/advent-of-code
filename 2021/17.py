@@ -114,7 +114,7 @@ def part1(lines: List[str]) -> int:
         rematch(r".*x=([-\d]+)..([-\d]+), y=([-\d]+)..([-\d]+)", lines[0]).groups(),
     )
 
-    for initial_x_vel in range(0, 100):
+    for initial_x_vel in irange(0, x2):
         for initial_y_vel in range(0, abs(y1)):
             sim_result = simulate(initial_x_vel, initial_y_vel, x1, x2, y1, y2)
             if sim_result is not None:
@@ -178,7 +178,7 @@ def part2(lines: List[str]) -> int:
     )
 
     for initial_x_vel in irange(0, x2):
-        for initial_y_vel in range(y1, 300):
+        for initial_y_vel in range(y1, abs(y1)):
             sim_result = simulate(initial_x_vel, initial_y_vel, x1, x2, y1, y2)
             if sim_result is not None:
                 ans += 1
