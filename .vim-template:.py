@@ -322,8 +322,10 @@ def prod(it: Iterable):
     return ft.reduce(operator.mul, it, 1)
 
 
-def rematch(pattern: str, s: str) -> Optional[Match]:
-    return re.fullmatch(pattern, s)
+def rematch(pattern: str, s: str) -> Match:
+    match = re.fullmatch(pattern, s)
+    assert match is not None
+    return match
 
 
 def rot(
