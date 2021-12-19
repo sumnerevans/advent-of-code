@@ -8,6 +8,7 @@ let
       black
       flake8
       graphviz
+      numpy
       pynvim
     ]
   );
@@ -64,26 +65,26 @@ let
   runScript = writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
 
-    ${watchexec}/bin/watchexec -r "${pypy3}/bin/pypy3 ./$day.py"
+    ${watchexec}/bin/watchexec -r "${py3WithPackages}/bin/python ./$day.py"
   '';
 
   debugRunScript = writeShellScriptBin "drun" ''
     ${getDayScriptPart "drun"}
 
-    ${watchexec}/bin/watchexec -r "${pypy3}/bin/pypy3 ./$day.py --debug"
+    ${watchexec}/bin/watchexec -r "${py3WithPackages}/bin/python ./$day.py --debug"
   '';
 
   # Single run, don't watchexec
   singleRunScript = writeShellScriptBin "srun" ''
     ${getDayScriptPart "srun"}
 
-    ${pypy3}/bin/pypy3 ./$day.py
+    ${py3WithPackages}/bin/python ./$day.py
   '';
 
   debugSingleRunScript = writeShellScriptBin "dsrun" ''
     ${getDayScriptPart "dsrun"}
 
-    ${pypy3}/bin/pypy3 ./$day.py --debug
+    ${py3WithPackages}/bin/python ./$day.py --debug
   '';
 
   # Write a test file
@@ -96,24 +97,24 @@ let
   # Run with --notest flag
   runNoTestScript = writeShellScriptBin "rntest" ''
     ${getDayScriptPart "rntest"}
-    ${pypy3}/bin/pypy3 ./$day.py --notest
+    ${py3WithPackages}/bin/python ./$day.py --notest
   '';
 
   debugRunNoTestScript = writeShellScriptBin "drntest" ''
     ${getDayScriptPart "druntest"}
-    ${pypy3}/bin/pypy3 ./$day.py --notest --debug
+    ${py3WithPackages}/bin/python ./$day.py --notest --debug
   '';
 
   # Run with --stdin and --notest flags
   runStdinScript = writeShellScriptBin "runstdin" ''
     ${getDayScriptPart "runstdin"}
-    ${pypy3}/bin/pypy3 ./$day.py --stdin --notest
+    ${py3WithPackages}/bin/python ./$day.py --stdin --notest
   '';
 
   # Run with --stdin and --notest flags, and pull from clipboard.
   runStdinClipScript = writeShellScriptBin "runstdinclip" ''
     ${getDayScriptPart "runstdin"}
-    ${xsel}/bin/xsel --output | ${pypy3}/bin/pypy3 ./$day.py --stdin --notest
+    ${xsel}/bin/xsel --output | ${py3WithPackages}/bin/python ./$day.py --stdin --notest
   '';
 
   # Compile and run the C version.

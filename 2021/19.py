@@ -11,29 +11,30 @@ import string
 import sys
 import time
 from copy import deepcopy
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from enum import Enum, IntEnum
 from fractions import Fraction
 from typing import (
     Callable,
+    DefaultDict,
     Dict,
     Generator,
     Iterable,
+    Iterator,
     List,
     Match,
     Optional,
     Set,
     Tuple,
     TypeVar,
-    Iterator,
     Union,
 )
 
 test = True
 debug = False
 stdin = False
-INFILENAME = "inputs/%FILE%.txt"
-TESTFILENAME = "inputs/%FILE%.test.txt"
+INFILENAME = "inputs/19.txt"
+TESTFILENAME = "inputs/19.test.txt"
 for arg in sys.argv:
     if arg == "--notest":
         test = False
@@ -141,7 +142,7 @@ def cache():  # Python 3.9 compat
 
 def chunks(iterable, n):
     if n < 1:
-        raise Exception('not allowed')
+        raise Exception("not allowed")
     itertype = type(iterable) if type(iterable) in (list, set, tuple) else list
 
     container = []
@@ -401,24 +402,162 @@ except Exception:
 ########################################################################################
 
 
+def rotations():
+    """
+    https://stackoverflow.com/questions/16452383/how-to-get-all-24-rotations-of-a-3-dimensional-array#16467849
+    """
+
+    def roll(v):
+        return (v[0], v[2], -v[1])
+
+    def turn(v):
+        return (-v[1], v[0], v[2])
+
+    tot = tuple()
+    for cycle in range(2):
+        for step in range(3):  # Yield RTTT 3 times
+            tot += (roll,)
+            yield tot
+            for i in range(3):  #  Yield TTT
+                tot += (turn,)
+                yield tot
+        tot += (roll, turn, roll)  # Do RTR
+
+
+def apply_rots(rotation_fns, point):
+    for r in rotation_fns:
+        point = r(point)
+    return point
+
+
 # Part 1
 ########################################################################################
 print("Part 1:")
 
 
-def part1(lines: List[str]) -> int:
+def part1(lines: List[str], threshold: int = 12) -> int:
     ans = 0
+    Point = Tuple[int, ...]
+    Diff = Tuple[int, ...]
 
-    # seq = [int(x) for x in lines]
-    # seq = [int(x) for x in lines[0].split(",")]
-    # L = [[int(x) for x in l] for l in lines]
-    "(<>)"
+    scanner_points: List[Set[Point]] = []
+    point_size = 0
     for line in lines:
-        "(<>)"
+        if line.strip() == "":
+            continue
+        try:
+            scanner_num = int(rematch(r"--- scanner (\d+) ---", line).group(1))
+            assert scanner_num == len(scanner_points)
+            scanner_points.append(set())
+            continue
+        except:
+            pass
+        line_tup = tuple(allints(line))
+        scanner_points[-1].add(line_tup)
+        point_size = len(line_tup)
 
-    "(<>)"
+    print()
+    TC = {
+        "(1, 1, 1)": {
+            (1, -1, -1),
+            (-1, 1, -1),
+            (1, 1, 1),
+            (1, -1, 1),
+            (-1, -1, 1),
+            (-1, 1, 1),
+            (1, 1, -1),
+            (-1, -1, -1),
+        }
+    }
+    for t, exp in TC.items():
+        print("Test:", t)
+        # rots = set(map(lambda x: x[0][1], rotations(eval(t))))
+        x = eval(t)
+        Z = set()
+        for rfns in rotations():
+            Z.add(apply_rots(rfns, x))
+        print(x)
+        print(Z)
+        print(len(Z))
+        assert Z == exp
 
-    return ans
+    scanner_point_diffs: List[DefaultDict[Point, Dict[Point, Diff]]] = []
+    for sp in scanner_points:
+        scanner_point_diffs.append(defaultdict(dict))
+        for rotation_fns in rotations():
+            rot_sp = maplist(ft.partial(apply_rots, rotation_fns), sp)
+            for i, p1 in enumerate(rot_sp):
+                for j, p2 in enumerate(rot_sp):
+                    if i == j:
+                        continue
+                    scanner_point_diffs[-1][p1][p2] = tuple(
+                        map(lambda x: x[1] - x[0], zip(p1, p2))
+                    )
+
+    # dictionary of scanner number -> {scanner number -> relative offset}
+    scanner_rel_pos = {0: {0: tuple([0] * point_size)}}
+
+    for i, spd1 in enumerate(scanner_point_diffs):
+        for j, spd2 in enumerate(scanner_point_diffs[i + 1 :], start=i + 1):
+            # print(spd1)
+            # print(spd2)
+            foundmatch = False
+            for spd1k, spd1v in spd1.items():
+                for spd2k, spd2v in spd2.items():
+                    for rotation_fns in rotations():
+                        spd2v_rot = maplist(ft.partial(apply_rots, rotation_fns), spd2v)
+                        print(" ", "spd1k", spd1k)
+                        print(" ", "spd2k", spd2k)
+                        print(" ", "spd1v", spd1v)
+                        print(" ", "spd2v", spd2v)
+                        intersection = set(spd1v.values()).intersection(set(spd2v_rot))
+                        print(">", intersection)
+                        # -1 because includes self
+                        if len(intersection) >= threshold - 1:
+                            print("got here")
+                            print(intersection)
+                            print(spd2k)
+                            print(apply_rots(rotation_fns, spd2k))
+                            print(spd1k)
+                            print(tuple(map(lambda x: x[0] - x[1], zip(spd1k, spd2k))))
+                            scanner_rel_pos[i][j] = tuple(
+                                map(lambda x: x[0] - x[1], zip(spd1k, spd2k))
+                            )
+                            foundmatch = True
+                            break
+                    if foundmatch:
+                        break
+                if foundmatch:
+                    break
+            # print(matches)
+            # if len(matches) >= threshold:
+            #     print("HERE")
+            #     print(i, j)
+            #     p1, p2 = matches[0]
+            #     scanner_rel_pos[i][j] = (p1[0] - p2[0], p1[1] - p2[1])
+    print("relpos", scanner_rel_pos)
+
+    all_beacons_rel_to_0 = set()
+    for i, sps in enumerate(scanner_points):
+        offset_for_i = scanner_rel_pos[0][i]
+        print(i, sps)
+        print(offset_for_i)
+        for point in sps:
+            all_beacons_rel_to_0.add(tuple(map(sum, zip(offset_for_i, point))))
+        print(all_beacons_rel_to_0)
+
+    print(all_beacons_rel_to_0)
+    print({(-1, -1, 1), (-2, -2, 2), (-3, -3, 3), (-2, -3, 1), (5, 6, -4), (8, 0, 7)})
+    assert all_beacons_rel_to_0 == {
+        (-1, -1, 1),
+        (-2, -2, 2),
+        (-3, -3, 3),
+        (-2, -3, 1),
+        (5, 6, -4),
+        (8, 0, 7),
+    }
+
+    return len(all_beacons_rel_to_0)
 
 
 # Run test on part 1
@@ -427,8 +566,8 @@ if test:
     if not test_lines:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
-        test_ans_part1 = part1(test_lines)
-        expected = %HERE%
+        test_ans_part1 = part1(test_lines, 6)
+        expected = 79
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part1 == expected:
@@ -443,7 +582,7 @@ if test:
 
 part1_start = time.time()
 print("Running input...")
-ans_part1 = part1(input_lines)
+ans_part1 = part1(input_lines, 12)
 part1_end = time.time()
 print("Result:", ans_part1)
 
