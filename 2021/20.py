@@ -198,9 +198,7 @@ def solve(
                     if test:
                         x.append((ar, ac) in image)
                     else:
-                        if ar < min_r or ar > max_r:
-                            x.append(gen % 2 == 1)
-                        elif ac < min_c or ac > max_c:
+                        if ar < min_r or ar > max_r or ac < min_c or ac > max_c:
                             x.append(gen % 2 == 1)
                         else:
                             x.append((ar, ac) in image)
