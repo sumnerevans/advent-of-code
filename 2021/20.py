@@ -186,10 +186,11 @@ except Exception:
 def solve(
     image: Set[Tuple[int, int]], enhance_algo: List[bool], n: int, test: bool = False
 ) -> int:
+    min_r, max_r = seqminmax(x[0] for x in image)
+    min_c, max_c = seqminmax(x[1] for x in image)
+
     for gen in range(n):
         new_image = set()
-        min_r, max_r = seqminmax(x[0] for x in image)
-        min_c, max_c = seqminmax(x[1] for x in image)
         for r in irange(min_r - 1, max_r + 1):
             for c in irange(min_c - 1, max_c + 1):
                 x = []
@@ -207,6 +208,10 @@ def solve(
                     new_image.add((r, c))
 
         image = new_image
+        min_r -= 1
+        min_c -= 1
+        max_r += 1
+        max_c += 1
     return len(image)
 
 
