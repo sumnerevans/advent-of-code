@@ -65,26 +65,26 @@ let
   runScript = writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
 
-    ${watchexec}/bin/watchexec -r "${py3WithPackages}/bin/python ./$day.py"
+    ${watchexec}/bin/watchexec -r "${pypy3}/bin/pypy3 ./$day.py"
   '';
 
   debugRunScript = writeShellScriptBin "drun" ''
     ${getDayScriptPart "drun"}
 
-    ${watchexec}/bin/watchexec -r "${py3WithPackages}/bin/python ./$day.py --debug"
+    ${watchexec}/bin/watchexec -r "${pypy3}/bin/pypy3 ./$day.py --debug"
   '';
 
   # Single run, don't watchexec
   singleRunScript = writeShellScriptBin "srun" ''
     ${getDayScriptPart "srun"}
 
-    ${py3WithPackages}/bin/python ./$day.py
+    ${pypy3}/bin/pypy3 ./$day.py
   '';
 
   debugSingleRunScript = writeShellScriptBin "dsrun" ''
     ${getDayScriptPart "dsrun"}
 
-    ${py3WithPackages}/bin/python ./$day.py --debug
+    ${pypy3}/bin/pypy3 ./$day.py --debug
   '';
 
   # Write a test file
@@ -97,24 +97,24 @@ let
   # Run with --notest flag
   runNoTestScript = writeShellScriptBin "rntest" ''
     ${getDayScriptPart "rntest"}
-    ${py3WithPackages}/bin/python ./$day.py --notest
+    ${pypy3}/bin/pypy3 ./$day.py --notest
   '';
 
   debugRunNoTestScript = writeShellScriptBin "drntest" ''
     ${getDayScriptPart "druntest"}
-    ${py3WithPackages}/bin/python ./$day.py --notest --debug
+    ${pypy3}/bin/pypy3 ./$day.py --notest --debug
   '';
 
   # Run with --stdin and --notest flags
   runStdinScript = writeShellScriptBin "runstdin" ''
     ${getDayScriptPart "runstdin"}
-    ${py3WithPackages}/bin/python ./$day.py --stdin --notest
+    ${pypy3}/bin/pypy3 ./$day.py --stdin --notest
   '';
 
   # Run with --stdin and --notest flags, and pull from clipboard.
   runStdinClipScript = writeShellScriptBin "runstdinclip" ''
     ${getDayScriptPart "runstdin"}
-    ${xsel}/bin/xsel --output | ${py3WithPackages}/bin/python ./$day.py --stdin --notest
+    ${xsel}/bin/xsel --output | ${pypy3}/bin/pypy3 ./$day.py --stdin --notest
   '';
 
   # Compile and run the C version.
