@@ -406,7 +406,7 @@ except Exception:
 print("Part 1:")
 
 
-def part1(lines: List[str]) -> int:
+def part1(lines: List[str], test: bool = False) -> int:
     ans = 0
 
     # seq = [int(x) for x in lines]
@@ -427,7 +427,7 @@ if TEST:
     if not test_lines:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
-        test_ans_part1 = part1(test_lines)
+        test_ans_part1 = part1(test_lines, test=True)
         expected = %HERE%
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
@@ -465,7 +465,7 @@ if expected is not None:
 print("\nPart 2:")
 
 
-def part2(lines: List[str]) -> int:
+def part2(lines: List[str], test: bool = False) -> int:
     ans = 0
 
     "(<>)"
@@ -479,7 +479,7 @@ if TEST:
     if not test_lines:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
-        test_ans_part2 = part2(test_lines)
+        test_ans_part2 = part2(test_lines, test=True)
         expected = None  # (<>)
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
