@@ -43,6 +43,8 @@ for arg in sys.argv:
     if arg == "--stdin":
         STDIN = True
 
+THRESHOLD = 12
+
 
 class bcolors:
     HEADER = "\033[95m"
@@ -538,58 +540,12 @@ for rf1 in ROTATIONS:
             ROT_INVERSES[rf1] = rf2
             break
 
-
-x = set(r((1, 2, 3)) for r in ROTATIONS)
-y = {
-    (1, 2, 3),
-    (1, -2, -3),
-    (-1, 2, -3),
-    (-1, -2, 3),
-    (1, 3, -2),
-    (1, -3, 2),
-    (-1, 3, 2),
-    (-1, -3, -2),
-    (2, 1, -3),
-    (2, -1, 3),
-    (-2, 1, 3),
-    (-2, -1, -3),
-    (2, 3, 1),
-    (2, -3, -1),
-    (-2, 3, -1),
-    (-2, -3, 1),
-    (3, 1, 2),
-    (3, -1, -2),
-    (-3, 1, -2),
-    (-3, -1, 2),
-    (3, 2, -1),
-    (3, -2, 1),
-    (-3, 2, 1),
-    (-3, -2, -1),
-}
-print(sum(1 for a in y if a not in x))
-for a in y:
-    if a not in x:
-        print(a)
-
-print()
-print(sum(1 for a in x if a not in y))
-for a in x:
-    if a not in y:
-        print(a)
-
-assert len(list(ROTATIONS)) == 24
+Point = Tuple[int, ...]
+Diff = Tuple[int, ...]
+Transformer = Callable[[Point], Point]
 
 
-# Part 1
-########################################################################################
-print("Part 1:")
-
-
-def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
-    Point = Tuple[int, ...]
-    Diff = Tuple[int, ...]
-    Transformer = Callable[[Point], Point]
-
+def get_scanner_points_and_diffs(lines: List[str]):
     scanner_points: List[Set[Point]] = []
     for line in lines:
         if line.strip() == "":
@@ -604,7 +560,6 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
         line_tup = tuple(allints(line))
         scanner_points[-1].add(line_tup)
 
-    print('spd create')
     # [{rotation -> {start_point -> {end_point: diff}}}]
     scanner_point_diffs: List[
         DefaultDict[Transformer, DefaultDict[Point, Dict[Point, Diff]]]
@@ -620,13 +575,11 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
                     scanner_point_diffs[-1][rotation_fn][p1][p2] = tuple(
                         b - a for a, b in zip(p1, p2)
                     )
-    print('spd done')
-    # print()
-    # print(scanner_point_diffs[0][0])
-    # print(scanner_point_diffs[0][1])
+    return scanner_points, scanner_point_diffs
 
+
+def calc_scanner_rel_pos(scanner_point_diffs, threshold):
     # dictionary of scanner number -> {scanner number -> (relative offset, fns)}
-    print('scanner_rel_pos create')
     scanner_rel_pos: DefaultDict[
         int, Dict[int, Tuple[Point, Transformer]]
     ] = defaultdict(dict)
@@ -639,38 +592,12 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
             # determine if any rotation of spd2 can get alignment with one of the points
             # in spd1
             for spd1_start_point, spd1_diffs_at_start_point in spd1_no_rot.items():
-                # print("start", spd1_start_point, spd1_diffs_at_start_point)
-                # print(spd2)
                 foundmatch = False
                 for rot_fn, spd2_rot in spd2.items():
-                    # print(rot_num, spd2_rot, ROTATIONS[rot_num])
                     for spd2k, spd2v in spd2_rot.items():
-                        # print(" ", "rot", rot_num)
-                        # print(" ", "spd1_start_point", spd1_start_point)
-                        # print(" ", "spd2k", spd2k)
-                        # print(
-                        #     " ", "spd1_diffs_at_start_point", spd1_diffs_at_start_point
-                        # )
-                        # print(" ", "spd2v                    ", spd2v)
                         intersection = set(spd1_diffs_at_start_point.values())
-                        # print(">>", intersection)
-                        # print(">>", set(spd2v.values()))
                         intersection &= set(spd2v.values())
-                        # print(">", intersection)
-                        # -1 because includes self
                         if len(intersection) >= threshold - 1:
-                            # print("got here")
-                            # print(intersection)
-                            # print(spd1_start_point)
-                            # print(spd2k, spd2v)
-                            # print(
-                            #     tuple(
-                            #         map(
-                            #             lambda x: x[0] - x[1],
-                            #             zip(spd1_start_point, spd2k),
-                            #         )
-                            #     )
-                            # )
                             scanner_rel_pos[i][j] = (
                                 tuple(a - b for a, b in zip(spd1_start_point, spd2k)),
                                 rot_fn,
@@ -683,115 +610,30 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
                 # print(i, j, foundmatch)
                 if foundmatch:
                     break
-    print('scanner_rel_pos done')
+    return scanner_rel_pos
 
-    # print("relpos", scanner_rel_pos)
-    # defaultdict(
-    #     dict,
-    #     {
-    #         0: {0: ((0, 0, 0), rot_px_0), 1: ((68, -1246, -43), rot_nx_270)},
-    #         1: {
-    #             0: ((68, 1246, -43), rot_nx_270),
-    #             1: ((0, 0, 0), rot_px_0),
-    #             3: ((160, -1134, -23), rot_px_0),
-    #             4: ((88, 113, -1104), rot_nz_90),
-    #         },
-    #         2: {2: ((0, 0, 0), rot_px_0), 4: ((1125, -168, 72), rot_py_180)},
-    #         3: {1: ((-160, 1134, 23), rot_px_0), 3: ((0, 0, 0), rot_px_0)},
-    #         4: {
-    #             1: ((-1104, -88, 113), rot_py_90),
-    #             2: ((168, -1125, 72), rot_py_180),
-    #             4: ((0, 0, 0), rot_px_0),
-    #         },
-    #     },
-    # )
 
-    ex = {
-        (-892, 524, 684),
-        (-876, 649, 763),
-        (-838, 591, 734),
-        (-789, 900, -551),
-        (-739, -1745, 668),
-        (-706, -3180, -659),
-        (-697, -3072, -689),
-        (-689, 845, -530),
-        (-687, -1600, 576),
-        (-661, -816, -575),
-        (-654, -3158, -753),
-        (-635, -1737, 486),
-        (-631, -672, 1502),
-        (-624, -1620, 1868),
-        (-620, -3212, 371),
-        (-618, -824, -621),
-        (-612, -1695, 1788),
-        (-601, -1648, -643),
-        (-584, 868, -557),
-        (-537, -823, -458),
-        (-532, -1715, 1894),
-        (-518, -1681, -600),
-        (-499, -1607, -770),
-        (-485, -357, 347),
-        (-470, -3283, 303),
-        (-456, -621, 1527),
-        (-447, -329, 318),
-        (-430, -3130, 366),
-        (-413, -627, 1469),
-        (-345, -311, 381),
-        (-36, -1284, 1171),
-        (-27, -1108, -65),
-        (7, -33, -71),
-        (12, -2351, -103),
-        (26, -1119, 1091),
-        (346, -2985, 342),
-        (366, -3059, 397),
-        (377, -2827, 367),
-        (390, -675, -793),
-        (396, -1931, -563),
-        (404, -588, -901),
-        (408, -1815, 803),
-        (423, -701, 434),
-        (432, -2009, 850),
-        (443, 580, 662),
-        (455, 729, 728),
-        (456, -540, 1869),
-        (459, -707, 401),
-        (465, -695, 1988),
-        (474, 580, 667),
-        (496, -1584, 1900),
-        (497, -1838, -617),
-        (527, -524, 1933),
-        (528, -643, 409),
-        (534, -1912, 768),
-        (544, -627, -890),
-        (553, 345, -567),
-        (564, 392, -477),
-        (568, -2007, -577),
-        (605, -1665, 1952),
-        (612, -1593, 1893),
-        (630, 319, -379),
-        (686, -3108, -505),
-        (776, -3184, -501),
-        (846, -3110, -434),
-        (1135, -1161, 1235),
-        (1243, -1093, 1063),
-        (1660, -552, 429),
-        (1693, -557, 386),
-        (1735, -437, 1738),
-        (1749, -1800, 1813),
-        (1772, -405, 1572),
-        (1776, -675, 371),
-        (1779, -442, 1789),
-        (1780, -1548, 337),
-        (1786, -1538, 337),
-        (1847, -1591, 415),
-        (1889, -1729, 1762),
-        (1994, -1805, 1792),
-    }
+TEST_POINTS, TEST_DIFFS = get_scanner_points_and_diffs(test_lines)
+TEST_SCANER_REL_POS = calc_scanner_rel_pos(TEST_DIFFS, THRESHOLD)
 
-    print('all_beacons_rel_to_0 create')
+REAL_POINTS, REAL_DIFFS = None, None
+REAL_SCANER_REL_POS = None
+
+# REAL_POINTS, REAL_DIFFS = get_scanner_points_and_diffs(input_lines)
+# REAL_SCANER_REL_POS = calc_scanner_rel_pos(REAL_DIFFS, THRESHOLD)
+
+
+# Part 1
+########################################################################################
+print("Part 1:")
+
+
+def part1(lines: List[str], test: bool = False) -> int:
+    scanner_points = TEST_POINTS if test else REAL_POINTS
+    scanner_rel_pos = TEST_SCANER_REL_POS if test else REAL_SCANER_REL_POS
+
     all_beacons_rel_to_0 = set()
     for i in range(len(scanner_points)):
-        # print("ohea", i, scanner_rel_pos[i])
 
         def dfs(x, visited: Set[int]):
             if x == 0:
@@ -801,80 +643,25 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
                 offset, rotation_fn_num = scanner_rel_pos[x][a]
                 if a in visited:
                     continue
-                # print("x", a)
                 offset_rotation_stack = dfs(a, visited.union({x}))
                 if offset_rotation_stack is not None:
                     return offset_rotation_stack + [(offset, rotation_fn_num)]
-                # print(offset, rotation_fn_nums)
             return None
 
         offset_rotation_stack = dfs(i, set())
-        print(f"============== {i} =============")
-        print("rot stack", offset_rotation_stack)
-        assert offset_rotation_stack is not None
 
-        # print("  sn", i)
-        # print("  sps", sps)
-        # print("  ofi", offset_for_i)
         points = scanner_points[i]
         while offset_rotation_stack:
             (offset, rot_fn) = offset_rotation_stack.pop()
-            # print('>>>')
-            # print(points)
-            # print('ml', maplist(ROT_INVERSES[rot_fn], points))
-            # print('rfo', ROT_INVERSES[rot_fn](offset))
-            # print(
-            #     maplist(
-            #         lambda p: tuple(map(lambda a: a[1] - a[0], zip(ROT_INVERSES[rot_fn](offset), p))),
-            #         map(ROT_INVERSES[rot_fn], points),
-            #     )
-            # )
             points = maplist(
-                lambda p: tuple(map(lambda a: a[1] - a[0], zip(ROT_INVERSES[rot_fn](offset), p))),
+                lambda p: tuple(
+                    map(lambda a: a[1] - a[0], zip(ROT_INVERSES[rot_fn](offset), p))
+                ),
                 map(ROT_INVERSES[rot_fn], points),
             )
 
         # print("  points", points)
         all_beacons_rel_to_0 = all_beacons_rel_to_0.union(points)
-
-        # for point in sps_rot:
-        #     # print("  p", point, offset_for_i)
-        #     # print(" ", tuple(map(sum, zip(offset_for_i, point))))
-        #     all_beacons_rel_to_0.add(tuple(map(sum, zip(offset_for_i, point))))
-        # print(" ", "all_beacons_rel_to_0", all_beacons_rel_to_0)
-
-        if test:
-            wrong = 0
-            for b in all_beacons_rel_to_0:
-                if b not in ex:
-                    print(b, "shouldn't be here")
-                    wrong += 1
-            print(wrong, "wrong")
-            if wrong > 0:
-                assert False
-
-    print('all_beacons_rel_to_0 done')
-
-    # print("ohea")
-    # print(all_beacons_rel_to_0)
-    # print(len(all_beacons_rel_to_0))
-    # assert all_beacons_rel_to_0 == {(0, 2, 0), (4, 1, 0), (3, 3, 0)}
-    # print({(-1, -1, 1)(-2, -2, 2)(-3, -3, 3)(-2, -3, 1)(5, 6, -4)(8, 0, 7)})
-    # assert all_beacons_rel_to_0 == {
-    #     (-1, -1, 1)(-2, -2, 2)(-3, -3, 3)(-2, -3, 1)(5, 6, -4)(8, 0, 7)
-    # }
-
-    if test:
-        wrong = 0
-        for b in all_beacons_rel_to_0:
-            if b not in ex:
-                print(b, "shouldn't be here")
-                wrong += 1
-        for b in ex:
-            if b not in all_beacons_rel_to_0:
-                print(b, "should be here")
-                wrong += 1
-        print(wrong, "wrong")
 
     return len(all_beacons_rel_to_0)
 
@@ -885,8 +672,8 @@ if TEST:
     if not test_lines:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
-        test_ans_part1 = part1(test_lines, 12, test=True)
-        expected = 79
+        test_ans_part1 = part1(test_lines, test=True)
+        expected = None  # 79
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part1 == expected:
@@ -899,37 +686,81 @@ if TEST:
         print("Result:", test_ans_part1)
         print()
 
-part1_start = time.time()
-print("Running input...")
-ans_part1 = part1(input_lines, 12)
-part1_end = time.time()
-print("Result:", ans_part1)
+# part1_start = time.time()
+# print("Running input...")
+# ans_part1 = part1(input_lines)
+# part1_end = time.time()
+# print("Result:", ans_part1)
 
-tries = [
-    761
-    # Store the attempts that failed here.
-]
-if tries:
-    print("Tries Part 1:", tries)
-    assert ans_part1 not in tries, "Same as an incorrect answer!"
+# tries = [
+#     761
+#     # Store the attempts that failed here.
+# ]
+# if tries:
+#     print("Tries Part 1:", tries)
+#     assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
-# Regression Test
-expected = None  # (<>)
-if expected is not None:
-    assert ans_part1 == expected
+# # Regression Test
+# expected = 350
+# if expected is not None:
+#     assert ans_part1 == expected
 
 # Part 2
 ########################################################################################
 print("\nPart 2:")
 
 
-def part2(lines: List[str]) -> int:
-    ans = 0
+def part2(lines: List[str], test: bool = False) -> int:
+    scanner_points = TEST_POINTS if test else REAL_POINTS
+    scanner_rel_pos = TEST_SCANER_REL_POS if test else REAL_SCANER_REL_POS
 
-    "(<>)"
+    scanner_pos = {}
+    for i in range(len(scanner_points)):
 
-    return ans
+        def dfs(x, visited: Set[int]):
+            if x == 0:
+                return [((0, 0, 0), rot_px_0)]
+
+            for a in scanner_rel_pos[x]:
+                offset, rot_fn = scanner_rel_pos[x][a]
+                if a in visited:
+                    continue
+                offset_rotation_stack = dfs(a, visited.union({x}))
+                if offset_rotation_stack is not None:
+                    return offset_rotation_stack + [(offset, rot_fn)]
+            return None
+
+        offset_rotation_stack = dfs(i, set())
+        print("===", i)
+        print(offset_rotation_stack)
+
+        O = (0, 0, 0)
+        while offset_rotation_stack:
+            (offset, rot_fn) = offset_rotation_stack[0]
+            # map(lambda a: a[1] - a[0], zip(ROT_INVERSES[rot_fn](offset), p))
+            # print(list(zip(ROT_INVERSES[rot_fn](O), offset)))
+            # O = ROT_INVERSES[rot_fn](tuple(a + b for a, b in zip(O, rot_fn(offset))))
+            print("qohea", O, ROT_INVERSES[rot_fn](offset))
+            O = rot_fn(tuple(a + b for a, b in zip(O, ROT_INVERSES[rot_fn](offset))))
+            offset_rotation_stack = offset_rotation_stack[1:]
+        print(O)
+        scanner_pos[i] = O
+
+    print(scanner_pos[2])
+    assert scanner_pos[2] == (1105, -1205, 1229)
+    print(scanner_pos[3])
+    assert scanner_pos[3] == (-92, -2380, -20)
+
+    max_man = 0
+    for i, sp1 in enumerate(scanner_pos.values()):
+        for j, sp2 in enumerate(scanner_pos.values()):
+            M = abs(sp1[0] - sp2[0]) + abs(sp1[1] - sp2[1]) + abs(sp1[2] - sp2[2])
+            if M > max_man:
+                print(i, j, sp1, sp2)
+                max_man = M
+
+    return max_man
 
 
 # Run test on part 2
@@ -938,8 +769,8 @@ if TEST:
     if not test_lines:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
-        test_ans_part2 = part2(test_lines)
-        expected = None  # (<>)
+        test_ans_part2 = part2(test_lines, test=True)
+        expected = 3621
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part2 == expected:
