@@ -30,8 +30,17 @@ let
     [[ -f inputs/$outfile.txt ]] && less inputs/$outfile.txt && exit 0
 
     mkdir -p inputs
-    sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
-    ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
+    if [[ -f ${PROJECT_ROOT}/.session_token ]]; then
+      sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
+      ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
+    else
+      echo -e "\033[0;31m.---------------------------.\033[0m"
+      echo -e "\033[0;31m|                           |\033[0m"
+      echo -e "\033[0;31m| Session Token is not set! |\033[0m"
+      echo -e "\033[0;31m|                           |\033[0m"
+      echo -e "\033[0;31m'---------------------------'\033[0m"
+      exit 1
+    fi
 
     less inputs/$outfile.txt
   '';
@@ -42,12 +51,21 @@ let
     # Skip if not a year dir
     [[ ! $(echo $year | ${rg} "\d{4}") ]] && exit 0
 
-    sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
-    ${curl} -s https://adventofcode.com/$year/leaderboard/self |
-      ${html-xml-utils}/bin/hxselect -c pre |
-      ${gnused}/bin/sed "s/<[^>]*>//g" |
-      ${rg} "^\s*(Day\s+Time|-+Part|\d+\s+(&gt;24h|\d{2}:\d{2}:\d{2}))" |
-      ${gnused}/bin/sed "s/&gt;/>/g"
+    if [[ -f ${PROJECT_ROOT}/.session_token ]]; then
+      sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
+      ${curl} -s https://adventofcode.com/$year/leaderboard/self |
+        ${html-xml-utils}/bin/hxselect -c pre |
+        ${gnused}/bin/sed "s/<[^>]*>//g" |
+        ${rg} "^\s*(Day\s+Time|-+Part|\d+\s+(&gt;24h|\d{2}:\d{2}:\d{2}))" |
+        ${gnused}/bin/sed "s/&gt;/>/g"
+    else
+      echo -e "\033[0;31m.---------------------------.\033[0m"
+      echo -e "\033[0;31m|                           |\033[0m"
+      echo -e "\033[0;31m| Session Token is not set! |\033[0m"
+      echo -e "\033[0;31m|                           |\033[0m"
+      echo -e "\033[0;31m'---------------------------'\033[0m"
+      exit 1
+    fi
   '';
 
   getDayScriptPart = scriptName: ''
