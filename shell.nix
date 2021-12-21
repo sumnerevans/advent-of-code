@@ -90,8 +90,11 @@ let
   # Write a test file
   mkTestScript = writeShellScriptBin "mktest" ''
     ${getDayScriptPart "mktest"}
-    # TODO detect wayland vs xorg
-    ${wl-clipboard}/bin/wl-paste -p > inputs/$day.test.txt
+    if [[ -z "$WAYLAND_DISPLAY" ]]; then
+      ${xsel}/bin/xsel --output > inputs/$day.test.txt
+    else
+      ${wl-clipboard}/bin/wl-paste -p > inputs/$day.test.txt
+    fi
   '';
 
   # Run with --notest flag
