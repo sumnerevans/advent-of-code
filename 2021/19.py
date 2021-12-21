@@ -30,18 +30,18 @@ from typing import (
     Union,
 )
 
-test = True
-debug = False
-stdin = False
+TEST = True
+DEBUG = False
+STDIN = False
 INFILENAME = "inputs/19.txt"
 TESTFILENAME = "inputs/19.test.txt"
 for arg in sys.argv:
     if arg == "--notest":
-        test = False
+        TEST = False
     if arg == "--debug":
-        debug = True
+        DEBUG = True
     if arg == "--stdin":
-        stdin = True
+        STDIN = True
 
 
 class bcolors:
@@ -384,7 +384,7 @@ def window(
 print(f"\n{'=' * 30}\n")
 
 # Read the input
-if stdin:
+if STDIN:
     input_lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
 else:
     with open(INFILENAME) as f:
@@ -585,7 +585,7 @@ assert len(list(ROTATIONS)) == 24
 print("Part 1:")
 
 
-def part1(lines: List[str], threshold: int = 12) -> int:
+def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
     Point = Tuple[int, ...]
     Diff = Tuple[int, ...]
     Transformer = Callable[[Point], Point]
@@ -767,16 +767,105 @@ def part1(lines: List[str], threshold: int = 12) -> int:
     #     (-1, -1, 1)(-2, -2, 2)(-3, -3, 3)(-2, -3, 1)(5, 6, -4)(8, 0, 7)
     # }
 
+    ex = {
+        (-892, 524, 684),
+        (-876, 649, 763),
+        (-838, 591, 734),
+        (-789, 900, -551),
+        (-739, -1745, 668),
+        (-706, -3180, -659),
+        (-697, -3072, -689),
+        (-689, 845, -530),
+        (-687, -1600, 576),
+        (-661, -816, -575),
+        (-654, -3158, -753),
+        (-635, -1737, 486),
+        (-631, -672, 1502),
+        (-624, -1620, 1868),
+        (-620, -3212, 371),
+        (-618, -824, -621),
+        (-612, -1695, 1788),
+        (-601, -1648, -643),
+        (-584, 868, -557),
+        (-537, -823, -458),
+        (-532, -1715, 1894),
+        (-518, -1681, -600),
+        (-499, -1607, -770),
+        (-485, -357, 347),
+        (-470, -3283, 303),
+        (-456, -621, 1527),
+        (-447, -329, 318),
+        (-430, -3130, 366),
+        (-413, -627, 1469),
+        (-345, -311, 381),
+        (-36, -1284, 1171),
+        (-27, -1108, -65),
+        (7, -33, -71),
+        (12, -2351, -103),
+        (26, -1119, 1091),
+        (346, -2985, 342),
+        (366, -3059, 397),
+        (377, -2827, 367),
+        (390, -675, -793),
+        (396, -1931, -563),
+        (404, -588, -901),
+        (408, -1815, 803),
+        (423, -701, 434),
+        (432, -2009, 850),
+        (443, 580, 662),
+        (455, 729, 728),
+        (456, -540, 1869),
+        (459, -707, 401),
+        (465, -695, 1988),
+        (474, 580, 667),
+        (496, -1584, 1900),
+        (497, -1838, -617),
+        (527, -524, 1933),
+        (528, -643, 409),
+        (534, -1912, 768),
+        (544, -627, -890),
+        (553, 345, -567),
+        (564, 392, -477),
+        (568, -2007, -577),
+        (605, -1665, 1952),
+        (612, -1593, 1893),
+        (630, 319, -379),
+        (686, -3108, -505),
+        (776, -3184, -501),
+        (846, -3110, -434),
+        (1135, -1161, 1235),
+        (1243, -1093, 1063),
+        (1660, -552, 429),
+        (1693, -557, 386),
+        (1735, -437, 1738),
+        (1749, -1800, 1813),
+        (1772, -405, 1572),
+        (1776, -675, 371),
+        (1779, -442, 1789),
+        (1780, -1548, 337),
+        (1786, -1538, 337),
+        (1847, -1591, 415),
+        (1889, -1729, 1762),
+        (1994, -1805, 1792),
+    }
+    if test:
+        for b in all_beacons_rel_to_0:
+            if b not in ex:
+                print(b, "shouldn't be here")
+        for b in ex:
+            if b not in all_beacons_rel_to_0:
+                print(b, "should be here")
+
     return len(all_beacons_rel_to_0)
 
 
 # Run test on part 1
-if test:
+if TEST:
     print("Running test... ", end="")
     if not test_lines:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
-        test_ans_part1 = part1(test_lines, 12)
+        test_ans_part1 = part1(test_lines, 12, test=True)
         expected = 79
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
@@ -824,7 +913,7 @@ def part2(lines: List[str]) -> int:
 
 
 # Run test on part 2
-if test:
+if TEST:
     print("Running test... ", end="")
     if not test_lines:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
@@ -861,7 +950,7 @@ expected = None  # (<>)
 if expected is not None:
     assert ans_part2 == expected
 
-if debug:
+if DEBUG:
     part1_time = part1_end - part1_start
     part2_time = part2_end - part2_start
     print()
