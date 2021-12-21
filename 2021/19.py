@@ -604,6 +604,7 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
         line_tup = tuple(allints(line))
         scanner_points[-1].add(line_tup)
 
+    print('spd create')
     # [{rotation -> {start_point -> {end_point: diff}}}]
     scanner_point_diffs: List[
         DefaultDict[Transformer, DefaultDict[Point, Dict[Point, Diff]]]
@@ -619,11 +620,13 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
                     scanner_point_diffs[-1][rotation_fn][p1][p2] = tuple(
                         b - a for a, b in zip(p1, p2)
                     )
+    print('spd done')
     # print()
     # print(scanner_point_diffs[0][0])
     # print(scanner_point_diffs[0][1])
 
     # dictionary of scanner number -> {scanner number -> (relative offset, fns)}
+    print('scanner_rel_pos create')
     scanner_rel_pos: DefaultDict[
         int, Dict[int, Tuple[Point, Transformer]]
     ] = defaultdict(dict)
@@ -680,92 +683,28 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
                 # print(i, j, foundmatch)
                 if foundmatch:
                     break
+    print('scanner_rel_pos done')
 
-    print("relpos", scanner_rel_pos)
-    defaultdict(
-        dict,
-        {
-            0: {0: ((0, 0, 0), rot_px_0), 1: ((68, -1246, -43), rot_nx_270)},
-            1: {
-                0: ((68, 1246, -43), rot_nx_270),
-                1: ((0, 0, 0), rot_px_0),
-                3: ((160, -1134, -23), rot_px_0),
-                4: ((88, 113, -1104), rot_nz_90),
-            },
-            2: {2: ((0, 0, 0), rot_px_0), 4: ((1125, -168, 72), rot_py_180)},
-            3: {1: ((-160, 1134, 23), rot_px_0), 3: ((0, 0, 0), rot_px_0)},
-            4: {
-                1: ((-1104, -88, 113), rot_py_90),
-                2: ((168, -1125, 72), rot_py_180),
-                4: ((0, 0, 0), rot_px_0),
-            },
-        },
-    )
-
-    all_beacons_rel_to_0 = set()
-    for i in range(len(scanner_points)):
-        print("ohea", i, scanner_rel_pos[i])
-
-        def dfs(x, visited: Set[int]):
-            if x == 0:
-                return [((0, 0, 0), rot_px_0)]
-
-            for a in scanner_rel_pos[x]:
-                offset, rotation_fn_num = scanner_rel_pos[x][a]
-                if a in visited:
-                    continue
-                # print("x", a)
-                offset_rotation_stack = dfs(a, visited.union({x}))
-                if offset_rotation_stack is not None:
-                    return offset_rotation_stack + [(offset, rotation_fn_num)]
-                # print(offset, rotation_fn_nums)
-            return None
-
-        offset_rotation_stack = dfs(i, set())
-        print(f"============== {i} =============")
-        print("rot stack", offset_rotation_stack)
-        assert offset_rotation_stack is not None
-
-        # print("  sn", i)
-        # print("  sps", sps)
-        # print("  ofi", offset_for_i)
-        points = scanner_points[i]
-        while offset_rotation_stack:
-            (offset, rot_fn) = offset_rotation_stack.pop()
-            print(points)
-            print(maplist(rot_fn, points))
-            if rot_fn is rot_px_90:
-                print(maplist(rot_px_270, points))
-                print(rot_px_270(offset))
-            print(rot_fn(offset))
-            print(
-                maplist(
-                    lambda p: tuple(map(lambda a: a[1] - a[0], zip(offset, p))),
-                    map(ROT_INVERSES[rot_fn], points),
-                )
-            )
-            points = maplist(
-                lambda p: tuple(map(lambda a: a[1] - a[0], zip(offset, p))),
-                map(ROT_INVERSES[rot_fn], points),
-            )
-
-        print("  points", points)
-        all_beacons_rel_to_0 = all_beacons_rel_to_0.union(points)
-
-        # for point in sps_rot:
-        #     # print("  p", point, offset_for_i)
-        #     # print(" ", tuple(map(sum, zip(offset_for_i, point))))
-        #     all_beacons_rel_to_0.add(tuple(map(sum, zip(offset_for_i, point))))
-        print(" ", "all_beacons_rel_to_0", all_beacons_rel_to_0)
-
-    # print("ohea")
-    # print(all_beacons_rel_to_0)
-    # print(len(all_beacons_rel_to_0))
-    # assert all_beacons_rel_to_0 == {(0, 2, 0), (4, 1, 0), (3, 3, 0)}
-    # print({(-1, -1, 1)(-2, -2, 2)(-3, -3, 3)(-2, -3, 1)(5, 6, -4)(8, 0, 7)})
-    # assert all_beacons_rel_to_0 == {
-    #     (-1, -1, 1)(-2, -2, 2)(-3, -3, 3)(-2, -3, 1)(5, 6, -4)(8, 0, 7)
-    # }
+    # print("relpos", scanner_rel_pos)
+    # defaultdict(
+    #     dict,
+    #     {
+    #         0: {0: ((0, 0, 0), rot_px_0), 1: ((68, -1246, -43), rot_nx_270)},
+    #         1: {
+    #             0: ((68, 1246, -43), rot_nx_270),
+    #             1: ((0, 0, 0), rot_px_0),
+    #             3: ((160, -1134, -23), rot_px_0),
+    #             4: ((88, 113, -1104), rot_nz_90),
+    #         },
+    #         2: {2: ((0, 0, 0), rot_px_0), 4: ((1125, -168, 72), rot_py_180)},
+    #         3: {1: ((-160, 1134, 23), rot_px_0), 3: ((0, 0, 0), rot_px_0)},
+    #         4: {
+    #             1: ((-1104, -88, 113), rot_py_90),
+    #             2: ((168, -1125, 72), rot_py_180),
+    #             4: ((0, 0, 0), rot_px_0),
+    #         },
+    #     },
+    # )
 
     ex = {
         (-892, 524, 684),
@@ -848,13 +787,94 @@ def part1(lines: List[str], threshold: int = 12, test: bool = False) -> int:
         (1889, -1729, 1762),
         (1994, -1805, 1792),
     }
+
+    print('all_beacons_rel_to_0 create')
+    all_beacons_rel_to_0 = set()
+    for i in range(len(scanner_points)):
+        # print("ohea", i, scanner_rel_pos[i])
+
+        def dfs(x, visited: Set[int]):
+            if x == 0:
+                return [((0, 0, 0), rot_px_0)]
+
+            for a in scanner_rel_pos[x]:
+                offset, rotation_fn_num = scanner_rel_pos[x][a]
+                if a in visited:
+                    continue
+                # print("x", a)
+                offset_rotation_stack = dfs(a, visited.union({x}))
+                if offset_rotation_stack is not None:
+                    return offset_rotation_stack + [(offset, rotation_fn_num)]
+                # print(offset, rotation_fn_nums)
+            return None
+
+        offset_rotation_stack = dfs(i, set())
+        print(f"============== {i} =============")
+        print("rot stack", offset_rotation_stack)
+        assert offset_rotation_stack is not None
+
+        # print("  sn", i)
+        # print("  sps", sps)
+        # print("  ofi", offset_for_i)
+        points = scanner_points[i]
+        while offset_rotation_stack:
+            (offset, rot_fn) = offset_rotation_stack.pop()
+            # print('>>>')
+            # print(points)
+            # print('ml', maplist(ROT_INVERSES[rot_fn], points))
+            # print('rfo', ROT_INVERSES[rot_fn](offset))
+            # print(
+            #     maplist(
+            #         lambda p: tuple(map(lambda a: a[1] - a[0], zip(ROT_INVERSES[rot_fn](offset), p))),
+            #         map(ROT_INVERSES[rot_fn], points),
+            #     )
+            # )
+            points = maplist(
+                lambda p: tuple(map(lambda a: a[1] - a[0], zip(ROT_INVERSES[rot_fn](offset), p))),
+                map(ROT_INVERSES[rot_fn], points),
+            )
+
+        # print("  points", points)
+        all_beacons_rel_to_0 = all_beacons_rel_to_0.union(points)
+
+        # for point in sps_rot:
+        #     # print("  p", point, offset_for_i)
+        #     # print(" ", tuple(map(sum, zip(offset_for_i, point))))
+        #     all_beacons_rel_to_0.add(tuple(map(sum, zip(offset_for_i, point))))
+        # print(" ", "all_beacons_rel_to_0", all_beacons_rel_to_0)
+
+        if test:
+            wrong = 0
+            for b in all_beacons_rel_to_0:
+                if b not in ex:
+                    print(b, "shouldn't be here")
+                    wrong += 1
+            print(wrong, "wrong")
+            if wrong > 0:
+                assert False
+
+    print('all_beacons_rel_to_0 done')
+
+    # print("ohea")
+    # print(all_beacons_rel_to_0)
+    # print(len(all_beacons_rel_to_0))
+    # assert all_beacons_rel_to_0 == {(0, 2, 0), (4, 1, 0), (3, 3, 0)}
+    # print({(-1, -1, 1)(-2, -2, 2)(-3, -3, 3)(-2, -3, 1)(5, 6, -4)(8, 0, 7)})
+    # assert all_beacons_rel_to_0 == {
+    #     (-1, -1, 1)(-2, -2, 2)(-3, -3, 3)(-2, -3, 1)(5, 6, -4)(8, 0, 7)
+    # }
+
     if test:
+        wrong = 0
         for b in all_beacons_rel_to_0:
             if b not in ex:
                 print(b, "shouldn't be here")
+                wrong += 1
         for b in ex:
             if b not in all_beacons_rel_to_0:
                 print(b, "should be here")
+                wrong += 1
+        print(wrong, "wrong")
 
     return len(all_beacons_rel_to_0)
 
