@@ -53,11 +53,12 @@ input using `curl`.
 
 ## Results
 
-### 2021 (30*, 115 points on global leaderboard)
+### 2021 (43*, 115 points on global leaderboard)
 
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 22   00:09:58    503      0   03:45:25   2276      0
  21   00:07:55    352      0   00:22:56    144      0
  20   00:45:49   1489      0   01:07:34   2108      0
  19       >24h  11368      0          -      -      -
