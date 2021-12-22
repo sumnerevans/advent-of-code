@@ -11,7 +11,7 @@ import string
 import sys
 import time
 from copy import deepcopy
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from enum import Enum, IntEnum
 from fractions import Fraction
 from typing import (
@@ -442,7 +442,7 @@ if TEST:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part1 = part1(test_lines, test=True)
-        expected = 590784
+        expected = None  # 590784
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part1 == expected:
@@ -470,7 +470,7 @@ if tries:
 
 
 # Regression Test
-expected = 542711
+expected = None  # 542711
 if expected is not None:
     assert ans_part1 == expected
 
@@ -480,141 +480,87 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str], test: bool = False) -> int:
-    import numpy
+    print()
+    from dataclasses import dataclass
 
     ans = 0
 
-    lit: Set[Tuple[int, int, int, int, int, int]] = set()
-    unlit: Set[Tuple[int, int, int, int, int, int]] = set()
+    @dataclass(frozen=True)
+    class Cuboid:
+        x1: int
+        x2: int
+        y1: int
+        y2: int
+        z1: int
+        z2: int
 
-    def bound(x, hi, low):
-        if x > hi:
-            return hi
-        if x < low:
-            return low
-        return x
+        def __post_init__(self):
+            assert self.x1 <= self.x2
+            assert self.y1 <= self.y2
+            assert self.z1 <= self.z2
 
-    def area(b):
-        (x1, x2, y1, y2, z1, z2) = b
-        return abs(x2 - x1) * abs(y2 - y1) * abs(z2 - z1)
+        def area(self):
+            return (
+                abs(self.x2 - self.x1) * abs(self.y2 - self.y1) * abs(self.z2 - self.z1)
+            )
 
-    def subtract():
-        pass
+        def complement_cuboids(self) -> Iterator["Cuboid"]:
+            # infinite cuboids on either side in X dir
+            yield Cuboid(-INF, self.x1, -INF, INF, -INF, INF)
+            yield Cuboid(self.x2, INF, -INF, INF, -INF, INF)
+            yield Cuboid(self.x1, self.x2, -INF, INF, -INF, self.z1)
+            yield Cuboid(self.x1, self.x2, -INF, INF, self.z2, INF)
+            yield Cuboid(self.x1, self.x2, -INF, self.y1, self.z1, self.z2)
+            yield Cuboid(self.x1, self.x2, self.y2, INF, self.z1, self.z2)
 
-    def intersect(b1, b2):
-        (x11, x21, y11, y21, z11, z21) = b1
-        (x12, x22, y12, y22, z12, z22) = b2
+        def intersect(self, other: "Cuboid") -> Optional["Cuboid"]:
+            nx1 = max(self.x1, other.x1)
+            nx2 = min(self.x2, other.x2)
+            ny1 = max(self.y1, other.y1)
+            ny2 = min(self.y2, other.y2)
+            nz1 = max(self.z1, other.z1)
+            nz2 = min(self.z2, other.z2)
+            if nx1 >= nx2 or ny1 >= ny2 or nz1 >= nz2:
+                return None
+            return Cuboid(nx1, nx2, ny1, ny2, nz1, nz2)
 
-        nx1 = max(x11, x12)
-        nx2 = min(x21, x22)
-        ny1 = max(y11, y12)
-        ny2 = min(y21, y22)
-        nz1 = max(z11, z12)
-        nz2 = min(z21, z22)
+    INF = 2 ** 128
 
-        return abs(nx2 - nx1) * abs(ny2 - ny1) * abs(nz2 - nz1), (
-            nx1,
-            nx2,
-            ny1,
-            ny2,
-            nz1,
-            nz2,
-        )
-
-    print(intersect((0, 2, 0, 2, 0, 2), (0, 1, 0, 1, 0, 1)))
-    assert intersect((0, 2, 0, 2, 0, 2), (0, 1, 0, 1, 0, 1)) == (1, (0, 1, 0, 1, 0, 1))
-    assert intersect((0, 2, 0, 2, 0, 2), (-1, 0, -1, 0, -1, 0)) == (
-        0,
-        (0, 0, 0, 0, 0, 0),
+    assert (
+        sum(map(Cuboid.area, Cuboid(0, 4, 0, 4, 0, 1).complement_cuboids()))
+        == (2 * INF) ** 3 - 16
     )
 
-    BOXES = []
+    lit_cuboids: Set[Cuboid] = set()
     for i, line in enumerate(lines):
-        print(i)
         onoff, *vals = rematch(
             r"(on|off) x=([\d-]+)..([\d-]+),y=([\d-]+)..([\d-]+),z=([\d-]+)..([\d-]+)",
             line,
         ).groups()
 
         (x1, x2, y1, y2, z1, z2) = map(int, vals)
-        L = (x1, x2, y1, y2, z1, z2)
+        C = Cuboid(x1, x2 + 1, y1, y2 + 1, z1, z2 + 1)
 
-        BOXES.append((onoff == "on", L))
-
-    for i in range(len(BOXES)):
-        print(i)
-        print(BOXES[i], BOXES[:i])
-
-        onoff, L = BOXES[i]
-
-        if onoff:
-            ans += area(L)
-            for pbl, prev_box in BOXES[:i]:
-                print("pb", pbl, prev_box)
-                if pbl:
-                    ans -= intersect(L, prev_box)[0]
-                else:
-                    ans += intersect(L, prev_box)[0]
-            # for r in range(2, i + 1):
-            #     for comb in it.combinations(BOXES[:i], r):
-            #         for is_lit, box in comb:
-            #             print(is_lit, box)
-        else:  # unlit
-            for pbl, prev_box in BOXES[:i]:
-                print("pb", pbl, prev_box)
-                if pbl:
-                    ans -= intersect(L, prev_box)[0]
-                else:
-                    ans += intersect(L, prev_box)[0]
-            for bb in BOXES[:i]:
-                ans -= area(L)
-
-        print("ans", ans)
-        if i == 2:
-            ohea
-        continue
-
+        new_lit_cuboids = set()
         if onoff == "on":
-            # need to calculate
-            # L - (L n X) - (L n Y) - (L n Z) + (L n X n Y) + (L n Y n Z) + (L n X n Z)
-            ans += abs(x2 - x1) * abs(y2 - y1) * abs(z2 - z1)
-            for ls in lit:
-                # subtract the intersection: of L and ls
-                ans -= intersect(L, ls)[0]
+            new_lit_cuboids.add(C)
 
-            for r in range(2, len(lit) + 1):
-                for comb in it.combinations(lit, r):
-                    # print("comb", comb)
-                    I = L
-                    for x in comb:
-                        A, new_intersection = intersect(I, x)
-                        if A == 0:
-                            break
-                        I = new_intersection
-                    x1l, x2l, y1l, y2l, z1l, z2l = I
-                    ans += abs(x2l - x1l) * abs(y2l - y1l) * abs(z2l - z1l)
+        for comp_c in C.complement_cuboids():
+            for cc in lit_cuboids:
+                nc = comp_c.intersect(cc)
+                if nc and nc.area() > 0:
+                    new_lit_cuboids.add(nc)
 
-            lit.add((x1, y1, z1, x2, y2, z2))
-        else:
-            ans -= abs(x2 - x1) * abs(y2 - y1) * abs(z2 - z1)
-            for ul in unlit:
-                ans += intersect(L, ul)[0]
+        lit_cuboids = new_lit_cuboids
 
-            for r in range(2, len(unlit) + 1):
-                for comb in it.combinations(unlit, r):
-                    # print("comb", comb)
-                    I = L
-                    for x in comb:
-                        A, new_intersection = intersect(I, x)
-                        if A == 0:
-                            break
-                        I = new_intersection
-                    x1l, x2l, y1l, y2l, z1l, z2l = I
-                    ans -= abs(x2l - x1l) * abs(y2l - y1l) * abs(z2l - z1l)
+    culled = set()
+    CULLER = Cuboid(-50, 50, -50, 50, -50, 50)
+    for c in lit_cuboids:
+        culled_cuboid = CULLER.intersect(c)
+        if culled_cuboid:
+            culled.add(culled_cuboid)
 
-            unlit.add((x1, y1, z1, x2, y2, z2))
-
-    return ans
+    return sum(map(Cuboid.area, lit_cuboids))
 
 
 # Run test on part 2
@@ -633,6 +579,7 @@ if TEST:
         else:
             print(f"{bcolors.FAIL}FAIL{bcolors.ENDC}")
             print(f"{bcolors.FAIL}Result: {test_ans_part2} != {expected}{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}{test_ans_part2}\n{expected}{bcolors.ENDC}")
             assert False
 
         print("Result:", test_ans_part2)
