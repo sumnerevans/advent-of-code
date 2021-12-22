@@ -616,11 +616,8 @@ def calc_scanner_rel_pos(scanner_point_diffs, threshold):
 TEST_POINTS, TEST_DIFFS = get_scanner_points_and_diffs(test_lines)
 TEST_SCANER_REL_POS = calc_scanner_rel_pos(TEST_DIFFS, THRESHOLD)
 
-REAL_POINTS, REAL_DIFFS = None, None
-REAL_SCANER_REL_POS = None
-
-# REAL_POINTS, REAL_DIFFS = get_scanner_points_and_diffs(input_lines)
-# REAL_SCANER_REL_POS = calc_scanner_rel_pos(REAL_DIFFS, THRESHOLD)
+REAL_POINTS, REAL_DIFFS = get_scanner_points_and_diffs(input_lines)
+REAL_SCANER_REL_POS = calc_scanner_rel_pos(REAL_DIFFS, THRESHOLD)
 
 
 # Part 1
@@ -673,7 +670,7 @@ if TEST:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part1 = part1(test_lines, test=True)
-        expected = None  # 79
+        expected = 79
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part1 == expected:
@@ -701,10 +698,10 @@ if TEST:
 #     assert ans_part1 not in tries, "Same as an incorrect answer!"
 
 
-# # Regression Test
-# expected = 350
-# if expected is not None:
-#     assert ans_part1 == expected
+# Regression Test
+expected = None  # 350
+if expected is not None:
+    assert ans_part1 == expected
 
 # Part 2
 ########################################################################################
@@ -715,49 +712,34 @@ def part2(lines: List[str], test: bool = False) -> int:
     scanner_points = TEST_POINTS if test else REAL_POINTS
     scanner_rel_pos = TEST_SCANER_REL_POS if test else REAL_SCANER_REL_POS
 
-    scanner_pos = {}
-    for i in range(len(scanner_points)):
+    def positions(scanner_no, visited: Set[int]) -> Set[Point]:
+        points = set()
+        for other_scanner_no, (offset, rotation) in scanner_rel_pos[scanner_no].items():
+            if other_scanner_no in visited:
+                continue
+            visited.add(other_scanner_no)
 
-        def dfs(x, visited: Set[int]):
-            if x == 0:
-                return [((0, 0, 0), rot_px_0)]
+            points.add(offset)
+            x = positions(other_scanner_no, visited.union({scanner_no}))
+            for p in x:
+                points.add(tuple(a + b for a, b in zip(offset, rotation(p))))
+            # points = points.union({ROT_INVERSES[cur_rot](p) for p in x})
+            # points = points.union({ROT_INVERSES[cur_rot](p) for p in x})
 
-            for a in scanner_rel_pos[x]:
-                offset, rot_fn = scanner_rel_pos[x][a]
-                if a in visited:
-                    continue
-                offset_rotation_stack = dfs(a, visited.union({x}))
-                if offset_rotation_stack is not None:
-                    return offset_rotation_stack + [(offset, rot_fn)]
-            return None
+        return points
 
-        offset_rotation_stack = dfs(i, set())
-        print("===", i)
-        print(offset_rotation_stack)
-
-        O = (0, 0, 0)
-        while offset_rotation_stack:
-            (offset, rot_fn) = offset_rotation_stack[0]
-            # map(lambda a: a[1] - a[0], zip(ROT_INVERSES[rot_fn](offset), p))
-            # print(list(zip(ROT_INVERSES[rot_fn](O), offset)))
-            # O = ROT_INVERSES[rot_fn](tuple(a + b for a, b in zip(O, rot_fn(offset))))
-            print("qohea", O, ROT_INVERSES[rot_fn](offset))
-            O = rot_fn(tuple(a + b for a, b in zip(O, ROT_INVERSES[rot_fn](offset))))
-            offset_rotation_stack = offset_rotation_stack[1:]
-        print(O)
-        scanner_pos[i] = O
-
-    print(scanner_pos[2])
-    assert scanner_pos[2] == (1105, -1205, 1229)
-    print(scanner_pos[3])
-    assert scanner_pos[3] == (-92, -2380, -20)
+    POSES = positions(0, set())
+    if test:
+        assert (-92, -2380, -20) in POSES
+        assert (1105, -1205, 1229) in POSES
+    assert len(POSES) == len(scanner_points)
+    # ohea
 
     max_man = 0
-    for i, sp1 in enumerate(scanner_pos.values()):
-        for j, sp2 in enumerate(scanner_pos.values()):
+    for sp1 in POSES:
+        for sp2 in POSES:
             M = abs(sp1[0] - sp2[0]) + abs(sp1[1] - sp2[1]) + abs(sp1[2] - sp2[2])
             if M > max_man:
-                print(i, j, sp1, sp2)
                 max_man = M
 
     return max_man
@@ -797,7 +779,7 @@ if tries2:
     assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-expected = None  # (<>)
+expected = 10895
 if expected is not None:
     assert ans_part2 == expected
 
