@@ -510,8 +510,6 @@ def part1(lines: List[str], test: bool = False) -> int:
         print("  #{}#{}#{}#{}#  ".format(*map(str, cfg[11:15])))
         print("  #########  ")
 
-    print()
-
     def next_states(config: Config) -> Iterator[Tuple[int, Config]]:
         # Amber amphipods require 1 energy per step, Bronze amphipods require 10 energy, Copper
         # amphipods require 100, and Desert ones require 1000.
@@ -537,40 +535,44 @@ def part1(lines: List[str], test: bool = False) -> int:
 
         # Out L1
         for i in irange(7, 10):
-            if config[i].type_ == order[i - 7] == config[i + 4].type_:
-                # Already in the right place, as is the one underneath
+            if config[i].empty or config[i].moved == 2:
+                continue
+            if order[i - 7] == config[i].type_ == config[i + 4].type_:
+                # Already in the right place, as are the ones underneath
                 continue
 
-            if not config[i].empty and config[i].moved < 2:
-                # Left
-                for j in dirange(i - 6, 0):
-                    if not config[j].empty:
-                        break
-                    yield cost(i, j, config[i].type_), swap(i, j, config)
+            # Left
+            for j in dirange(i - 6, 0):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
 
-                # Right
-                for j in dirange(i - 5, 6):
-                    if not config[j].empty:
-                        break
-                    yield cost(i, j, config[i].type_), swap(i, j, config)
+            # Right
+            for j in dirange(i - 5, 6):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
 
         # Out L2
         for i in irange(11, 14):
-            if config[i].type_ == order[i - 11]:
-                # Already in the right place
+            if not config[i - 4].empty or config[i].empty or config[i].moved == 2:
+                # Can't move out, or are empty, or moved twice
                 continue
-            if not config[i].empty and config[i].moved == 0 and config[i - 4].empty:
-                # Left
-                for j in dirange(i - 10, 0):
-                    if not config[j].empty:
-                        break
-                    yield cost(i, j, config[i].type_), swap(i, j, config)
+            if order[i - 11] == config[i].type_:
+                # Already in the right place, as are the ones underneath
+                continue
 
-                # Right
-                for j in dirange(i - 9, 6):
-                    if not config[j].empty:
-                        break
-                    yield cost(i, j, config[i].type_), swap(i, j, config)
+            # Left
+            for j in dirange(i - 10, 0):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
+
+            # Right
+            for j in dirange(i - 9, 6):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
 
         # In
         for i in irange(0, 6):
@@ -581,32 +583,32 @@ def part1(lines: List[str], test: bool = False) -> int:
             if i >= 2:
                 for j in dirange(min(5, i), 2):
                     # print("l", i, j, not config[j].empty)
-                    if config[j + 5].empty:
-                        if config[j + 9].empty:
-                            if config[i].type_ == order[j - 2]:
+                    if config[i].type_ == order[j - 2]:
+                        if config[j + 5].empty:
+                            if config[j + 9].empty:
                                 yield cost(i, j + 9, config[i].type_), swap(
                                     i, j + 9, config
                                 )
-                        elif config[j + 9].type_ == config[i].type_:
-                            yield cost(i, j + 5, config[i].type_), swap(
-                                i, j + 5, config
-                            )
+                            elif config[j + 9].type_ == config[i].type_:
+                                yield cost(i, j + 5, config[i].type_), swap(
+                                    i, j + 5, config
+                                )
                     if not config[j - 1].empty:
                         break
 
             # Right
             if i <= 4:
                 for j in dirange(max(1, i), 4):
-                    if config[j + 6].empty:  # upper is empty
-                        if config[j + 10].empty:  # lower is empty
-                            if config[i].type_ == order[j - 1]:
+                    if config[i].type_ == order[j - 1]:
+                        if config[j + 6].empty:  # upper is empty
+                            if config[j + 10].empty:  # lower is empty
                                 yield cost(i, j + 10, config[i].type_), swap(
                                     i, j + 10, config
                                 )
-                        elif config[j + 10].type_ == config[i].type_:
-                            yield cost(i, j + 6, config[i].type_), swap(
-                                i, j + 6, config
-                            )
+                            elif config[j + 10].type_ == config[i].type_:
+                                yield cost(i, j + 6, config[i].type_), swap(
+                                    i, j + 6, config
+                                )
                     if not config[j + 1].empty:
                         break
 
@@ -736,6 +738,7 @@ def part2(lines: List[str], test: bool = False) -> int:
             Square("C", 0),
             Square("B", 0),
             Square("A", 0),
+            #
             Square("D", 0),
             Square("B", 0),
             Square("A", 0),
@@ -764,6 +767,7 @@ def part2(lines: List[str], test: bool = False) -> int:
             Square("C", 0),
             Square("B", 0),
             Square("A", 0),
+            #
             Square("D", 0),
             Square("B", 0),
             Square("A", 0),
@@ -792,8 +796,6 @@ def part2(lines: List[str], test: bool = False) -> int:
         print("###{}#{}#{}#{}###".format(*map(str, cfg[7:11])))
         print("  #{}#{}#{}#{}#  ".format(*map(str, cfg[11:15])))
         print("  #########  ")
-
-    print()
 
     def next_states(config: Config) -> Iterator[Tuple[int, Config]]:
         # Amber amphipods require 1 energy per step, Bronze amphipods require 10 energy, Copper
@@ -830,40 +832,97 @@ def part2(lines: List[str], test: bool = False) -> int:
 
         # Out L1
         for i in irange(7, 10):
-            if config[i].type_ == order[i - 7] == config[i + 4].type_:
-                # Already in the right place, as is the one underneath
+            if config[i].empty or config[i].moved == 2:
+                continue
+            if (
+                order[i - 7]
+                == config[i].type_
+                == config[i + 4].type_
+                == config[i + 8].type_
+                == config[i + 12]
+            ):
+                # Already in the right place, as are the ones underneath
                 continue
 
-            if not config[i].empty and config[i].moved < 2:
-                # Left
-                for j in dirange(i - 6, 0):
-                    if not config[j].empty:
-                        break
-                    yield cost(i, j, config[i].type_), swap(i, j, config)
+            # Left
+            for j in dirange(i - 6, 0):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
 
-                # Right
-                for j in dirange(i - 5, 6):
-                    if not config[j].empty:
-                        break
-                    yield cost(i, j, config[i].type_), swap(i, j, config)
+            # Right
+            for j in dirange(i - 5, 6):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
 
         # Out L2
         for i in irange(11, 14):
-            if config[i].type_ == order[i - 11]:
+            if not config[i - 4].empty or config[i].empty or config[i].moved == 2:
+                # Can't move out, or are empty, or moved twice
+                continue
+            if (
+                order[i - 11]
+                == config[i].type_
+                == config[i + 4].type_
+                == config[i + 8].type_
+            ):
+                # Already in the right place, as are the ones underneath
+                continue
+
+            # Left
+            for j in dirange(i - 10, 0):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
+
+            # Right
+            for j in dirange(i - 9, 6):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
+
+        # Out L3
+        for i in irange(15, 18):
+            if not config[i - 4].empty or config[i].empty or config[i].moved == 2:
+                # Can't move out, or are empty, or moved twice
+                continue
+            if order[i - 15] == config[i].type_ == config[i + 4].type_:
+                # Already in the right place, as is the one underneath
+                continue
+
+            # Left
+            for j in dirange(i - 14, 0):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
+
+            # Right
+            for j in dirange(i - 13, 6):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
+
+        # Out L4
+        for i in irange(19, 22):
+            if not config[i - 4].empty or config[i].empty or config[i].moved == 2:
+                # Can't move out, or are empty, or moved twice
+                continue
+            if order[i - 19] == config[i].type_:
                 # Already in the right place
                 continue
-            if not config[i].empty and config[i].moved == 0 and config[i - 4].empty:
-                # Left
-                for j in dirange(i - 10, 0):
-                    if not config[j].empty:
-                        break
-                    yield cost(i, j, config[i].type_), swap(i, j, config)
 
-                # Right
-                for j in dirange(i - 9, 6):
-                    if not config[j].empty:
-                        break
-                    yield cost(i, j, config[i].type_), swap(i, j, config)
+            # Left
+            for j in dirange(i - 18, 0):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
+
+            # Right
+            for j in dirange(i - 17, 6):
+                if not config[j].empty:
+                    break
+                yield cost(i, j, config[i].type_), swap(i, j, config)
 
         # In
         for i in irange(0, 6):
@@ -873,33 +932,73 @@ def part2(lines: List[str], test: bool = False) -> int:
             # Left
             if i >= 2:
                 for j in dirange(min(5, i), 2):
-                    # print("l", i, j, not config[j].empty)
-                    if config[j + 5].empty:
-                        if config[j + 9].empty:
-                            if config[i].type_ == order[j - 2]:
-                                yield cost(i, j + 9, config[i].type_), swap(
-                                    i, j + 9, config
+                    if config[i].type_ == order[j - 2]:
+                        # print("l", i, j, not config[j].empty)
+                        if config[j + 5].empty:
+                            if config[j + 9].empty:
+                                if config[j + 13].empty:
+                                    if config[j + 17].empty:
+                                        yield cost(i, j + 17, config[i].type_), swap(
+                                            i, j + 17, config
+                                        )
+                                    elif config[j + 17].type_ == config[i].type_:
+                                        # everything under is fine
+                                        yield cost(i, j + 13, config[i].type_), swap(
+                                            i, j + 13, config
+                                        )
+                                elif (
+                                    config[i].type_
+                                    == config[j + 13].type_
+                                    == config[j + 17].type_
+                                ):  # everything below is fine
+                                    yield cost(i, j + 9, config[i].type_), swap(
+                                        i, j + 9, config
+                                    )
+                            elif (
+                                config[i].type_
+                                == config[j + 9].type_
+                                == config[j + 13].type_
+                                == config[j + 17].type_
+                            ):
+                                yield cost(i, j + 5, config[i].type_), swap(
+                                    i, j + 5, config
                                 )
-                        elif config[j + 9].type_ == config[i].type_:
-                            yield cost(i, j + 5, config[i].type_), swap(
-                                i, j + 5, config
-                            )
                     if not config[j - 1].empty:
                         break
 
             # Right
             if i <= 4:
                 for j in dirange(max(1, i), 4):
-                    if config[j + 6].empty:  # upper is empty
-                        if config[j + 10].empty:  # lower is empty
-                            if config[i].type_ == order[j - 1]:
-                                yield cost(i, j + 10, config[i].type_), swap(
-                                    i, j + 10, config
+                    if config[i].type_ == order[j - 1]:
+                        if config[j + 6].empty:
+                            if config[j + 10].empty:
+                                if config[j + 14].empty:
+                                    if config[j + 18].empty:
+                                        yield cost(i, j + 18, config[i].type_), swap(
+                                            i, j + 18, config
+                                        )
+                                    elif config[j + 18].type_ == config[i].type_:
+                                        # everything under is same
+                                        yield cost(i, j + 14, config[i].type_), swap(
+                                            i, j + 14, config
+                                        )
+                                elif (
+                                    config[i].type_
+                                    == config[j + 14].type_
+                                    == config[j + 18].type_
+                                ):  # everything below is fine
+                                    yield cost(i, j + 10, config[i].type_), swap(
+                                        i, j + 10, config
+                                    )
+                            elif (
+                                config[i].type_
+                                == config[j + 10].type_
+                                == config[j + 14].type_
+                                == config[j + 18].type_
+                            ):  # everything below is fine
+                                yield cost(i, j + 6, config[i].type_), swap(
+                                    i, j + 6, config
                                 )
-                        elif config[j + 10].type_ == config[i].type_:
-                            yield cost(i, j + 6, config[i].type_), swap(
-                                i, j + 6, config
-                            )
                     if not config[j + 1].empty:
                         break
 
@@ -917,14 +1016,17 @@ def part2(lines: List[str], test: bool = False) -> int:
             and el[8].type_ == "B"
             and el[9].type_ == "C"
             and el[10].type_ == "D"
+            #
             and el[11].type_ == "A"
             and el[12].type_ == "B"
             and el[13].type_ == "C"
             and el[14].type_ == "D"
+            #
             and el[15].type_ == "A"
             and el[16].type_ == "B"
             and el[17].type_ == "C"
             and el[18].type_ == "D"
+            #
             and el[19].type_ == "A"
             and el[20].type_ == "B"
             and el[21].type_ == "C"
@@ -970,6 +1072,7 @@ part2_end = time.time()
 print("Result:", ans_part2)
 
 tries2 = [
+    48803
     # Store the attempts that failed here.
 ]
 if tries2:
