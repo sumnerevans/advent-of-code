@@ -431,6 +431,28 @@ class Square:
         return (self.empty and other.empty) or (self.type_ == other.type_)
 
 
+# Amber amphipods require 1 energy per step, Bronze amphipods require 10 energy, Copper
+# amphipods require 100, and Desert ones require 1000.
+costs = {"A": 1, "B": 10, "C": 100, "D": 1000}
+cost_matrix = {
+    7: [3, 2, 2, 4, 6, 8, 9],
+    8: [5, 4, 2, 2, 4, 6, 7],
+    9: [7, 6, 4, 2, 2, 4, 5],
+    10: [9, 8, 6, 4, 2, 2, 3],
+}
+for i in range(1, 3):
+    cost_matrix.update(
+        {k + (i * 4): [v2 + i for v2 in v] for k, v in cost_matrix.items()}
+    )
+
+
+def cost(frm, to, type_: str) -> int:
+    if cost_matrix.get(frm):
+        return cost_matrix[frm][to] * costs[type_]
+    else:
+        return cost_matrix[to][frm] * costs[type_]
+
+
 # Part 1
 ########################################################################################
 print("Part 1:")
@@ -513,25 +535,7 @@ def part1(lines: List[str], test: bool = False) -> int:
     def next_states(config: Config) -> Iterator[Tuple[int, Config]]:
         # Amber amphipods require 1 energy per step, Bronze amphipods require 10 energy, Copper
         # amphipods require 100, and Desert ones require 1000.
-        costs = {"A": 1, "B": 10, "C": 100, "D": 1000}
         order = "ABCD"
-
-        def cost(frm, to, type_: str) -> int:
-            out = {
-                7: {0: 3, 1: 2, 2: 2, 3: 4, 4: 6, 5: 8, 6: 9},
-                8: {0: 5, 1: 4, 2: 2, 3: 2, 4: 4, 5: 6, 6: 7},
-                9: {0: 7, 1: 6, 2: 4, 3: 2, 4: 2, 5: 4, 6: 5},
-                10: {0: 9, 1: 8, 2: 6, 3: 4, 4: 2, 5: 2, 6: 3},
-                #
-                11: {0: 4, 1: 3, 2: 3, 3: 5, 4: 7, 5: 9, 6: 10},
-                12: {0: 6, 1: 5, 2: 3, 3: 3, 4: 5, 5: 7, 6: 8},
-                13: {0: 8, 1: 7, 2: 5, 3: 3, 4: 3, 5: 5, 6: 6},
-                14: {0: 10, 1: 9, 2: 7, 3: 5, 4: 3, 5: 3, 6: 4},
-            }
-            if out.get(frm):
-                return out[frm][to] * costs[type_]
-            else:
-                return out[to][frm] * costs[type_]
 
         # Out L1
         for i in irange(7, 10):
@@ -620,7 +624,7 @@ def part1(lines: List[str], test: bool = False) -> int:
 
     i = 0
     while Q:
-        cost, el = heapq.heappop(Q)
+        el_cost, el = heapq.heappop(Q)
         if (
             el[7].type_ == "A"
             and el[8].type_ == "B"
@@ -631,17 +635,17 @@ def part1(lines: List[str], test: bool = False) -> int:
             and el[13].type_ == "C"
             and el[14].type_ == "D"
         ):
-            return cost
+            return el_cost
         i += 1
         if el in seen:
             continue
         seen.add(el)
 
         for c, x in next_states(el):
-            if cost + c < D.get(x, math.inf):
-                D[x] = cost + c
+            if el_cost + c < D.get(x, math.inf):
+                D[x] = el_cost + c
                 P[x] = el
-                heapq.heappush(Q, (cost + c, x))
+                heapq.heappush(Q, (el_cost + c, x))
 
     assert False
 
@@ -798,37 +802,7 @@ def part2(lines: List[str], test: bool = False) -> int:
         print("  #########  ")
 
     def next_states(config: Config) -> Iterator[Tuple[int, Config]]:
-        # Amber amphipods require 1 energy per step, Bronze amphipods require 10 energy, Copper
-        # amphipods require 100, and Desert ones require 1000.
-        costs = {"A": 1, "B": 10, "C": 100, "D": 1000}
         order = "ABCD"
-
-        def cost(frm, to, type_: str) -> int:
-            out = {
-                7: {0: 3, 1: 2, 2: 2, 3: 4, 4: 6, 5: 8, 6: 9},
-                8: {0: 5, 1: 4, 2: 2, 3: 2, 4: 4, 5: 6, 6: 7},
-                9: {0: 7, 1: 6, 2: 4, 3: 2, 4: 2, 5: 4, 6: 5},
-                10: {0: 9, 1: 8, 2: 6, 3: 4, 4: 2, 5: 2, 6: 3},
-                #
-                11: {0: 4, 1: 3, 2: 3, 3: 5, 4: 7, 5: 9, 6: 10},
-                12: {0: 6, 1: 5, 2: 3, 3: 3, 4: 5, 5: 7, 6: 8},
-                13: {0: 8, 1: 7, 2: 5, 3: 3, 4: 3, 5: 5, 6: 6},
-                14: {0: 10, 1: 9, 2: 7, 3: 5, 4: 3, 5: 3, 6: 4},
-                #
-                15: {0: 5, 1: 4, 2: 4, 3: 6, 4: 8, 5: 10, 6: 11},
-                16: {0: 7, 1: 6, 2: 4, 3: 4, 4: 6, 5: 8, 6: 9},
-                17: {0: 9, 1: 8, 2: 6, 3: 4, 4: 4, 5: 6, 6: 7},
-                18: {0: 11, 1: 10, 2: 8, 3: 6, 4: 4, 5: 4, 6: 5},
-                #
-                19: {0: 6, 1: 5, 2: 5, 3: 7, 4: 9, 5: 11, 6: 12},
-                20: {0: 8, 1: 7, 2: 5, 3: 5, 4: 7, 5: 9, 6: 10},
-                21: {0: 10, 1: 9, 2: 7, 3: 5, 4: 5, 5: 7, 6: 8},
-                22: {0: 12, 1: 11, 2: 9, 3: 6, 4: 5, 5: 5, 6: 6},
-            }
-            if out.get(frm):
-                return out[frm][to] * costs[type_]
-            else:
-                return out[to][frm] * costs[type_]
 
         # Out L1
         for i in irange(7, 10):
@@ -1010,7 +984,7 @@ def part2(lines: List[str], test: bool = False) -> int:
 
     i = 0
     while Q:
-        cost, el = heapq.heappop(Q)
+        el_cost, el = heapq.heappop(Q)
         if (
             el[7].type_ == "A"
             and el[8].type_ == "B"
@@ -1032,17 +1006,19 @@ def part2(lines: List[str], test: bool = False) -> int:
             and el[21].type_ == "C"
             and el[22].type_ == "D"
         ):
-            return cost
+            return el_cost
         i += 1
         if el in seen:
             continue
         seen.add(el)
 
         for c, x in next_states(el):
-            if cost + c < D.get(x, math.inf):
-                D[x] = cost + c
+            if el_cost + c < D.get(x, math.inf):
+                D[x] = el_cost + c
                 P[x] = el
-                heapq.heappush(Q, (cost + c, x))
+                heapq.heappush(Q, (el_cost + c, x))
+
+    assert False
 
 
 # Run test on part 2
@@ -1080,7 +1056,7 @@ if tries2:
     assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-expected = None  # (<>)
+expected = 49803
 if expected is not None:
     assert ans_part2 == expected
 
