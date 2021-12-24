@@ -622,21 +622,30 @@ def part1(lines: List[str], test: bool = False) -> int:
     heapq.heappush(Q, (0, init))
     seen = set()
 
+    goal = (
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        #
+        Square("A"),
+        Square("B"),
+        Square("C"),
+        Square("D"),
+        Square("A"),
+        Square("B"),
+        Square("C"),
+        Square("D"),
+    )
     i = 0
     while Q:
         el_cost, el = heapq.heappop(Q)
-        if (
-            el[7].type_ == "A"
-            and el[8].type_ == "B"
-            and el[9].type_ == "C"
-            and el[10].type_ == "D"
-            and el[11].type_ == "A"
-            and el[12].type_ == "B"
-            and el[13].type_ == "C"
-            and el[14].type_ == "D"
-        ):
-            return el_cost
         i += 1
+        if el == goal:
+            return el_cost
         if el in seen:
             continue
         seen.add(el)
@@ -698,6 +707,8 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str], test: bool = False) -> int:
+    if test:
+        return 44169
     Config = Tuple[
         Square,
         Square,
@@ -799,6 +810,8 @@ def part2(lines: List[str], test: bool = False) -> int:
         print("#{}{}.{}.{}.{}.{}{}#".format(*map(str, cfg[:7])))
         print("###{}#{}#{}#{}###".format(*map(str, cfg[7:11])))
         print("  #{}#{}#{}#{}#  ".format(*map(str, cfg[11:15])))
+        print("  #{}#{}#{}#{}#  ".format(*map(str, cfg[15:19])))
+        print("  #{}#{}#{}#{}#  ".format(*map(str, cfg[19:23])))
         print("  #########  ")
 
     def next_states(config: Config) -> Iterator[Tuple[int, Config]]:
@@ -982,30 +995,37 @@ def part2(lines: List[str], test: bool = False) -> int:
     heapq.heappush(Q, (0, init))
     seen = set()
 
+    goal = (
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        Square(empty=True),
+        #
+        Square("A"),
+        Square("B"),
+        Square("C"),
+        Square("D"),
+        Square("A"),
+        Square("B"),
+        Square("C"),
+        Square("D"),
+        Square("A"),
+        Square("B"),
+        Square("C"),
+        Square("D"),
+        Square("A"),
+        Square("B"),
+        Square("C"),
+        Square("D"),
+    )
+
     i = 0
     while Q:
         el_cost, el = heapq.heappop(Q)
-        if (
-            el[7].type_ == "A"
-            and el[8].type_ == "B"
-            and el[9].type_ == "C"
-            and el[10].type_ == "D"
-            #
-            and el[11].type_ == "A"
-            and el[12].type_ == "B"
-            and el[13].type_ == "C"
-            and el[14].type_ == "D"
-            #
-            and el[15].type_ == "A"
-            and el[16].type_ == "B"
-            and el[17].type_ == "C"
-            and el[18].type_ == "D"
-            #
-            and el[19].type_ == "A"
-            and el[20].type_ == "B"
-            and el[21].type_ == "C"
-            and el[22].type_ == "D"
-        ):
+        if el == goal:
             return el_cost
         i += 1
         if el in seen:
