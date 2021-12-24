@@ -63,6 +63,7 @@ def islit(s: str) -> bool:
 
 
 def get_solver(lines: List[str]) -> Tuple[z3.Optimize, List]:
+    z3.reset_params()
     solver = z3.Optimize()
 
     curstate = [z3.Int(f"{a}0") for a in "wxyz"]

@@ -3,7 +3,7 @@ let
 in
 with pkgs;
 let
-  py3WithPackages = python3.withPackages (
+  pythonWithPackages = python3.withPackages (
     ps: with ps; [
       black
       flake8
@@ -11,17 +11,9 @@ let
       numpy
       pynvim
       z3
-      (sympy.overrideAttrs (old: rec {
-        version = "1.8";
-        pname = old.pname;
-        src = fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-HKWIqfbOajI8VZL5Y1FZwgk1coJmaKECLHXHW98Cl8s=";
-        };
-      }))
     ]
   );
-  pypy3WithPackages = py3WithPackages;
+  binName = "python";
 
   PROJECT_ROOT = builtins.getEnv "PWD";
 
@@ -93,26 +85,26 @@ let
   runScript = writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
 
-    ${watchexec}/bin/watchexec -r "${pypy3WithPackages}/bin/python ./$day.py"
+    ${watchexec}/bin/watchexec -r "${pythonWithPackages}/bin/${binName} ./$day.py"
   '';
 
   debugRunScript = writeShellScriptBin "drun" ''
     ${getDayScriptPart "drun"}
 
-    ${watchexec}/bin/watchexec -r "${pypy3WithPackages}/bin/python ./$day.py --debug"
+    ${watchexec}/bin/watchexec -r "${pythonWithPackages}/bin/${binName} ./$day.py --debug"
   '';
 
   # Single run, don't watchexec
   singleRunScript = writeShellScriptBin "srun" ''
     ${getDayScriptPart "srun"}
 
-    ${pypy3WithPackages}/bin/python ./$day.py
+    ${pythonWithPackages}/bin/${binName} ./$day.py
   '';
 
   debugSingleRunScript = writeShellScriptBin "dsrun" ''
     ${getDayScriptPart "dsrun"}
 
-    ${pypy3WithPackages}/bin/python ./$day.py --debug
+    ${pythonWithPackages}/bin/${binName} ./$day.py --debug
   '';
 
   # Write a test file
@@ -128,24 +120,24 @@ let
   # Run with --notest flag
   runNoTestScript = writeShellScriptBin "rntest" ''
     ${getDayScriptPart "rntest"}
-    ${pypy3WithPackages}/bin/python ./$day.py --notest
+    ${pythonWithPackages}/bin/${binName} ./$day.py --notest
   '';
 
   debugRunNoTestScript = writeShellScriptBin "drntest" ''
     ${getDayScriptPart "druntest"}
-    ${pypy3WithPackages}/bin/python ./$day.py --notest --debug
+    ${pythonWithPackages}/bin/${binName} ./$day.py --notest --debug
   '';
 
   # Run with --stdin and --notest flags
   runStdinScript = writeShellScriptBin "runstdin" ''
     ${getDayScriptPart "runstdin"}
-    ${pypy3WithPackages}/bin/python ./$day.py --stdin --notest
+    ${pythonWithPackages}/bin/${binName} ./$day.py --stdin --notest
   '';
 
   # Run with --stdin and --notest flags, and pull from clipboard.
   runStdinClipScript = writeShellScriptBin "runstdinclip" ''
     ${getDayScriptPart "runstdin"}
-    ${xsel}/bin/xsel --output | ${pypy3WithPackages}/bin/python ./$day.py --stdin --notest
+    ${xsel}/bin/xsel --output | ${pythonWithPackages}/bin/${binName} ./$day.py --stdin --notest
   '';
 
   # Compile and run the C version.
@@ -170,7 +162,7 @@ let
       "python.linting.flake8Enabled" = true;
       "python.linting.mypyEnabled" = true;
       "python.linting.pylintEnabled" = false;
-      "python.pythonPath" = "${py3WithPackages}/bin/python";
+      "python.pythonPath" = "${pythonWithPackages}/bin/${binName}";
       "clangd.path" = "${clang-tools}/bin/clangd";
       "languageserver" = {
         "ocaml-lsp" = {
@@ -211,10 +203,10 @@ mkShell {
     ocamlPackages.utop
 
     # Python
-    py3WithPackages
-    py3WithPackages.pkgs.black
-    py3WithPackages.pkgs.flake8
-    pypy3WithPackages
+    pythonWithPackages.pkgs.black
+    pythonWithPackages.pkgs.flake8
+    pythonWithPackages
+    pypy3
 
     # Utilities
     cRunScript
