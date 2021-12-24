@@ -10,6 +10,7 @@ let
       graphviz
       numpy
       pynvim
+      z3
       (sympy.overrideAttrs (old: rec {
         version = "1.8";
         pname = old.pname;
