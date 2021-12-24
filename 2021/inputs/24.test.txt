@@ -1,0 +1,4 @@
+inp z
+inp w
+mul w -2
+add z w

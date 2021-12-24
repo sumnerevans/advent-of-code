@@ -10,8 +10,17 @@ let
       graphviz
       numpy
       pynvim
+      (sympy.overrideAttrs (old: rec {
+        version = "1.8";
+        pname = old.pname;
+        src = fetchPypi {
+          inherit pname version;
+          sha256 = "sha256-HKWIqfbOajI8VZL5Y1FZwgk1coJmaKECLHXHW98Cl8s=";
+        };
+      }))
     ]
   );
+  pypy3WithPackages = py3WithPackages;
 
   PROJECT_ROOT = builtins.getEnv "PWD";
 
@@ -83,26 +92,26 @@ let
   runScript = writeShellScriptBin "run" ''
     ${getDayScriptPart "run"}
 
-    ${watchexec}/bin/watchexec -r "${pypy3}/bin/pypy3 ./$day.py"
+    ${watchexec}/bin/watchexec -r "${pypy3WithPackages}/bin/python ./$day.py"
   '';
 
   debugRunScript = writeShellScriptBin "drun" ''
     ${getDayScriptPart "drun"}
 
-    ${watchexec}/bin/watchexec -r "${pypy3}/bin/pypy3 ./$day.py --debug"
+    ${watchexec}/bin/watchexec -r "${pypy3WithPackages}/bin/python ./$day.py --debug"
   '';
 
   # Single run, don't watchexec
   singleRunScript = writeShellScriptBin "srun" ''
     ${getDayScriptPart "srun"}
 
-    ${pypy3}/bin/pypy3 ./$day.py
+    ${pypy3WithPackages}/bin/python ./$day.py
   '';
 
   debugSingleRunScript = writeShellScriptBin "dsrun" ''
     ${getDayScriptPart "dsrun"}
 
-    ${pypy3}/bin/pypy3 ./$day.py --debug
+    ${pypy3WithPackages}/bin/python ./$day.py --debug
   '';
 
   # Write a test file
@@ -118,24 +127,24 @@ let
   # Run with --notest flag
   runNoTestScript = writeShellScriptBin "rntest" ''
     ${getDayScriptPart "rntest"}
-    ${pypy3}/bin/pypy3 ./$day.py --notest
+    ${pypy3WithPackages}/bin/python ./$day.py --notest
   '';
 
   debugRunNoTestScript = writeShellScriptBin "drntest" ''
     ${getDayScriptPart "druntest"}
-    ${pypy3}/bin/pypy3 ./$day.py --notest --debug
+    ${pypy3WithPackages}/bin/python ./$day.py --notest --debug
   '';
 
   # Run with --stdin and --notest flags
   runStdinScript = writeShellScriptBin "runstdin" ''
     ${getDayScriptPart "runstdin"}
-    ${pypy3}/bin/pypy3 ./$day.py --stdin --notest
+    ${pypy3WithPackages}/bin/python ./$day.py --stdin --notest
   '';
 
   # Run with --stdin and --notest flags, and pull from clipboard.
   runStdinClipScript = writeShellScriptBin "runstdinclip" ''
     ${getDayScriptPart "runstdin"}
-    ${xsel}/bin/xsel --output | ${pypy3}/bin/pypy3 ./$day.py --stdin --notest
+    ${xsel}/bin/xsel --output | ${pypy3WithPackages}/bin/python ./$day.py --stdin --notest
   '';
 
   # Compile and run the C version.
@@ -204,7 +213,7 @@ mkShell {
     py3WithPackages
     py3WithPackages.pkgs.black
     py3WithPackages.pkgs.flake8
-    pypy3
+    pypy3WithPackages
 
     # Utilities
     cRunScript
