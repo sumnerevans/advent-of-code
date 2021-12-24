@@ -115,7 +115,7 @@ def dirange(start, end=None, step=1) -> Generator[int, None, None]:
     if end >= start:
         yield from irange(start, end, step)
     else:
-        yield from range(start, end - 1, step=-step)
+        yield from range(start, end - 1, -step)
 
 
 # Utilities
