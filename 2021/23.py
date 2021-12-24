@@ -5,7 +5,7 @@ import math
 import sys
 import time
 from dataclasses import dataclass
-from typing import Generator, List, Tuple, Iterator
+from typing import Callable, Generator, Iterable, Iterator, List, Tuple, TypeVar
 
 TEST = True
 DEBUG = False
@@ -31,6 +31,10 @@ class bcolors:
     ENDC = "\033[0m"
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
+
+
+# Type variables
+K = TypeVar("K")
 
 
 # Modified range functions
@@ -62,6 +66,33 @@ def dirange(start, end=None, step=1) -> Generator[int, None, None]:
         yield from irange(start, end, step)
     else:
         yield from range(start, end - 1, step=-step)
+
+
+# Utilities
+def dijkstra(
+    next_states: Callable[[K], Iterable[Tuple[int, K]]], start: K, end: K
+) -> int:
+    """
+    A simple implementation of Dijkstra's shortest path algorithm for finding the
+    shortest path from ``start`` to ``end`` given a function to determine the next possible states
+    in the graph from a given node.
+    """
+    Q = []
+    D = {}
+    heapq.heappush(Q, (0, start))
+    seen = set()
+
+    while Q:
+        cost, el = heapq.heappop(Q)
+        if el in seen:
+            continue
+        seen.add(el)
+        for c, x in next_states(el):
+            if cost + c < D.get(x, math.inf):
+                D[x] = cost + c
+                heapq.heappush(Q, (cost + c, x))
+
+    return D[end]
 
 
 print(f"\n{'=' * 30}\n")
@@ -299,12 +330,6 @@ def part1(lines: List[str], test: bool = False) -> int:
                     if not config[j + 1].empty:
                         break
 
-    Q: List[Tuple[int, Config]] = []
-    D = {}
-    P = {}
-    heapq.heappush(Q, (0, init))
-    seen = set()
-
     goal = (
         Square(empty=True),
         Square(empty=True),
@@ -323,23 +348,7 @@ def part1(lines: List[str], test: bool = False) -> int:
         Square("C"),
         Square("D"),
     )
-    i = 0
-    while Q:
-        el_cost, el = heapq.heappop(Q)
-        i += 1
-        if el == goal:
-            return el_cost
-        if el in seen:
-            continue
-        seen.add(el)
-
-        for c, x in next_states(el):
-            if el_cost + c < D.get(x, math.inf):
-                D[x] = el_cost + c
-                P[x] = el
-                heapq.heappush(Q, (el_cost + c, x))
-
-    assert False
+    return dijkstra(next_states, init, goal)
 
 
 # Run test on part 1
@@ -672,12 +681,6 @@ def part2(lines: List[str], test: bool = False) -> int:
                     if not config[j + 1].empty:
                         break
 
-    Q: List[Tuple[int, Config]] = []
-    D = {}
-    P = {}
-    heapq.heappush(Q, (0, init))
-    seen = set()
-
     goal = (
         Square(empty=True),
         Square(empty=True),
@@ -704,24 +707,7 @@ def part2(lines: List[str], test: bool = False) -> int:
         Square("C"),
         Square("D"),
     )
-
-    i = 0
-    while Q:
-        el_cost, el = heapq.heappop(Q)
-        if el == goal:
-            return el_cost
-        i += 1
-        if el in seen:
-            continue
-        seen.add(el)
-
-        for c, x in next_states(el):
-            if el_cost + c < D.get(x, math.inf):
-                D[x] = el_cost + c
-                P[x] = el
-                heapq.heappush(Q, (el_cost + c, x))
-
-    assert False
+    return dijkstra(next_states, init, goal)
 
 
 # Run test on part 2

@@ -155,10 +155,13 @@ def chunks(iterable, n):
         yield itertype(container)
 
 
-def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
+def dijkstra(
+    next_states: Callable[[K], Iterator[Tuple[int, K]]], start: K, end: K
+) -> int:
     """
     A simple implementation of Dijkstra's shortest path algorithm for finding the
-    shortest path from ``start`` to ``end`` in ``G``.
+    shortest path from ``start`` to ``end`` given a function to determine the next possible states
+    in the graph from a given node.
     """
     Q = []
     D = {}
@@ -170,12 +173,16 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
         if el in seen:
             continue
         seen.add(el)
-        for c, x in G[el]:
+        for c, x in next_states(el):
             if cost + c < D.get(x, math.inf):
                 D[x] = cost + c
                 heapq.heappush(Q, (cost + c, x))
 
     return D[end]
+
+
+def dijkstra_g(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
+    return dijkstra(lambda x: G[x], start, end)
 
 
 def grid_adjs(

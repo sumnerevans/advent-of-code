@@ -7,7 +7,7 @@ import sys
 import time
 from collections import defaultdict
 from enum import Enum
-from typing import Dict, Iterable, List, Tuple, TypeVar
+from typing import Callable, Dict, Iterable, List, Tuple, TypeVar
 
 test = True
 debug = False
@@ -69,10 +69,13 @@ class AdjacenciesType(Enum):
 
 
 # Utilities
-def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
+def dijkstra(
+    next_states: Callable[[K], Iterable[Tuple[int, K]]], start: K, end: K
+) -> int:
     """
     A simple implementation of Dijkstra's shortest path algorithm for finding the
-    shortest path from ``start`` to ``end`` in ``G``.
+    shortest path from ``start`` to ``end`` given a function to determine the next possible states
+    in the graph from a given node.
     """
     Q = []
     D = {}
@@ -84,12 +87,16 @@ def dijkstra(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
         if el in seen:
             continue
         seen.add(el)
-        for c, x in G[el]:
+        for c, x in next_states(el):
             if cost + c < D.get(x, math.inf):
                 D[x] = cost + c
                 heapq.heappush(Q, (cost + c, x))
 
     return D[end]
+
+
+def dijkstra_g(G: Dict[K, Iterable[Tuple[int, K]]], start: K, end: K) -> int:
+    return dijkstra(lambda x: G[x], start, end)
 
 
 def grid_adjs(
@@ -181,7 +188,7 @@ def part1(lines: List[str]) -> int:
         x = 1 + (x - 10)
 
     G[(len(lines) - 1, len(lines[0]) - 1)].add((x, (2 ** 40, 2 ** 40)))
-    return dijkstra(G, (0, 0), (2 ** 40, 2 ** 40))
+    return dijkstra_g(G, (0, 0), (2 ** 40, 2 ** 40))
 
 
 # Run test on part 1
@@ -248,7 +255,7 @@ def part2(lines: List[str]) -> int:
         x = 1 + (x - 10)
 
     G[(len(lines) * 5 - 1, len(lines[0]) * 5 - 1)].add((x, (2 ** 40, 2 ** 40)))
-    return dijkstra(G, (0, 0), (2 ** 40, 2 ** 40))
+    return dijkstra_g(G, (0, 0), (2 ** 40, 2 ** 40))
 
 
 # Run test on part 2
