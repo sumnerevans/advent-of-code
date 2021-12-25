@@ -1,4 +1,13 @@
 #! /usr/bin/env python3
+"""
+Download the JSON from:
+
+https://adventofcode.com/YYYY/leaderboard/private/view/XXXXXX.json
+
+where YYYY is the year, and XXXXXX is the leaderboard ID.
+
+Pass the file as the first argument.
+"""
 
 import json
 import sys
