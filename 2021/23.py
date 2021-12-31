@@ -70,12 +70,17 @@ def dirange(start, end=None, step=1) -> Generator[int, None, None]:
 
 # Utilities
 def dijkstra(
-    next_states: Callable[[K], Iterable[Tuple[int, K]]], start: K, end: K
+    next_states: Callable[[K], Iterable[Tuple[int, K]]], start: K, end_state: Callable[[K], bool],
 ) -> int:
     """
     A simple implementation of Dijkstra's shortest path algorithm for finding the
-    shortest path from ``start`` to ``end`` given a function to determine the next possible states
-    in the graph from a given node.
+    shortest path from ``start`` to any element where ``end_state(el) == True``.
+
+    Arguments:
+    :param next_states: a function which gives the next possible states of the graph from a given
+        node.
+    :param start: the start location of the search
+    :param end_state: a function which determines if a given element is an end state or not.
     """
     Q = []
     D = {}
@@ -86,13 +91,15 @@ def dijkstra(
         cost, el = heapq.heappop(Q)
         if el in seen:
             continue
+        if end_state(el):
+            return D[el]
         seen.add(el)
         for c, x in next_states(el):
             if cost + c < D.get(x, math.inf):
                 D[x] = cost + c
                 heapq.heappush(Q, (cost + c, x))
 
-    return D[end]
+    assert False, "No path found to any end state"
 
 
 print(f"\n{'=' * 30}\n")
@@ -348,7 +355,7 @@ def part1(lines: List[str], test: bool = False) -> int:
         Square("C"),
         Square("D"),
     )
-    return dijkstra(next_states, init, goal)
+    return dijkstra(next_states, init, lambda x: x == goal)
 
 
 # Run test on part 1
@@ -707,7 +714,7 @@ def part2(lines: List[str], test: bool = False) -> int:
         Square("C"),
         Square("D"),
     )
-    return dijkstra(next_states, init, goal)
+    return dijkstra(next_states, init, lambda x: x == goal)
 
 
 # Run test on part 2
