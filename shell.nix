@@ -19,6 +19,16 @@ let
 
   curl = ''${pkgs.curl}/bin/curl -f --cookie "session=$sessionToken"'';
   rg = "${ripgrep}/bin/rg --color never";
+
+  noSessionToken = ''
+    echo -e "\033[0;31m.---------------------------.\033[0m"
+    echo -e "\033[0;31m|                           |\033[0m"
+    echo -e "\033[0;31m| Session Token is not set! |\033[0m"
+    echo -e "\033[0;31m|                           |\033[0m"
+    echo -e "\033[0;31m'---------------------------'\033[0m"
+    exit 1
+  '';
+
   getInputScript = writeShellScriptBin "getinput" ''
     [[ $1 == "" ]] && echo "Usage: getinput <day>" && exit 1
     year=$(basename $(pwd))
@@ -36,12 +46,7 @@ let
       sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
       ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
     else
-      echo -e "\033[0;31m.---------------------------.\033[0m"
-      echo -e "\033[0;31m|                           |\033[0m"
-      echo -e "\033[0;31m| Session Token is not set! |\033[0m"
-      echo -e "\033[0;31m|                           |\033[0m"
-      echo -e "\033[0;31m'---------------------------'\033[0m"
-      exit 1
+      ${noSessionToken}
     fi
 
     less inputs/$outfile.txt
@@ -61,12 +66,7 @@ let
         ${rg} "^\s*(Day\s+Time|-+Part|\d+\s+(&gt;24h|\d{2}:\d{2}:\d{2}))" |
         ${gnused}/bin/sed "s/&gt;/>/g"
     else
-      echo -e "\033[0;31m.---------------------------.\033[0m"
-      echo -e "\033[0;31m|                           |\033[0m"
-      echo -e "\033[0;31m| Session Token is not set! |\033[0m"
-      echo -e "\033[0;31m|                           |\033[0m"
-      echo -e "\033[0;31m'---------------------------'\033[0m"
-      exit 1
+      ${noSessionToken}
     fi
   '';
 
