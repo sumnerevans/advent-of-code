@@ -145,14 +145,14 @@ let
     ${getDayScriptPart "crun"}
     mkdir -p bin
     gcc -o bin/$day $day.c
-    ./bin/$day
+    ./bin/$day <inputs/$day.txt
   '';
 
   cRunTestScript = writeShellScriptBin "cruntest" ''
     ${getDayScriptPart "cruntest"}
     mkdir -p bin
     gcc -o bin/$day $day.c
-    ./bin/$day --test
+    ./bin/$day --test <inputs/$day.txt
   '';
 
   # CoC Config
