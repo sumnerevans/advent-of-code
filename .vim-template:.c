@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define ll long long
+#define getlong(VAR) scanf("%lld", &VAR)
+
 int main()
 {
-    long long ans1 = 0;
-    long long ans2 = 0;
+    ll ans1 = 0;
+    ll ans2 = 0;
 
     %HERE%
 
