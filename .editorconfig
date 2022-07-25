@@ -14,5 +14,10 @@ indent_size = 4
 [*.py]
 max_line_length = 99
 
+[*.go]
+indent_style = tab
+trim_trailing_whitespace = true
+insert_final_newline = true
+
 [*.{ml,md,nix}]
 indent_size = 2

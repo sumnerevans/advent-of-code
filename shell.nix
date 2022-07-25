@@ -195,6 +195,11 @@ mkShell {
     gdb
     valgrind
 
+    # Golang
+    go
+    gopls
+    gotools
+
     # OCaml
     ocaml
     ocamlformat
