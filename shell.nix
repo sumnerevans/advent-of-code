@@ -196,7 +196,7 @@ mkShell {
     valgrind
 
     # Golang
-    go
+    go_1_19
     gopls
     gotools
 
