@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog"
-	"github.com/sumnerevans/advent-of-code/util"
+	"github.com/sumnerevans/advent-of-code/lib"
 )
 
 type Direction string
@@ -29,7 +29,7 @@ func (d *Day02) LoadInput(log *zerolog.Logger, lines []string) error {
 		l := strings.Split(line, " ")
 		d.Instr = append(d.Instr, Instruction{
 			Dir:  Direction(l[0]),
-			Amnt: util.ToIntUnsafe(l[1]),
+			Amnt: lib.ToIntUnsafe(l[1]),
 		})
 	}
 	return nil

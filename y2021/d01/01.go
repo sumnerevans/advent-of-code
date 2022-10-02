@@ -3,7 +3,7 @@ package d01
 import (
 	"github.com/rs/zerolog"
 
-	"github.com/sumnerevans/advent-of-code/util"
+	"github.com/sumnerevans/advent-of-code/lib"
 )
 
 type Day01 struct {
@@ -11,7 +11,7 @@ type Day01 struct {
 }
 
 func (d *Day01) LoadInput(log *zerolog.Logger, lines []string) (err error) {
-	d.Nums, err = util.LoadInts(lines)
+	d.Nums, err = lib.LoadInts(lines)
 	return
 }
 
