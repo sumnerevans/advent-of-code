@@ -3,11 +3,8 @@ package d02_test
 import (
 	"embed"
 	"fmt"
-	"os"
 	"testing"
-	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -18,27 +15,8 @@ import (
 //go:embed *.txt
 var inputs embed.FS
 
-func SetupTest(t *testing.T) (log *zerolog.Logger, sample []string, actual []string) {
-	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
-	logger := zerolog.New(output).With().Timestamp().Logger()
-	log = &logger
-
-	if testFile, err := inputs.ReadFile("02.test.txt"); err != nil {
-		log.Warn().Msg("No test file found")
-	} else {
-		sample = util.Lines(string(testFile))
-	}
-
-	if actualInput, err := inputs.ReadFile("02.txt"); err != nil {
-		t.Fatalf("Unable to open input file")
-	} else {
-		actual = util.Lines(string(actualInput))
-	}
-	return
-}
-
 func Test_Part1(t *testing.T) {
-	log, sample, actual := SetupTest(t)
+	log, sample, actual := util.SetupTest(t, inputs, "02")
 
 	if len(sample) > 0 {
 		ok := t.Run("Test case", func(t *testing.T) {
@@ -64,7 +42,7 @@ func Test_Part1(t *testing.T) {
 }
 
 func Test_Part2(t *testing.T) {
-	log, sample, actual := SetupTest(t)
+	log, sample, actual := util.SetupTest(t, inputs, "02")
 
 	if len(sample) > 0 {
 		ok := t.Run("Test case", func(t *testing.T) {
