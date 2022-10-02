@@ -17,7 +17,7 @@ func SetupTest(t *testing.T, inputs embed.FS, dayNum string) (log *zerolog.Logge
 
 	if testFile, err := inputs.ReadFile(fmt.Sprintf("%s.test.txt", dayNum)); err != nil {
 		log.Warn().Msg("No test file found")
-	} else {
+	} else if len(testFile) > 0 {
 		sample = Lines(string(testFile))
 	}
 

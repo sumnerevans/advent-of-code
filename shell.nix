@@ -29,34 +29,62 @@ let
     exit 1
   '';
 
-  getInputScript = writeShellScriptBin "getinput" ''
-    [[ $1 == "" ]] && echo "Usage: getinput <day>" && exit 1
-    year=$(basename $(pwd))
+  initDayScript = writeShellScriptBin "initday" ''
+    yearDirname=$(basename $(pwd))
 
     # Error if not a year dir
-    [[ ! $(echo $year | ${rg} "\d{4}") ]] && echo "Not a year dir" && exit 1
+    [[ ! $(echo $yearDirname | ${rg} "y\d{4}") ]] && echo "Not a year dir" && exit 1
+    year=''${yearDirname:1}
 
-    outfile=$1
-    [[ $(echo "$1 < 10" | ${bc}/bin/bc) == "1" ]] && outfile="0$outfile"
+    ${getDayScriptPart "initday"}
 
-    [[ -f inputs/$outfile.txt ]] && less inputs/$outfile.txt && exit 0
+    mkdir -p ${PROJECT_ROOT}/$yearDirname/d$day
+    touch ${PROJECT_ROOT}/$yearDirname/d$day/$day.test.txt
+    cat ${PROJECT_ROOT}/templates/template.go \
+      | sed "s/%DAYNUM%/$day/g" \
+      > ${PROJECT_ROOT}/$yearDirname/d$day/$day.go
+    cat ${PROJECT_ROOT}/templates/testtemplate.go \
+      | sed "s/%DAYNUM%/$day/g" \
+      | sed "s/%YEARNUM%/$year/g" \
+      > ${PROJECT_ROOT}/$yearDirname/d$day/''${day}_test.go
 
-    mkdir -p inputs
+    cd ${PROJECT_ROOT}/$yearDirname/d$day
+    ${waitForInput}/bin/waitforinput
+  '';
+
+  waitForInput = writeShellScriptBin "waitforinput" ''
+    dayDirname=$(basename $(pwd))
+
+    # Error if not a solution dir
+    [[ ! $(echo $dayDirname | ${rg} "d\d{2}") ]] && echo "Not a day solution dir" && exit 1
+    day=''${dayDirname:1}
+
+    yearDirname=$(basename $(dirname $(pwd)))
+
+    # Error if not a year dir
+    [[ ! $(echo $yearDirname | ${rg} "y\d{4}") ]] && echo "Not a year dir" && exit 1
+    year=''${yearDirname:1}
+
+    [[ -f $day.txt ]] && less $day.txt && exit 0
+
     if [[ -f ${PROJECT_ROOT}/.session_token ]]; then
+      dayTruncated=$day
+      [[ $(echo "$day < 10" | ${bc}/bin/bc) == "1" ]] && dayTruncated=''${day:1}
       sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
-      ${curl} --output inputs/$outfile.txt https://adventofcode.com/$year/day/$1/input
+      ${curl} --output $day.txt https://adventofcode.com/$year/day/$dayTruncated/input
     else
       ${noSessionToken}
     fi
 
-    less inputs/$outfile.txt
+    less $day.txt
   '';
 
   printStatsScript = writeShellScriptBin "printstats" ''
-    year=$(basename $(pwd))
+    yearDirname=$(basename $(pwd))
 
     # Skip if not a year dir
-    [[ ! $(echo $year | ${rg} "\d{4}") ]] && exit 0
+    [[ ! $(echo $yearDirname | ${rg} "y\d{4}") ]] && exit 0
+    year=''${yearDirname:1}
 
     if [[ -f ${PROJECT_ROOT}/.session_token ]]; then
       sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
@@ -214,12 +242,13 @@ mkShell {
     pypy3
 
     # Utilities
+    initDayScript
     cRunScript
     cRunTestScript
     debugRunScript
     debugRunNoTestScript
     debugSingleRunScript
-    getInputScript
+    waitForInput
     mkTestScript
     printStatsScript
     runScript
