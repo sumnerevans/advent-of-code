@@ -1,21 +1,14 @@
 package lib
 
-import "fmt"
+import (
+	"fmt"
 
-// Range is an iterator over a range of integers
-type Range <-chan int
-
-func (r Range) List() []int {
-	l := []int{}
-	for v := range r {
-		l = append(l, v)
-	}
-	return l
-}
+	"github.com/sumnerevans/advent-of-code/lib/ds"
+)
 
 // ERange generates a Range that iterates over the integers in the range
 // [start, end).
-func ERange(rangearg1 int, rangeargs ...int) Range {
+func ERange(rangearg1 int, rangeargs ...int) ds.Iterator[int] {
 	if len(rangeargs) == 0 {
 		return IRange(rangearg1 - 1)
 	}
@@ -36,7 +29,7 @@ func ERange(rangearg1 int, rangeargs ...int) Range {
 }
 
 // IRange generates a Range using the same rules as the Python range function.
-func IRange(rangearg1 int, rangeargs ...int) Range {
+func IRange(rangearg1 int, rangeargs ...int) ds.Iterator[int] {
 	if len(rangeargs) > 2 {
 		panic(fmt.Sprintf("Invalid rangeargs %+v", rangeargs))
 	}

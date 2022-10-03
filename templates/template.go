@@ -9,7 +9,7 @@ type Day%DAYNUM% struct {
 
 func (d *Day%DAYNUM%) LoadInput(log *zerolog.Logger, lines []string) error {
 	for _, line := range lines {
-
+		log.Info().Msg(line)
 	}
 	return nil
 }
