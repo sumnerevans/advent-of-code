@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/sumnerevans/advent-of-code/lib"
+	"github.com/sumnerevans/advent-of-code/lib/testutil"
 	"github.com/sumnerevans/advent-of-code/y2021/d03"
 )
 
@@ -15,7 +15,7 @@ import (
 var inputs embed.FS
 
 func Test_Day03(t *testing.T) {
-	log, sample, actual := lib.SetupTest(t, inputs, "03")
+	log, sample, actual := testutil.SetupTest(t, inputs, "03")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
 		if len(sample) > 0 {

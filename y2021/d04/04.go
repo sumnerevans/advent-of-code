@@ -8,6 +8,7 @@ import (
 
 	"github.com/sumnerevans/advent-of-code/lib"
 	"github.com/sumnerevans/advent-of-code/lib/fp"
+	"github.com/sumnerevans/advent-of-code/lib/strs"
 )
 
 type Board [][]int64
@@ -45,7 +46,7 @@ func (b Board) Won() bool {
 }
 
 func (b Board) Sum() int64 {
-	return fp.ISum(fp.Map(func(r []int64) int64 { return fp.Sum(r) })(b))
+	return fp.ISum(fp.Map(fp.Sum)(b))
 }
 
 type Day04 struct {
@@ -54,7 +55,7 @@ type Day04 struct {
 }
 
 func (d *Day04) LoadInput(log *zerolog.Logger, lines []string) error {
-	d.Nums = fp.MapStrInt(strings.Split(lines[0], ",")).List()
+	d.Nums = strs.AllInts(lines[0]).List()
 
 	d.Boards = []Board{}
 	board := Board{}

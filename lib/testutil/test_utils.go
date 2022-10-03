@@ -1,4 +1,4 @@
-package lib
+package testutil
 
 import (
 	"embed"
@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
+
+	"github.com/sumnerevans/advent-of-code/lib/strs"
 )
 
 func SetupTest(t *testing.T, inputs embed.FS, dayNum string) (log *zerolog.Logger, sample []string, actual []string) {
@@ -18,13 +20,13 @@ func SetupTest(t *testing.T, inputs embed.FS, dayNum string) (log *zerolog.Logge
 	if testFile, err := inputs.ReadFile(fmt.Sprintf("%s.test.txt", dayNum)); err != nil {
 		log.Warn().Msg("No test file found")
 	} else if len(testFile) > 0 {
-		sample = Lines(string(testFile))
+		sample = strs.Lines(string(testFile))
 	}
 
 	if actualInput, err := inputs.ReadFile(fmt.Sprintf("%s.txt", dayNum)); err != nil {
 		t.Fatalf("Unable to open input file")
 	} else {
-		actual = Lines(string(actualInput))
+		actual = strs.Lines(string(actualInput))
 	}
 	return
 }
