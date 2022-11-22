@@ -232,7 +232,7 @@ mkShell {
     ocaml
     ocamlformat
     ocamlPackages.ocaml-lsp
-    ocamlPackages.ocaml_extlib
+    ocamlPackages.extlib
     ocamlPackages.utop
 
     # Python
