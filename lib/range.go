@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sumnerevans/advent-of-code/lib/ds"
+	"golang.org/x/exp/constraints"
 )
 
 // ERange generates a Range that iterates over the integers in the range
@@ -29,13 +30,13 @@ func ERange(rangearg1 int, rangeargs ...int) ds.Iterator[int] {
 }
 
 // IRange generates a Range using the same rules as the Python range function.
-func IRange(rangearg1 int, rangeargs ...int) ds.Iterator[int] {
+func IRange[T constraints.Signed](rangearg1 T, rangeargs ...T) ds.Iterator[T] {
 	if len(rangeargs) > 2 {
 		panic(fmt.Sprintf("Invalid rangeargs %+v", rangeargs))
 	}
-	start := rangearg1
-	end := 0
-	step := 1
+	var start T = rangearg1
+	var end T = 0
+	var step T = 1
 	if len(rangeargs) == 0 {
 		start, end = 0, rangearg1
 	} else {
@@ -53,7 +54,7 @@ func IRange(rangearg1 int, rangeargs ...int) ds.Iterator[int] {
 		step *= -1
 	}
 
-	r := make(chan int)
+	r := make(chan T)
 	go func() {
 		defer close(r)
 		if start == end {

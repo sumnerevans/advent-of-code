@@ -11,7 +11,7 @@ type Day01 struct {
 }
 
 func (d *Day01) LoadInput(log *zerolog.Logger, lines []string) (err error) {
-	d.Nums, err = lib.LoadInts(lines)
+	d.Nums, err = lib.LoadInt64s(lines)
 	return
 }
 

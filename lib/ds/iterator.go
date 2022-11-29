@@ -20,3 +20,11 @@ func (it Iterator[T]) List() []T {
 	}
 	return l
 }
+
+func (it Iterator[T]) Count() int64 {
+	var count int64
+	for range it {
+		count++
+	}
+	return count
+}

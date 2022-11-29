@@ -55,7 +55,7 @@ type Day04 struct {
 }
 
 func (d *Day04) LoadInput(log *zerolog.Logger, lines []string) error {
-	d.Nums = strs.AllInts(lines[0]).List()
+	d.Nums = strs.AllInts64(lines[0]).List()
 
 	d.Boards = []Board{}
 	board := Board{}
@@ -64,7 +64,7 @@ func (d *Day04) LoadInput(log *zerolog.Logger, lines []string) error {
 			d.Boards = append(d.Boards, board)
 			board = Board{}
 		} else {
-			board = append(board, fp.MapStrInt(strings.Fields(line)).List())
+			board = append(board, fp.MapStrInt64(strings.Fields(line)).List())
 		}
 	}
 	d.Boards = append(d.Boards, board)

@@ -17,6 +17,10 @@ func Lines(s string) []string {
 
 var IntegerRegex = regexp.MustCompile(`\d+`)
 
-func AllInts(s string) ds.Iterator[int64] {
+func AllInts(s string) ds.Iterator[int] {
 	return fp.MapStrInt(IntegerRegex.FindAllString(s, -1))
+}
+
+func AllInts64(s string) ds.Iterator[int64] {
+	return fp.MapStrInt64(IntegerRegex.FindAllString(s, -1))
 }

@@ -29,7 +29,7 @@ func (d *Day02) LoadInput(log *zerolog.Logger, lines []string) error {
 		l := strings.Split(line, " ")
 		d.Instr = append(d.Instr, Instruction{
 			Dir:  Direction(l[0]),
-			Amnt: lib.ToIntUnsafe(l[1]),
+			Amnt: lib.ToInt64Unsafe(l[1]),
 		})
 	}
 	return nil
