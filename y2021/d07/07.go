@@ -42,11 +42,7 @@ func (d *Day07) Part1(log *zerolog.Logger) int64 {
 
 func (d *Day07) Part2(log *zerolog.Logger) int64 {
 	return d.Solve(log, func(a, b int64) int64 {
-		var c int64
-		var i int64
-		for ; i < lmath.AbsInt(a-b); i++ {
-			c += i + 1
-		}
-		return c
+		abs := lmath.AbsInt(a - b)
+		return abs * (abs + 1) / 2
 	})
 }
