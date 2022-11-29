@@ -8,3 +8,18 @@ func GCD[T constraints.Integer](x, y T) T {
 	}
 	return x
 }
+
+func AbsInt[T constraints.Integer](x T) T {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func Min[T constraints.Ordered](a, b T) T {
+	if a <= b {
+		return a
+	} else {
+		return b
+	}
+}

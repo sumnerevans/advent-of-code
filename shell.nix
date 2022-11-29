@@ -52,6 +52,7 @@ let
     ${waitForInput}/bin/waitforinput
   '';
 
+  # TODO actually wait
   waitForInput = writeShellScriptBin "waitforinput" ''
     dayDirname=$(basename $(pwd))
 
