@@ -15,9 +15,11 @@ func (d *Day%DAYNUM%) LoadInput(log *zerolog.Logger, lines []string) error {
 }
 
 func (d *Day%DAYNUM%) Part1(log *zerolog.Logger) int64 {
-	return 0
+	var ans int64
+	return ans
 }
 
 func (d *Day%DAYNUM%) Part2(log *zerolog.Logger) int64 {
-	return 0
+	var ans int64
+	return ans
 }
