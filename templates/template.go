@@ -19,6 +19,10 @@ func (d *Day%DAYNUM%) Part1(log *zerolog.Logger) int64 {
 	return ans
 }
 
+func (d *Day01) SkipFirst() bool {
+	return false
+}
+
 func (d *Day%DAYNUM%) Part2(log *zerolog.Logger) int64 {
 	var ans int64
 	return ans

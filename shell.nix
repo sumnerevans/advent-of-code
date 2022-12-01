@@ -49,11 +49,9 @@ let
       > ${PROJECT_ROOT}/$yearDirname/d$day/''${day}_test.go
 
     cd ${PROJECT_ROOT}/$yearDirname/d$day
-    ${waitForInput}/bin/waitforinput
   '';
 
-  # TODO actually wait
-  waitForInput = writeShellScriptBin "waitforinput" ''
+  getInputScript = writeShellScriptBin "getinput" ''
     dayDirname=$(basename $(pwd))
 
     # Error if not a solution dir
@@ -249,7 +247,7 @@ mkShell {
     debugRunScript
     debugRunNoTestScript
     debugSingleRunScript
-    waitForInput
+    getInputScript
     mkTestScript
     printStatsScript
     runScript
