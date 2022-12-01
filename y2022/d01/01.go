@@ -1,10 +1,10 @@
 package d01
 
 import (
-	"sort"
-
 	"github.com/rs/zerolog"
 	"github.com/sumnerevans/advent-of-code/lib"
+	"github.com/sumnerevans/advent-of-code/lib/fp"
+	math "github.com/sumnerevans/advent-of-code/lib/math"
 )
 
 type Day01 struct {
@@ -22,21 +22,15 @@ func (d *Day01) LoadInput(log *zerolog.Logger, lines []string) (err error) {
 			cur = append(cur, x)
 		}
 	}
+	d.G = append(d.G, cur)
 	return err
 }
 
 func (d *Day01) Part1(log *zerolog.Logger) int64 {
 	var ans int64
 
-	for i, n := range d.G {
-		log.Debug().Int("i", i).Interface("n", n).Msg("num")
-		var sum int64
-		for _, x := range n {
-			sum += x
-		}
-		if sum > ans {
-			ans = sum
-		}
+	for _, nums := range d.G {
+		ans = math.Max(fp.Sum(nums), ans)
 	}
 
 	return ans
@@ -46,20 +40,12 @@ func (d *Day01) SkipFirst() bool {
 	return false
 }
 
-func (d *Day01) Part2(log *zerolog.Logger) int {
-	var ans []int
+func (d *Day01) Part2(log *zerolog.Logger) int64 {
+	var groupSums []int64
 
-	for i, n := range d.G {
-		log.Debug().Int("i", i).Interface("n", n).Msg("num")
-		var sum int
-		for _, x := range n {
-			sum += int(x)
-		}
-		ans = append(ans, sum)
+	for _, nums := range d.G {
+		groupSums = append(groupSums, fp.Sum(nums))
 	}
 
-	sort.Ints(ans)
-
-	return ans[len(ans)-1] + ans[len(ans)-2] + ans[len(ans)-3]
-
+	return fp.Sum(lib.TopN(groupSums, 3))
 }

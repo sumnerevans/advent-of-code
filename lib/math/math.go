@@ -16,6 +16,14 @@ func AbsInt[T constraints.Integer](x T) T {
 	return x
 }
 
+func Max[T constraints.Ordered](a, b T) T {
+	if a >= b {
+		return a
+	} else {
+		return b
+	}
+}
+
 func Min[T constraints.Ordered](a, b T) T {
 	if a <= b {
 		return a
