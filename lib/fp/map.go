@@ -32,9 +32,9 @@ func IMap[T any, U any](f func(T) U) func(ds.Iterator[T]) ds.Iterator[U] {
 }
 
 func MapStrInt(input []string) ds.Iterator[int] {
-	return Map(lib.ToIntUnsafe)(input)
+	return Map(lib.ToInt)(input)
 }
 
 func MapStrInt64(input []string) ds.Iterator[int64] {
-	return Map(lib.ToInt64Unsafe)(input)
+	return Map(lib.ToInt64)(input)
 }

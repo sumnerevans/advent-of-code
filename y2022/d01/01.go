@@ -4,6 +4,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/sumnerevans/advent-of-code/lib"
 	"github.com/sumnerevans/advent-of-code/lib/fp"
+	"github.com/sumnerevans/advent-of-code/lib/input"
 )
 
 type Day01 struct {
@@ -11,18 +12,10 @@ type Day01 struct {
 }
 
 func (d *Day01) LoadInput(log *zerolog.Logger, lines []string) (err error) {
-	var sum int64
-	for _, line := range lines {
-		if line == "" {
-			d.GroupSums = append(d.GroupSums, sum)
-			sum = 0
-		} else {
-			x, _ := lib.ToInt64(line)
-			sum += x
-		}
-	}
-	d.GroupSums = append(d.GroupSums, sum)
-	return err
+	d.GroupSums = input.ParseGroups(lines, func(ls []string) int64 {
+		return fp.Sum(lib.LoadInt64s(ls))
+	}).List()
+	return nil
 }
 
 func (d *Day01) Part1(log *zerolog.Logger) int64 {
