@@ -18,6 +18,7 @@ channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
 
 * [2020 Playlist](https://www.youtube.com/playlist?list=PLpnr_TeIrBtB56VmuG8PIn5TU3wxkDtHE)
 * [2021 Playlist](https://www.youtube.com/playlist?list=PLpnr_TeIrBtAXS6uWQijhF-2JjsArzFz7)
+* 2022 Playlist is delayed due to me being sick at the start of Advent of Code.
 
 ## A few random links
 
@@ -52,6 +53,14 @@ of helper scripts to help with things such as running tests and getting the
 input using `curl`.
 
 ## Results
+
+### 2022 (2*)
+
+```
+      -------Part 1--------   -------Part 2--------
+Day       Time  Rank  Score       Time  Rank  Score
+  1   00:03:27  1461      0   00:08:04  2857      0
+```
 
 ### 2021 (50*, 115 points on global leaderboard)
 
