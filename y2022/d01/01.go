@@ -14,7 +14,7 @@ type Day01 struct {
 func (d *Day01) LoadInput(log *zerolog.Logger, lines []string) (err error) {
 	d.GroupSums = input.ParseGroups(lines, func(ls []string) int64 {
 		return fp.Sum(lib.LoadInt64s(ls))
-	}).List()
+	})
 	return nil
 }
 
