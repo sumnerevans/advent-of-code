@@ -45,8 +45,8 @@ func (d *Day03) Part1(log *zerolog.Logger) int64 {
 
 func (d *Day03) Part2(log *zerolog.Logger) int64 {
 	var oxy, co2 int64
-	oxyConsider := ds.NewSetFromIter(lib.ERange(len(d.Report)))
-	co2Consider := ds.NewSetFromIter(lib.ERange(len(d.Report)))
+	oxyConsider := ds.NewSet(lib.ERange(len(d.Report)))
+	co2Consider := ds.NewSet(lib.ERange(len(d.Report)))
 
 	for col := range lib.ERange(len(d.Report[0])) {
 		var oxyOnes, oxyZeros int64

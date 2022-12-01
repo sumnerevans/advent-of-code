@@ -49,7 +49,7 @@ func (s Set[T]) Remove(val T) {
 	delete(s, val)
 }
 
-func NewSet[T comparable](values ...T) Set[T] {
+func NewSet[T comparable](values []T) Set[T] {
 	set := Set[T]{}
 	for _, v := range values {
 		set[v] = struct{}{}
@@ -57,9 +57,9 @@ func NewSet[T comparable](values ...T) Set[T] {
 	return set
 }
 
-func NewSetFromIter[T comparable](iter <-chan T) Set[T] {
+func SetFromValues[T comparable](values ...T) Set[T] {
 	set := Set[T]{}
-	for v := range iter {
+	for _, v := range values {
 		set[v] = struct{}{}
 	}
 	return set

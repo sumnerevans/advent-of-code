@@ -1,4 +1,4 @@
-package fp
+package lib
 
 func Cached[T comparable, U any](f func(T) U) func(T) U {
 	cache := make(map[T]U)

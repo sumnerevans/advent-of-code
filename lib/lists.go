@@ -42,3 +42,41 @@ func BottomN[T constraints.Ordered](input []T, n int) []T {
 	sort.Slice(cp, func(i, j int) bool { return cp[i] < cp[j] })
 	return cp[:n]
 }
+
+func MaxList[T constraints.Ordered](l []T) T {
+	_, max := MinMaxList(l)
+	return max
+}
+
+func MaxListFn[T, U constraints.Ordered](l []T, f func(T) U) U {
+	_, max := MinMaxListFn(l, f)
+	return max
+}
+
+func MinList[T constraints.Ordered](l []T) T {
+	min, _ := MinMaxList(l)
+	return min
+}
+
+func MinListFn[T, U constraints.Ordered](l []T, f func(T) U) U {
+	min, _ := MinMaxListFn(l, f)
+	return min
+}
+
+func MinMaxList[T constraints.Ordered](l []T) (min, max T) {
+	return MinMaxListFn(l, func(x T) T { return x })
+}
+
+func MinMaxListFn[T any, U constraints.Ordered](l []T, f func(T) U) (min, max U) {
+	if len(l) == 0 {
+		panic("cannot find min/max of empty list")
+	}
+	min = f(l[0])
+	max = min
+	for _, val := range l {
+		v := f(val)
+		min = Min(min, v)
+		max = Max(max, v)
+	}
+	return
+}

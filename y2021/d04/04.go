@@ -7,8 +7,6 @@ import (
 	"github.com/rs/zerolog"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	"github.com/sumnerevans/advent-of-code/lib/fp"
-	"github.com/sumnerevans/advent-of-code/lib/strs"
 )
 
 type Board [][]int64
@@ -33,12 +31,12 @@ func (b Board) Mark(num int64) {
 
 func (b Board) Won() bool {
 	for _, row := range b {
-		if fp.Sum(row) == 0 {
+		if lib.Sum(row) == 0 {
 			return true
 		}
 	}
 	for _, col := range lib.Columns(b) {
-		if fp.Sum(col) == 0 {
+		if lib.Sum(col) == 0 {
 			return true
 		}
 	}
@@ -46,7 +44,11 @@ func (b Board) Won() bool {
 }
 
 func (b Board) Sum() int64 {
-	return fp.ISum(fp.Map(fp.Sum)(b))
+	var sum int64
+	for _, row := range b {
+		sum += lib.Sum(row)
+	}
+	return sum
 }
 
 type Day04 struct {
@@ -55,7 +57,7 @@ type Day04 struct {
 }
 
 func (d *Day04) LoadInput(log *zerolog.Logger, lines []string) error {
-	d.Nums = strs.AllInts64(lines[0]).List()
+	d.Nums = lib.AllInts64(lines[0])
 
 	d.Boards = []Board{}
 	board := Board{}
@@ -64,7 +66,7 @@ func (d *Day04) LoadInput(log *zerolog.Logger, lines []string) error {
 			d.Boards = append(d.Boards, board)
 			board = Board{}
 		} else {
-			board = append(board, fp.MapStrInt64(strings.Fields(line)).List())
+			board = append(board, lib.MapStrInt64(strings.Fields(line)))
 		}
 	}
 	d.Boards = append(d.Boards, board)

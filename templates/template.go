@@ -3,14 +3,14 @@ package d%DAYNUM%
 import (
 	"github.com/rs/zerolog"
 
-	math "github.com/sumnerevans/advent-of-code/lib/math"
+	_ "github.com/sumnerevans/advent-of-code/lib"
+	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type Day%DAYNUM% struct {
 }
 
 func (d *Day%DAYNUM%) LoadInput(log *zerolog.Logger, lines []string) error {
-	math.Min(1, 2)
 	for _, line := range lines {
 		log.Info().Msg(line)
 	}

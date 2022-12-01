@@ -1,4 +1,4 @@
-package input
+package lib
 
 func ParseGroups[T any](lines []string, fn func([]string) T) (groups []T) {
 	start := 0

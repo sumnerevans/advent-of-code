@@ -3,23 +3,18 @@ package lib
 import (
 	"fmt"
 
-	"github.com/sumnerevans/advent-of-code/lib/ds"
 	"golang.org/x/exp/constraints"
 )
 
 // ERange generates a Range that iterates over the integers in the range
 // [start, end).
-func ERange(rangearg1 int, rangeargs ...int) ds.Iterator[int] {
+func ERange(rangearg1 int, rangeargs ...int) []int {
 	if len(rangeargs) == 0 {
 		return IRange(rangearg1 - 1)
 	}
 	args := []int{}
 	if rangearg1 == rangeargs[0] {
-		r := make(chan int)
-		go func() {
-			close(r)
-		}()
-		return r
+		return []int{}
 	} else if rangearg1 < rangeargs[0] {
 		args = append(args, rangeargs[0]-1)
 	} else {
@@ -30,7 +25,7 @@ func ERange(rangearg1 int, rangeargs ...int) ds.Iterator[int] {
 }
 
 // IRange generates a Range using the same rules as the Python range function.
-func IRange[T constraints.Signed](rangearg1 T, rangeargs ...T) ds.Iterator[T] {
+func IRange[T constraints.Signed](rangearg1 T, rangeargs ...T) (output []T) {
 	if len(rangeargs) > 2 {
 		panic(fmt.Sprintf("Invalid rangeargs %+v", rangeargs))
 	}
@@ -54,21 +49,16 @@ func IRange[T constraints.Signed](rangearg1 T, rangeargs ...T) ds.Iterator[T] {
 		step *= -1
 	}
 
-	r := make(chan T)
-	go func() {
-		defer close(r)
-		if start == end {
-			r <- start
-			return
-		} else if start < end {
-			for i := start; i <= end; i += step {
-				r <- i
-			}
-		} else {
-			for i := start; i >= end; i -= step {
-				r <- i
-			}
+	if start == end {
+		return []T{start}
+	} else if start < end {
+		for i := start; i <= end; i += step {
+			output = append(output, i)
 		}
-	}()
-	return r
+	} else {
+		for i := start; i >= end; i -= step {
+			output = append(output, i)
+		}
+	}
+	return output
 }

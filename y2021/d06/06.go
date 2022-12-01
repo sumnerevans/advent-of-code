@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog"
-	"github.com/sumnerevans/advent-of-code/lib/fp"
+	"github.com/sumnerevans/advent-of-code/lib"
 )
 
 type Day06 struct {
@@ -12,7 +12,7 @@ type Day06 struct {
 }
 
 func (d *Day06) LoadInput(log *zerolog.Logger, lines []string) error {
-	d.Fishes = fp.MapStrInt(strings.Split(lines[0], ",")).List()
+	d.Fishes = lib.MapStrInt(strings.Split(lines[0], ","))
 	return nil
 }
 
