@@ -17,8 +17,8 @@ func (d *Day%DAYNUM%) LoadInput(log *zerolog.Logger, lines []string) error {
 	return nil
 }
 
-func (d *Day%DAYNUM%) Part1(log *zerolog.Logger) int64 {
-	var ans int64
+func (d *Day%DAYNUM%) Part1(log *zerolog.Logger) int {
+	var ans int
 	return ans
 }
 
@@ -26,7 +26,7 @@ func (d *Day%DAYNUM%) SkipFirst() bool {
 	return false
 }
 
-func (d *Day%DAYNUM%) Part2(log *zerolog.Logger) int64 {
-	var ans int64
+func (d *Day%DAYNUM%) Part2(log *zerolog.Logger) int {
+	var ans int
 	return ans
 }

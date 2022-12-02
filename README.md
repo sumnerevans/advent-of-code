@@ -59,6 +59,7 @@ input using `curl`.
 ```
       -------Part 1--------   -------Part 2--------
 Day       Time  Rank  Score       Time  Rank  Score
+  2   00:14:26  5517      0   00:19:30  4347      0
   1   00:03:27  1461      0   00:08:04  2857      0
 ```
 

@@ -9,58 +9,62 @@ import (
 	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
-type Pair struct {
-	You string
-	Me  string
+type Play int
+
+const (
+	Rock    Play = 0
+	Paper   Play = 1
+	Scisors Play = 2
+)
+
+func (p Play) Score() int {
+	return int(p) + 1
+}
+
+func (p Play) Beats(other Play) bool {
+	return int(p) == (int(other)+1)%3
+}
+
+func PlayFromStr(play string) Play {
+	switch play {
+	case "X", "A":
+		return Rock
+	case "Y", "B":
+		return Paper
+	case "Z", "C":
+		return Scisors
+	default:
+		panic(play)
+	}
+}
+
+type Round struct {
+	You Play
+	Me  Play
 }
 
 type Day02 struct {
-	Pairs []Pair
+	Rounds []Round
 }
 
 func (d *Day02) LoadInput(log *zerolog.Logger, lines []string) error {
 	for _, line := range lines {
 		k := strings.Split(line, " ")
-		d.Pairs = append(d.Pairs, Pair{k[0], k[1]})
+		d.Rounds = append(d.Rounds, Round{PlayFromStr(k[0]), PlayFromStr(k[1])})
 	}
 	return nil
 }
 
-func (d *Day02) Part1(log *zerolog.Logger) int64 {
-	var ans int64
+func (d *Day02) Part1(log *zerolog.Logger) int {
+	var ans int
 
-	for _, p := range d.Pairs {
-		val := 0
-		switch p.Me {
-		case "X": // R
-			val = 1
-		case "Y": // paper
-			val = 2
-		case "Z": // sci
-			val = 3
+	for _, r := range d.Rounds {
+		ans += r.Me.Score()
+		if r.Me == r.You {
+			ans += 3
+		} else if r.Me.Beats(r.You) {
+			ans += 6
 		}
-
-		switch p.You {
-		case "A": // R
-			if val == 1 {
-				val += 3
-			} else if val == 2 {
-				val += 6
-			}
-		case "B": // paper
-			if val == 2 {
-				val += 3
-			} else if val == 3 {
-				val += 6
-			}
-		case "C": // sci
-			if val == 3 {
-				val += 3
-			} else if val == 1 {
-				val += 6
-			}
-		}
-		ans += int64(val)
 	}
 
 	return ans
@@ -70,49 +74,34 @@ func (d *Day02) SkipFirst() bool {
 	return false
 }
 
-func (d *Day02) Part2(log *zerolog.Logger) int64 {
-	var ans int64
+func (d *Day02) Part2(log *zerolog.Logger) int {
+	var ans int
 
-	for _, p := range d.Pairs {
-		val := 0
+	for _, p := range d.Rounds {
 		switch p.Me {
-		case "X": // R
-			val = 0
-		case "Y": // paper
-			val = 3
-		case "Z": // sci
-			val = 6
-		}
-
-		if val == 0 {
+		case Rock: // Lose
+			ans += 0
 			switch p.You {
-			case "A": //R
-				val += 3
-			case "B": //p
-				val += 1
-			case "C": //s
-				val += 2
+			case Rock:
+				ans += Scisors.Score()
+			case Paper:
+				ans += Rock.Score()
+			case Scisors:
+				ans += Paper.Score()
 			}
-		} else if val == 3 {
+		case Paper: // Draw
+			ans += 3 + p.You.Score()
+		case Scisors: // Win
+			ans += 6
 			switch p.You {
-			case "A": //R
-				val += 1
-			case "B": //p
-				val += 2
-			case "C": //s
-				val += 3
-			}
-		} else if val == 6 {
-			switch p.You {
-			case "A": //R
-				val += 2
-			case "B": //p
-				val += 3
-			case "C": //s
-				val += 1
+			case Rock:
+				ans += Paper.Score()
+			case Paper:
+				ans += Scisors.Score()
+			case Scisors:
+				ans += Rock.Score()
 			}
 		}
-		ans += int64(val)
 	}
 
 	return ans

@@ -83,7 +83,7 @@ func Test_Day02(t *testing.T) {
 			fmt.Printf("Part 2:\n%d", output)
 			fmt.Print("\n\n=================================\n")
 
-			assert.EqualValues(t, -1, output)
+			assert.EqualValues(t, 11258, output)
 		})
 	})
 }
