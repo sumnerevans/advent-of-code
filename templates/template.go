@@ -22,7 +22,7 @@ func (d *Day%DAYNUM%) Part1(log *zerolog.Logger) int64 {
 	return ans
 }
 
-func (d *Day01) SkipFirst() bool {
+func (d *Day%DAYNUM%) SkipFirst() bool {
 	return false
 }
 
