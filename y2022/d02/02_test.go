@@ -18,11 +18,6 @@ func Test_Day02(t *testing.T) {
 	log, sample, actual := lib.SetupTest(t, inputs, "02")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
-		day02 := &d02.Day02{}
-		if day02.SkipFirst() {
-			return
-		}
-
 		if len(sample) > 0 {
 			ok := t.Run("1 Test case", func(t *testing.T) {
 				day02 := &d02.Day02{}

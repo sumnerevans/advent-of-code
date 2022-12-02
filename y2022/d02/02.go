@@ -12,9 +12,9 @@ import (
 type Play int
 
 const (
-	Rock    Play = 0
-	Paper   Play = 1
-	Scisors Play = 2
+	Rock Play = iota
+	Paper
+	Scisors
 )
 
 func (p Play) Score() int {
@@ -68,10 +68,6 @@ func (d *Day02) Part1(log *zerolog.Logger) int {
 	}
 
 	return ans
-}
-
-func (d *Day02) SkipFirst() bool {
-	return false
 }
 
 func (d *Day02) Part2(log *zerolog.Logger) int {
