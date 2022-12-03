@@ -32,8 +32,8 @@ func (d *Day03) Part1(log *zerolog.Logger) int {
 	var ans int
 
 	for _, s := range d.Sacks {
-		half := len(s) / 2
-		ans += score(ds.NewSet(s[:half]).Intersection(ds.NewSet(s[half:])).List()[0])
+		fst, snd := lib.SplitAt(s, len(s)/2)
+		ans += score(ds.NewSet(fst).Intersection(ds.NewSet(snd)).List()[0])
 	}
 
 	return ans

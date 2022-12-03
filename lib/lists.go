@@ -97,3 +97,7 @@ func Windowed[T any](l []T, n int) (windows [][]T) {
 	windows = append(windows, cur)
 	return windows
 }
+
+func SplitAt[T any](l []T, n int) ([]T, []T) {
+	return l[:n], l[n:]
+}
