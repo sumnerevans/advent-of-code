@@ -64,3 +64,11 @@ func SetFromValues[T comparable](values ...T) Set[T] {
 	}
 	return set
 }
+
+func (s Set[T]) List() []T {
+	result := []T{}
+	for x := range s {
+		result = append(result, x)
+	}
+	return result
+}

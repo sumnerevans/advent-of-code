@@ -80,3 +80,20 @@ func MinMaxListFn[T any, U constraints.Ordered](l []T, f func(T) U) (min, max U)
 	}
 	return
 }
+
+func Windowed[T any](l []T, n int) (windows [][]T) {
+	if n <= 0 {
+		panic("invalid window size")
+	}
+	cur := []T{}
+	for i := 0; i < len(l); i++ {
+		if i > 0 && i%n == 0 {
+			windows = append(windows, cur)
+			cur = []T{}
+		}
+
+		cur = append(cur, l[i])
+	}
+	windows = append(windows, cur)
+	return windows
+}
