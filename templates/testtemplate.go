@@ -51,6 +51,8 @@ func Test_Day%DAYNUM%(t *testing.T) {
 			fmt.Printf("Part 1:\n%d", output)
 			fmt.Print("\n\n=================================\n")
 
+			assert.NotEqualValues(t, 0, output)
+
 			assert.EqualValues(t, -1, output)
 		})
 	})
@@ -92,6 +94,8 @@ func Test_Day%DAYNUM%(t *testing.T) {
 			fmt.Print("ACTUAL INPUT\n\n")
 			fmt.Printf("Part 2:\n%d", output)
 			fmt.Print("\n\n=================================\n")
+
+			assert.NotEqualValues(t, 0, output)
 
 			assert.EqualValues(t, -1, output)
 		})

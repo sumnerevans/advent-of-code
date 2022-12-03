@@ -15,17 +15,25 @@ import (
 var inputs embed.FS
 
 func Test_Day04(t *testing.T) {
-	log, sample, actual := lib.SetupTest(t, inputs, "04")
+	log, samples, actual := lib.SetupTest(t, inputs, "04")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
-		if len(sample) > 0 {
-			ok := t.Run("1 Test case", func(t *testing.T) {
-				day04 := &d04.Day04{}
-				err := day04.LoadInput(log, sample)
-				assert.NoError(t, err)
-				output := day04.Part1(log)
+		if len(samples) > 0 {
+			ok := t.Run("1 Test cases", func(t *testing.T) {
+				EXPECTED := []int64{
+					4512,
+				}
 
-				assert.EqualValues(t, 4512, output)
+				for i, sample := range samples {
+					t.Run(fmt.Sprintf("Test %d", i), func(t *testing.T) {
+						day04 := &d04.Day04{}
+						err := day04.LoadInput(log, sample)
+						assert.NoError(t, err)
+						output := day04.Part1(log)
+
+						assert.EqualValues(t, EXPECTED[i], output)
+					})
+				}
 			})
 			if !ok {
 				t.FailNow()
@@ -51,14 +59,22 @@ func Test_Day04(t *testing.T) {
 	}
 
 	t.Run("Part 2", func(t *testing.T) {
-		if len(sample) > 0 {
-			ok := t.Run("1 Test case", func(t *testing.T) {
-				day04 := &d04.Day04{}
-				err := day04.LoadInput(log, sample)
-				assert.NoError(t, err)
-				output := day04.Part2(log)
+		if len(samples) > 0 {
+			ok := t.Run("1 Test cases", func(t *testing.T) {
+				EXPECTED := []int64{
+					1924,
+				}
 
-				assert.EqualValues(t, 1924, output)
+				for i, sample := range samples {
+					t.Run(fmt.Sprintf("Test %d", i), func(t *testing.T) {
+						day04 := &d04.Day04{}
+						err := day04.LoadInput(log, sample)
+						assert.NoError(t, err)
+						output := day04.Part2(log)
+
+						assert.EqualValues(t, EXPECTED[i], output)
+					})
+				}
 			})
 			if !ok {
 				t.FailNow()

@@ -15,17 +15,25 @@ import (
 var inputs embed.FS
 
 func Test_Day07(t *testing.T) {
-	log, sample, actual := lib.SetupTest(t, inputs, "07")
+	log, samples, actual := lib.SetupTest(t, inputs, "07")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
-		if len(sample) > 0 {
+		if len(samples) > 0 {
 			ok := t.Run("1 Test case", func(t *testing.T) {
-				day07 := &d07.Day07{}
-				err := day07.LoadInput(log, sample)
-				assert.NoError(t, err)
-				output := day07.Part1(log)
+				EXPECTED := []int64{
+					37,
+				}
 
-				assert.EqualValues(t, 37, output)
+				for i, sample := range samples {
+					t.Run(fmt.Sprintf("Test %d", i), func(t *testing.T) {
+						day07 := &d07.Day07{}
+						err := day07.LoadInput(log, sample)
+						assert.NoError(t, err)
+						output := day07.Part1(log)
+
+						assert.EqualValues(t, EXPECTED[i], output)
+					})
+				}
 			})
 			if !ok {
 				t.FailNow()
@@ -52,14 +60,22 @@ func Test_Day07(t *testing.T) {
 	}
 
 	t.Run("Part 2", func(t *testing.T) {
-		if len(sample) > 0 {
+		if len(samples) > 0 {
 			ok := t.Run("1 Test case", func(t *testing.T) {
-				day07 := &d07.Day07{}
-				err := day07.LoadInput(log, sample)
-				assert.NoError(t, err)
-				output := day07.Part2(log)
+				EXPECTED := []int64{
+					168,
+				}
 
-				assert.EqualValues(t, 168, output)
+				for i, sample := range samples {
+					t.Run(fmt.Sprintf("Test %d", i), func(t *testing.T) {
+						day07 := &d07.Day07{}
+						err := day07.LoadInput(log, sample)
+						assert.NoError(t, err)
+						output := day07.Part2(log)
+
+						assert.EqualValues(t, EXPECTED[i], output)
+					})
+				}
 			})
 			if !ok {
 				t.FailNow()
