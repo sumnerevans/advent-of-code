@@ -22,10 +22,6 @@ func (d *Day%DAYNUM%) Part1(log *zerolog.Logger) int {
 	return ans
 }
 
-func (d *Day%DAYNUM%) SkipFirst() bool {
-	return false
-}
-
 func (d *Day%DAYNUM%) Part2(log *zerolog.Logger) int {
 	var ans int
 	return ans

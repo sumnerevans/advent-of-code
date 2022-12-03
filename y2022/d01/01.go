@@ -21,10 +21,6 @@ func (d *Day01) Part1(log *zerolog.Logger) int64 {
 	return lib.Sum(lib.TopN(d.GroupSums, 1))
 }
 
-func (d *Day01) SkipFirst() bool {
-	return false
-}
-
 func (d *Day01) Part2(log *zerolog.Logger) int64 {
 	return lib.Sum(lib.TopN(d.GroupSums, 3))
 }

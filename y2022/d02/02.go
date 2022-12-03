@@ -4,9 +4,6 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog"
-
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type Play int

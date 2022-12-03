@@ -19,5 +19,5 @@ indent_style = tab
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{ml,md,nix}]
+[*.{ml,md,nix,yaml}]
 indent_size = 2

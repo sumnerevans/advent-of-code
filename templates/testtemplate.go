@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/sumnerevans/advent-of-code/lib/testutil"
+	"github.com/sumnerevans/advent-of-code/lib"
 	"github.com/sumnerevans/advent-of-code/y%YEARNUM%/d%DAYNUM%"
 )
 
@@ -15,22 +15,25 @@ import (
 var inputs embed.FS
 
 func Test_Day%DAYNUM%(t *testing.T) {
-	log, sample, actual := testutil.SetupTest(t, inputs, "%DAYNUM%")
+	log, samples, actual := lib.SetupTest(t, inputs, "%DAYNUM%")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
-		day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-		if day%DAYNUM%.SkipFirst() {
-			return
-		}
+		if len(samples) > 0 {
+			ok := t.Run("1 Test cases", func(t *testing.T) {
+				EXPECTED := []int64{
+					-1,
+				}
 
-		if len(sample) > 0 {
-			ok := t.Run("1 Test case", func(t *testing.T) {
-				day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-				err := day%DAYNUM%.LoadInput(log, sample)
-				assert.NoError(t, err)
-				output := day%DAYNUM%.Part1(log)
+				for i, sample := range samples {
+					t.Run(fmt.Sprintf("Test %d", i), func(t *testing.T) {
+						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
+						err := day%DAYNUM%.LoadInput(log, sample)
+						assert.NoError(t, err)
+						output := day%DAYNUM%.Part1(log)
 
-				assert.EqualValues(t, -1, output)
+						assert.EqualValues(t, EXPECTED[i], output)
+					})
+				}
 			})
 			if !ok {
 				t.FailNow()
@@ -57,14 +60,22 @@ func Test_Day%DAYNUM%(t *testing.T) {
 	}
 
 	t.Run("Part 2", func(t *testing.T) {
-		if len(sample) > 0 {
-			ok := t.Run("1 Test case", func(t *testing.T) {
-				day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-				err := day%DAYNUM%.LoadInput(log, sample)
-				assert.NoError(t, err)
-				output := day%DAYNUM%.Part2(log)
+		if len(samples) > 0 {
+			ok := t.Run("1 Test cases", func(t *testing.T) {
+				EXPECTED := []int64{
+					-1,
+				}
 
-				assert.EqualValues(t, -1, output)
+				for i, sample := range samples {
+					t.Run(fmt.Sprintf("Test %d", i), func(t *testing.T) {
+						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
+						err := day%DAYNUM%.LoadInput(log, sample)
+						assert.NoError(t, err)
+						output := day%DAYNUM%.Part2(log)
+
+						assert.EqualValues(t, EXPECTED[i], output)
+					})
+				}
 			})
 			if !ok {
 				t.FailNow()

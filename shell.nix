@@ -39,7 +39,7 @@ let
     ${getDayScriptPart "initday"}
 
     mkdir -p ${PROJECT_ROOT}/$yearDirname/d$day
-    touch ${PROJECT_ROOT}/$yearDirname/d$day/$day.test.txt
+    touch ${PROJECT_ROOT}/$yearDirname/d$day/$day.test.1.txt
     cat ${PROJECT_ROOT}/templates/template.go \
       | sed "s/%DAYNUM%/$day/g" \
       > ${PROJECT_ROOT}/$yearDirname/d$day/$day.go
