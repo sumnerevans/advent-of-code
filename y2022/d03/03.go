@@ -22,9 +22,9 @@ func (d *Day03) LoadInput(log *zerolog.Logger, lines []string) error {
 
 func score(c rune) int {
 	if unicode.IsLower(c) {
-		return int(c-'a') + 1
+		return int(c - 'a' + 1)
 	} else {
-		return int(c-'A') + 27
+		return int(c - 'A' + 27)
 	}
 }
 
