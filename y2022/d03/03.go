@@ -1,6 +1,8 @@
 package d03
 
 import (
+	"unicode"
+
 	"github.com/rs/zerolog"
 
 	"github.com/sumnerevans/advent-of-code/lib"
@@ -19,13 +21,11 @@ func (d *Day03) LoadInput(log *zerolog.Logger, lines []string) error {
 }
 
 func score(c rune) int {
-	if c >= 'a' && c <= 'z' {
+	if unicode.IsLower(c) {
 		return int(c-'a') + 1
-	}
-	if c >= 'A' && c <= 'Z' {
+	} else {
 		return int(c-'A') + 27
 	}
-	panic("impossible")
 }
 
 func (d *Day03) Part1(log *zerolog.Logger) int {
