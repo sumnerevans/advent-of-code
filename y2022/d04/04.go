@@ -14,13 +14,8 @@ func (s Section) Contains(other Section) bool {
 	return s.Start <= other.Start && other.End <= s.End
 }
 
-func (s Section) IntersectionCard(other Section) int {
-	start := lib.Max(s.Start, other.Start)
-	end := lib.Min(s.End, other.End)
-	if start <= end {
-		return end - start + 1
-	}
-	return 0
+func (s Section) IntersectionCard(other Section) bool {
+	return lib.Max(s.Start, other.Start) <= lib.Min(s.End, other.End)
 }
 
 type Pair struct {
@@ -57,7 +52,7 @@ func (d *Day04) Part1(log *zerolog.Logger) int {
 func (d *Day04) Part2(log *zerolog.Logger) int {
 	var ans int
 	for _, p := range d.Pairs {
-		if p.Section1.IntersectionCard(p.Section2) > 0 {
+		if p.Section1.IntersectionCard(p.Section2) {
 			ans += 1
 		}
 	}
