@@ -97,7 +97,7 @@ func Test_Day04(t *testing.T) {
 
 			assert.NotEqualValues(t, 979, output)
 
-			assert.EqualValues(t, -1, output)
+			assert.EqualValues(t, 886, output)
 		})
 	})
 }
