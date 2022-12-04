@@ -25,7 +25,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				}
 
 				for i, sample := range samples {
-					t.Run(fmt.Sprintf("Test %d", i), func(t *testing.T) {
+					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
 						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
 						err := day%DAYNUM%.LoadInput(log, sample)
 						assert.NoError(t, err)
@@ -69,7 +69,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				}
 
 				for i, sample := range samples {
-					t.Run(fmt.Sprintf("Test %d", i), func(t *testing.T) {
+					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
 						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
 						err := day%DAYNUM%.LoadInput(log, sample)
 						assert.NoError(t, err)
