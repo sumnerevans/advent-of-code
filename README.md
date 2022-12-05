@@ -6,43 +6,44 @@
 These are my solutions to Advent of Code problems. If you want to join my
 leaderboard, the code is `540750-9589f56d`.
 
-When I solve for speed on the night when the problem opens, I solve using
-Python. I've gone back and solved a few problems in other languages as well.
+When I solve for speed on the night when the problem opens. Currently (2022),
+I'm solving using Go. In previous years, I solved using Python. I've gone back
+and solved a few problems in other languages as well.
 
 **Starting in 2020, I am streaming my solve sessions [on
 Twitch](https://www.twitch.tv/sumnerevans).** Go over there and follow to be
 notified when I stream!
 
 I then upload the VODs to [my YouTube
-channel](https://www.youtube.com/channel/UCyrdRO4oJRpszr0ovN1FwBA).
+channel](https://youtube.com/@sumnerevans).
 
-* [2020 Playlist](https://www.youtube.com/playlist?list=PLpnr_TeIrBtB56VmuG8PIn5TU3wxkDtHE)
-* [2021 Playlist](https://www.youtube.com/playlist?list=PLpnr_TeIrBtAXS6uWQijhF-2JjsArzFz7)
-* 2022 Playlist is delayed due to me being sick at the start of Advent of Code.
+- [2020 Playlist](https://youtube.com/playlist?list=PLpnr_TeIrBtB56VmuG8PIn5TU3wxkDtHE)
+- [2021 Playlist](https://youtube.com/playlist?list=PLpnr_TeIrBtAXS6uWQijhF-2JjsArzFz7)
+- [2022 Playlist](https://youtube.com/playlist?list=PLpnr_TeIrBtDsExAIisrtLd3qokURP-mG)
 
 ## A few random links
 
 **Other solutions that I take a look at:**
 
-* [Adam Sandstedt](https://github.com/AdamSandstedt/AdventOfCode)
-* [Colin Siles](https://github.com/sColin16/AoC)
-* [Jack Garner](https://gitlab.com/jhgarner/advent2021)
-* [Jordan Newport](https://sr.ht/~talos/advent-of-code/)
-* [Kelly Dance](https://github.com/mcbobby123/AdventOfCode2020)
-* [Sam Sartor](https://gitlab.com/samsartor/aoc-2021/)
+- [Adam Sandstedt](https://github.com/AdamSandstedt/AdventOfCode)
+- [Colin Siles](https://github.com/sColin16/AoC)
+- [Jack Garner](https://gitlab.com/jhgarner/advent2021)
+- [Jordan Newport](https://sr.ht/~talos/advent-of-code/)
+- [Kelly Dance](https://github.com/mcbobby123/AdventOfCode2020)
+- [Sam Sartor](https://gitlab.com/samsartor/aoc-2021/)
 
 **Other streamers I like watching:**
 
-* [Anthony Sottile](https://www.twitch.tv/anthonywritescode)
-* [Jonathan Paulson](https://www.youtube.com/channel/UCuWLIm0l4sDpEe28t41WITA/featured)
-* [Joshua Wise](https://www.youtube.com/user/joshuawise)
-* [lizthegrey](https://www.twitch.tv/lizthegrey)
-* [Rhymu](https://www.twitch.tv/rhymu)
-* [where_is_x](https://www.twitch.tv/where_is_x)
+- [Anthony Sottile](https://www.twitch.tv/anthonywritescode)
+- [Jonathan Paulson](https://www.youtube.com/channel/UCuWLIm0l4sDpEe28t41WITA/featured)
+- [Joshua Wise](https://www.youtube.com/user/joshuawise)
+- [lizthegrey](https://www.twitch.tv/lizthegrey)
+- [Rhymu](https://www.twitch.tv/rhymu)
+- [where_is_x](https://www.twitch.tv/where_is_x)
 
 **Why I'm not good at this:**
 
-* [Why you probably won't get better at pool](https://jenniferbarretta.wordpress.com/2016/02/16/why-you-probably-wont-get-better-at-pool/)
+- [Why you probably won't get better at pool](https://jenniferbarretta.wordpress.com/2016/02/16/why-you-probably-wont-get-better-at-pool/)
 
 ## Workflow
 
@@ -54,18 +55,19 @@ input using `curl`.
 
 ## Results
 
-### 2022 (8*)
+### 2022 (10\*)
 
 ```
       -------Part 1--------   -------Part 2--------
 Day       Time  Rank  Score       Time  Rank  Score
+  5   00:18:24  2321      0   00:26:01  3205      0
   4   00:03:46   669      0   00:13:17  3984      0
   3   00:11:02  3285      0   00:18:05  3187      0
   2   00:14:26  5517      0   00:19:30  4347      0
   1   00:03:27  1461      0   00:08:04  2857      0
 ```
 
-### 2021 (50*, 115 points on global leaderboard)
+### 2021 (50\*, 115 points on global leaderboard)
 
 ```
       --------Part 1--------   --------Part 2--------
@@ -97,7 +99,7 @@ Day       Time   Rank  Score       Time   Rank  Score
   1   00:00:49     38     63   00:02:22     66     35
 ```
 
-### 2020 (50*)
+### 2020 (50\*)
 
 ```
       -------Part 1--------   -------Part 2--------
@@ -129,7 +131,7 @@ Day       Time  Rank  Score       Time  Rank  Score
   1   00:08:00  1134      0   00:09:30   945      0
 ```
 
-### 2019 (25*)
+### 2019 (25\*)
 
 ```
       --------Part 1--------   --------Part 2--------
@@ -150,7 +152,7 @@ Day       Time   Rank  Score       Time   Rank  Score
   1       >24h  90496      0       >24h  80094      0
 ```
 
-### 2018 (16*)
+### 2018 (16\*)
 
 ```
       --------Part 1--------   --------Part 2--------
@@ -165,7 +167,7 @@ Day       Time   Rank  Score       Time   Rank  Score
   1       >24h  70773      0       >24h  56082      0
 ```
 
-### 2017 (6*)
+### 2017 (6\*)
 
 ```
       --------Part 1--------   --------Part 2--------

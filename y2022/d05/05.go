@@ -7,8 +7,6 @@ import (
 	"github.com/rs/zerolog"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type Move struct {
