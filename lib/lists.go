@@ -21,6 +21,12 @@ func Columns[T any](input [][]T) (columns [][]T) {
 	return
 }
 
+func CopySlice[T any](input []T) []T {
+	output := make([]T, len(input))
+	copy(output, input)
+	return output
+}
+
 func Sort[T constraints.Ordered](input []T) {
 	sort.Slice(input, func(i, j int) bool { return input[i] < input[j] })
 }
@@ -48,7 +54,7 @@ func MaxList[T constraints.Ordered](l []T) T {
 	return max
 }
 
-func MaxListFn[T, U constraints.Ordered](l []T, f func(T) U) U {
+func MaxListFn[T any, U constraints.Ordered](l []T, f func(T) U) U {
 	_, max := MinMaxListFn(l, f)
 	return max
 }
