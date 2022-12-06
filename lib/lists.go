@@ -104,6 +104,20 @@ func Windowed[T any](l []T, n int) (windows [][]T) {
 	return windows
 }
 
+// SlidingWindowsSlices gives the sliding n-sized windows of l as an array of
+// slices of the original list. It is recommended that you only use this for
+// read-only use-cases, and copy out the elements if needed to put into a
+// different data structure.
+func SlidingWindowsSlices[T any](l []T, n int) (windows [][]T) {
+	if n <= 0 {
+		panic("invalid sliding window size")
+	}
+	for i := 0; i < len(l)-n; i++ {
+		windows = append(windows, l[i:i+n])
+	}
+	return
+}
+
 func SplitAt[T any](l []T, n int) ([]T, []T) {
 	return l[:n], l[n:]
 }
