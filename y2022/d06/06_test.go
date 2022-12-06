@@ -1,4 +1,4 @@
-package d%DAYNUM%_test
+package d06_test
 
 import (
 	"embed"
@@ -8,28 +8,28 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	"github.com/sumnerevans/advent-of-code/y%YEARNUM%/d%DAYNUM%"
+	"github.com/sumnerevans/advent-of-code/y2022/d06"
 )
 
 //go:embed *.txt
 var inputs embed.FS
 
-func Test_Day%DAYNUM%(t *testing.T) {
-	_, samples, actual := lib.SetupTest(t, inputs, "%DAYNUM%")
+func Test_Day06(t *testing.T) {
+	_, samples, actual := lib.SetupTest(t, inputs, "06")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
 		if len(samples) > 0 {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
-					-1,
+					7,
 				}
 
 				for i, sample := range samples {
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
-						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-						err := day%DAYNUM%.LoadInput(sample)
+						day06 := &d06.Day06{}
+						err := day06.LoadInput(sample)
 						assert.NoError(t, err)
-						output := day%DAYNUM%.Part1()
+						output := day06.Part1()
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -42,10 +42,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
-			day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-			err := day%DAYNUM%.LoadInput(actual)
+			day06 := &d06.Day06{}
+			err := day06.LoadInput(actual)
 			assert.NoError(t, err)
-			output := day%DAYNUM%.Part1()
+			output := day06.Part1()
 			fmt.Print("=================================\n\n")
 			fmt.Print("ACTUAL INPUT\n\n")
 			fmt.Printf("Part 1:\n%d", output)
@@ -53,7 +53,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 
 			assert.NotEqualValues(t, 0, output)
 
-			assert.EqualValues(t, -1, output)
+			assert.EqualValues(t, 1275, output)
 		})
 	})
 	if !ok {
@@ -65,15 +65,15 @@ func Test_Day%DAYNUM%(t *testing.T) {
 		if len(samples) > 0 {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
-					-1,
+					19,
 				}
 
 				for i, sample := range samples {
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
-						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-						err := day%DAYNUM%.LoadInput(sample)
+						day06 := &d06.Day06{}
+						err := day06.LoadInput(sample)
 						assert.NoError(t, err)
-						output := day%DAYNUM%.Part2()
+						output := day06.Part2()
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -86,10 +86,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
-			day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-			err := day%DAYNUM%.LoadInput(actual)
+			day06 := &d06.Day06{}
+			err := day06.LoadInput(actual)
 			assert.NoError(t, err)
-			output := day%DAYNUM%.Part2()
+			output := day06.Part2()
 			fmt.Print("=================================\n\n")
 			fmt.Print("ACTUAL INPUT\n\n")
 			fmt.Printf("Part 2:\n%d", output)
@@ -97,7 +97,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 
 			assert.NotEqualValues(t, 0, output)
 
-			assert.EqualValues(t, -1, output)
+			assert.EqualValues(t, 3605, output)
 		})
 	})
 }

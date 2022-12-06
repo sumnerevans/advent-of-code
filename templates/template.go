@@ -1,7 +1,7 @@
 package d%DAYNUM%
 
 import (
-	"github.com/rs/zerolog"
+	"fmt"
 
 	_ "github.com/sumnerevans/advent-of-code/lib"
 	_ "github.com/sumnerevans/advent-of-code/lib/ds"
@@ -10,19 +10,19 @@ import (
 type Day%DAYNUM% struct {
 }
 
-func (d *Day%DAYNUM%) LoadInput(log *zerolog.Logger, lines []string) error {
+func (d *Day%DAYNUM%) LoadInput(lines []string) error {
 	for _, line := range lines {
-		log.Info().Msg(line)
+		fmt.Printf("%s\n", line)
 	}
 	return nil
 }
 
-func (d *Day%DAYNUM%) Part1(log *zerolog.Logger) int {
+func (d *Day%DAYNUM%) Part1() int {
 	var ans int
 	return ans
 }
 
-func (d *Day%DAYNUM%) Part2(log *zerolog.Logger) int {
+func (d *Day%DAYNUM%) Part2() int {
 	var ans int
 	return ans
 }
