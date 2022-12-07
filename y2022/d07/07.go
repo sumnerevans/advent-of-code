@@ -1,7 +1,6 @@
 package d07
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 
@@ -10,141 +9,100 @@ import (
 	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
-type Item struct {
-	IsDir bool
-	Items map[string]*Item
-	Size  int
+type Inode struct {
+	IsDir    bool
+	Children map[string]Inode
+	size     int
 }
 
-func NewItem() *Item {
-	return &Item{Items: map[string]*Item{}}
+func NewDir() Inode {
+	return Inode{IsDir: true, Children: map[string]Inode{}}
 }
 
-func (i *Item) Add(name string, size int) {
-	if dir, filename, found := strings.Cut(name, "/"); found {
-		if _, ok := i.Items[dir]; !ok {
-			i.Items[dir] = NewItem()
-		}
-		i.Items[dir].IsDir = true
-		i.Items[dir].Add(filename, size)
+func NewFile(size int) Inode {
+	return Inode{IsDir: false, size: size}
+}
+
+func (i Inode) Add(path []string, size int) {
+	if len(path) == 1 {
+		i.Children[path[0]] = NewFile(size)
 	} else {
-		i.Items[name] = &Item{Items: map[string]*Item{}, Size: size}
+		dir := path[0]
+		if _, ok := i.Children[dir]; !ok {
+			i.Children[dir] = NewDir()
+		}
+		i.Children[dir].Add(path[1:], size)
 	}
 }
 
-func (i Item) SizeR() int {
-	if i.Size > 0 {
-		return i.Size
+func (i Inode) Size() int {
+	if !i.IsDir {
+		return i.size
 	}
-	s := 0
-	for _, v := range i.Items {
-		s += v.SizeR()
-	}
-	return s
+	return lib.Sum(lib.Map(Inode.Size)(lib.Values(i.Children)))
 }
 
 type Day07 struct {
-	Root *Item
+	DirSizes []int
 }
 
 func (d *Day07) LoadInput(lines []string) error {
-	d.Root = NewItem()
-	d.Root.IsDir = true
+	root := NewDir()
 	path := []string{}
 	for _, line := range lines {
 		if line[0] == '$' {
-			// fmt.Printf("%s\n", line)
 			cmd := strings.Split(line, " ")
-			if cmd[1] == "cd" {
-				switch cmd[2] {
-				case "/":
-					path = []string{}
-				case "..":
-					path = path[:len(path)-1]
-				default:
-					path = append(path, cmd[2])
-				}
-			} else {
-				// fmt.Printf("LS %s\n", line)
+			if cmd[1] != "cd" {
+				continue
+			}
+
+			switch cmd[2] {
+			case "/":
+				path = []string{}
+			case "..":
+				path = path[:len(path)-1]
+			default:
+				path = append(path, cmd[2])
 			}
 		} else {
 			fileInfo := strings.Split(line, " ")
-			switch fileInfo[0] {
-			case "dir":
-				// TODO
-			default:
-				size := lib.ToInt(fileInfo[0])
-				name := fileInfo[1]
-				parts := []string{}
-				parts = append(parts, path...)
-				parts = append(parts, name)
-				// fmt.Printf("%v\n", parts)
-				d.Root.Add(strings.Join(parts, "/"), size)
+			if fileInfo[0] == "dir" {
+				continue
 			}
+			root.Add(append(path, fileInfo[1]), lib.ToInt(fileInfo[0]))
 		}
-		fmt.Printf("%v\n", d.Root)
 	}
+
+	q := []Inode{root}
+
+	for len(q) > 0 {
+		next := q[0]
+		q = q[1:]
+
+		if next.IsDir {
+			d.DirSizes = append(d.DirSizes, next.Size())
+		}
+
+		for _, v := range next.Children {
+			q = append(q, v)
+		}
+	}
+
 	return nil
 }
 
 func (d *Day07) Part1() int {
-	var ans int
-
-	q := []*Item{d.Root}
-
-	for len(q) > 0 {
-		next := q[0]
-		q = q[1:]
-
-		s := next.SizeR()
-		if next.IsDir && s <= 100000 {
-			ans += s
-		}
-
-		for _, v := range next.Items {
-			q = append(q, v)
-		}
-	}
-
-	return ans
+	return lib.Sum(lib.Filter(d.DirSizes, func(s int) bool { return s <= 100000 }))
 }
 
 func (d *Day07) Part2() int {
-	var ans int
-
-	q := []*Item{d.Root}
-	sizes := map[*Item]int{}
-
-	for len(q) > 0 {
-		next := q[0]
-		q = q[1:]
-
-		s := next.SizeR()
-		if next.IsDir {
-			sizes[next] = s
-		}
-
-		for _, v := range next.Items {
-			q = append(q, v)
-		}
-	}
-
-	fmt.Printf("ohea\n", )
-	opts := []int{}
-	for k, v := range sizes {
-		fmt.Printf("%v %v\n", k, v)
-		opts = append(opts, v)
-	}
-
-	sort.Ints(opts)
-	fmt.Printf("%v\n", opts)
+	sort.Ints(d.DirSizes)
 	total := 70000000
-	taken := d.Root.SizeR()
-	for _, o := range opts {
-		if (taken - o) <= total -30000000 {
+	rootSize := d.DirSizes[len(d.DirSizes)-1]
+	for _, o := range d.DirSizes {
+		if rootSize-o <= total-30000000 {
 			return o
 		}
 	}
-
-	return ans
+	panic("no answer")
 }
