@@ -5,22 +5,23 @@ import (
 	"strings"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type Inode struct {
-	IsDir    bool
 	Children map[string]Inode
 	size     int
 }
 
+func (i Inode) IsDir() bool {
+	return i.size == 0
+}
+
 func NewDir() Inode {
-	return Inode{IsDir: true, Children: map[string]Inode{}}
+	return Inode{Children: map[string]Inode{}}
 }
 
 func NewFile(size int) Inode {
-	return Inode{IsDir: false, size: size}
+	return Inode{size: size}
 }
 
 func (i Inode) Add(path []string, size int) {
@@ -36,7 +37,7 @@ func (i Inode) Add(path []string, size int) {
 }
 
 func (i Inode) Size() int {
-	if !i.IsDir {
+	if !i.IsDir() {
 		return i.size
 	}
 	return lib.Sum(lib.Map(Inode.Size)(lib.Values(i.Children)))
@@ -79,7 +80,7 @@ func (d *Day07) LoadInput(lines []string) error {
 		next := q[0]
 		q = q[1:]
 
-		if next.IsDir {
+		if next.IsDir() {
 			d.DirSizes = append(d.DirSizes, next.Size())
 		}
 
