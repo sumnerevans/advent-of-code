@@ -6,16 +6,16 @@ import (
 )
 
 type Day06 struct {
-	S []rune
+	Signal []rune
 }
 
 func (d *Day06) LoadInput(lines []string) error {
-	d.S = []rune(lines[0])
+	d.Signal = []rune(lines[0])
 	return nil
 }
 
 func (d *Day06) Solve(n int) int {
-	for i, w := range lib.SlidingWindowsSlices(d.S, n) {
+	for i, w := range lib.SlidingWindowsSlices(d.Signal, n) {
 		if len(ds.NewSet(w).List()) == n {
 			return i + n
 		}
