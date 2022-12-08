@@ -19,6 +19,10 @@ func (s Set[T]) Add(v T) {
 	s[v] = struct{}{}
 }
 
+func (s Set[T]) Remove(val T) {
+	delete(s, val)
+}
+
 func (s Set[T]) Contains(val T) (contains bool) {
 	_, contains = s[val]
 	return
@@ -47,10 +51,6 @@ func (s Set[T]) Intersection(other Set[T]) Set[T] {
 		}
 	}
 	return newSet
-}
-
-func (s Set[T]) Remove(val T) {
-	delete(s, val)
 }
 
 func NewSet[T comparable](values []T) Set[T] {

@@ -31,6 +31,13 @@ func Sort[T constraints.Ordered](input []T) {
 	sort.Slice(input, func(i, j int) bool { return input[i] < input[j] })
 }
 
+func Reverse[T any](input []T) (output []T) {
+	for i := len(input) - 1; i >= 0; i-- {
+		output = append(output, input[i])
+	}
+	return
+}
+
 func TopN[T constraints.Ordered](input []T, n int) []T {
 	cp := make([]T, len(input))
 	for i, val := range input {
