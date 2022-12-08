@@ -59,7 +59,7 @@ func (d *Day08) Part1() int {
 		}
 	}
 
-	return len(visibleTrees.List())
+	return len(visibleTrees)
 }
 
 func (d *Day08) Part2() int {
