@@ -25,6 +25,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				}
 
 				for i, sample := range samples {
+					if i >= len(EXPECTED) {
+						break
+					}
+
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
 						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
 						err := day%DAYNUM%.LoadInput(sample)
@@ -51,9 +55,12 @@ func Test_Day%DAYNUM%(t *testing.T) {
 			fmt.Printf("Part 1:\n%d", output)
 			fmt.Print("\n\n=================================\n")
 
-			assert.NotEqualValues(t, 0, output)
+			require.NotEqualValues(t, 0, output)
 
 			assert.EqualValues(t, -1, output)
+
+			require.True(t, false)
+			lib.Submit(t, %YEARNUM%, %DAYNUM, 1, output)
 		})
 	})
 	if !ok {
@@ -95,9 +102,12 @@ func Test_Day%DAYNUM%(t *testing.T) {
 			fmt.Printf("Part 2:\n%d", output)
 			fmt.Print("\n\n=================================\n")
 
-			assert.NotEqualValues(t, 0, output)
+			require.NotEqualValues(t, 0, output)
 
 			assert.EqualValues(t, -1, output)
+
+			require.True(t, false)
+			lib.Submit(t, %YEARNUM%, %DAYNUM, 2, output)
 		})
 	})
 }

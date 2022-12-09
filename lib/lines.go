@@ -14,6 +14,13 @@ func (p Point[T]) String() string {
 	return fmt.Sprintf("(%d, %d)", p.X, p.Y)
 }
 
+var Quadrants = map[int]Point[int]{
+	1: {1, 1},
+	2: {-1, 1},
+	3: {-1, -1},
+	4: {1, -1},
+}
+
 // IntPointsBetween return an iterator of all of the integer points between two
 // given points. Note that you are *not* guaranteed that the points will be
 // given from `start` to `end`, but all points will be included.
