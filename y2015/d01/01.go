@@ -1,10 +1,5 @@
 package d01
 
-import (
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
-)
-
 type Day01 struct {
 	Seq string
 }

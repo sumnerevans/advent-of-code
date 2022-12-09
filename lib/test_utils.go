@@ -159,41 +159,46 @@ func Submit(t *testing.T, year, day, part int, answer any) (result SubmissionRes
 	require.NoError(t, err)
 
 	answerText := doc.Find("article").Text()
-	var wrappedAnswer strings.Builder
-	lineLen := 0
-	for _, word := range strings.Fields(strings.TrimSpace(answerText)) {
-		if lineLen+len(word) > 80 {
-			lineLen = 0
-			wrappedAnswer.WriteString("\n")
-		}
 
-		if lineLen > 0 {
-			wrappedAnswer.WriteString(" ")
-		}
+	printAnswer := func(color Color) {
+		var line strings.Builder
+		lineLen := 0
+		for _, word := range strings.Fields(strings.TrimSpace(answerText)) {
+			if lineLen+len(word) > 40 {
+				lineLen = 0
+				t.Log(ColorString(line.String(), color))
+				line = strings.Builder{}
+			}
 
-		wrappedAnswer.WriteString(word)
-		lineLen += len(word)
+			if lineLen > 0 {
+				line.WriteString(" ")
+			}
+
+			line.WriteString(word)
+			lineLen += len(word)
+		}
+		t.Log(ColorString(line.String(), color))
 	}
 
 	result = SubmissionIncorrect
 	switch {
 	case strings.Contains(answerText, "That's not the right answer"):
-		t.Log(ColorString(wrappedAnswer.String(), ColorRed))
+		printAnswer(ColorRed)
 		return SubmissionIncorrect
 
 	case strings.Contains(answerText, "You gave an answer too recently"):
-		t.Log(ColorString(wrappedAnswer.String(), ColorRed))
+		printAnswer(ColorRed)
 		return SubmissionTooSoon
 
 	case strings.Contains(answerText, "Did you already complete it"):
-		t.Log(ColorString(wrappedAnswer.String(), ColorYellow))
+		printAnswer(ColorYellow)
 		return SubmissionAlreadyComplete
 
 	case strings.Contains(answerText, "That's the right answer"):
-		t.Log(ColorString(wrappedAnswer.String(), ColorGreen))
+		printAnswer(ColorGreen)
 		return SubmissionCorrect
 	default:
-		t.Log(ColorString(wrappedAnswer.String(), ColorRed))
+		printAnswer(ColorRed)
 		panic("no idea what the output means")
 	}
 }
