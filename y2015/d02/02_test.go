@@ -105,8 +105,8 @@ func Test_Day02(t *testing.T) {
 		if len(samples) > 0 {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
-					// 34,
-					// 14,
+					34,
+					14,
 				}
 
 				for i, sample := range samples {
