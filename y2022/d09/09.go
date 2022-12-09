@@ -49,7 +49,6 @@ func (d *Day09) Follow(numFollowers int) int {
 			for seg := 0; seg < len(rope)-1; seg++ {
 				leader := rope[seg]
 				follower := rope[seg+1]
-
 				if follower.Y == leader.Y {
 					if follower.X < leader.X-1 {
 						follower.X++
@@ -63,25 +62,17 @@ func (d *Day09) Follow(numFollowers int) int {
 						follower.Y--
 					}
 				} else if lib.AbsInt(leader.X-follower.X)+lib.AbsInt(leader.Y-follower.Y) > 2 {
-					if leader.X > follower.X && leader.Y > follower.Y {
-						// 1st quad
-						follower.X += lib.Quadrants[1].X
-						follower.Y += lib.Quadrants[1].Y
+					if leader.X > follower.X {
+						follower.X++
 					}
-					if leader.X < follower.X && leader.Y > follower.Y {
-						// 2st quad
-						follower.X += lib.Quadrants[2].X
-						follower.Y += lib.Quadrants[2].Y
+					if leader.Y > follower.Y {
+						follower.Y++
 					}
-					if leader.X < follower.X && leader.Y < follower.Y {
-						// 3rd quad
-						follower.X += lib.Quadrants[3].X
-						follower.Y += lib.Quadrants[3].Y
+					if leader.X < follower.X {
+						follower.X--
 					}
-					if leader.X > follower.X && leader.Y < follower.Y {
-						// 1st quad
-						follower.X += lib.Quadrants[4].X
-						follower.Y += lib.Quadrants[4].Y
+					if leader.Y < follower.Y {
+						follower.Y--
 					}
 				}
 				rope[seg] = leader
