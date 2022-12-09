@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         year:
+          - 2015
           - 2021
           - 2022
     steps:
