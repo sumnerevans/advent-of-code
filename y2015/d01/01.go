@@ -29,7 +29,18 @@ func (d *Day01) Part1() int {
 }
 
 func (d *Day01) Part2() int {
-	var ans int
+	var level int
 
-	return ans
+	for i, c := range d.Seq {
+		if c == '(' {
+			level++
+		} else {
+			level--
+		}
+		if level == -1 {
+			return i + 1
+		}
+	}
+
+	return level
 }
