@@ -206,6 +206,7 @@ mkShell {
     ln -sf ${cocConfig} ${PROJECT_ROOT}/.vim/coc-settings.json
   '';
 
+  PROJECT_ROOT = PROJECT_ROOT;
   POST_CD_COMMAND = "${printStatsScript}/bin/printstats";
 
   buildInputs = [
