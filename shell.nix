@@ -199,6 +199,11 @@ let
       };
     }
   );
+
+  twitchChatScript = writeShellScriptBin "twitchchat" ''
+    TOKEN=$(cat ${PROJECT_ROOT}/.chat_token) 
+    ttchat --channel sumnerevans --token $TOKEN
+  '';
 in
 mkShell {
   shellHook = ''
@@ -216,6 +221,9 @@ mkShell {
     rnix-lsp
     sloccount
     tokei
+
+    # Streaming
+    twitchChatScript
 
     # C/C++
     clang

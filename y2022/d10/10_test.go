@@ -1,33 +1,36 @@
-package d%DAYNUM%_test
+package d10_test
 
 import (
 	"embed"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	"github.com/sumnerevans/advent-of-code/y%YEARNUM%/d%DAYNUM%"
+	"github.com/sumnerevans/advent-of-code/y2022/d10"
 )
 
 //go:embed *.txt
 var inputs embed.FS
 
-func Test_Day%DAYNUM%(t *testing.T) {
+func Test_Day10(t *testing.T) {
 	t.Log(lib.ColorString("============================================", lib.ColorGreen))
 	t.Log(lib.ColorString("=                START TEST                =", lib.ColorGreen))
 	t.Log(lib.ColorString("============================================", lib.ColorGreen))
 
-	_, samples, actual := lib.SetupTest(t, inputs, "%DAYNUM%")
+	_, samples, actual := lib.SetupTest(t, inputs, "10")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
 		if len(samples) > 0 {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
 					// Test cases
+					0,
+					13140,
 				}
 
 				for i, sample := range samples {
@@ -36,10 +39,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 					}
 
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
-						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-						err := day%DAYNUM%.LoadInput(sample)
+						day10 := &d10.Day10{}
+						err := day10.LoadInput(sample)
 						require.NoError(t, err)
-						output := day%DAYNUM%.Part1()
+						output := day10.Part1()
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -52,10 +55,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
-			day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-			err := day%DAYNUM%.LoadInput(actual)
+			day10 := &d10.Day10{}
+			err := day10.LoadInput(actual)
 			require.NoError(t, err)
-			output := day%DAYNUM%.Part1()
+			output := day10.Part1()
 			t.Log("=================================")
 			t.Log("")
 			t.Log("ACTUAL INPUT")
@@ -77,9 +80,9 @@ func Test_Day%DAYNUM%(t *testing.T) {
 					}
 				}
 
-				require.True(t, false, "AUTOSUBMISSION GATE")
+				// require.True(t, false, "AUTOSUBMISSION GATE")
 
-				switch lib.Submit(t, %YEARNUM%, %DAYNUM%, 1, output) {
+				switch lib.Submit(t, 2022, 10, 1, output) {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.1.txt", []byte(lib.AsJSON(output)), 0644)
 				case lib.SubmissionIncorrect:
@@ -105,8 +108,21 @@ func Test_Day%DAYNUM%(t *testing.T) {
 	t.Run("Part 2", func(t *testing.T) {
 		if len(samples) > 0 {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
-				EXPECTED := []int64{
-					// Test cases
+				EXPECTED := []string{
+					// Test 1
+					`#####...................................
+					 ........................................
+					 ........................................
+					 ........................................
+					 ........................................
+					 ........................................`,
+					// Test 2
+					`##..##..##..##..##..##..##..##..##..##..
+					 ###...###...###...###...###...###...###.
+					 ####....####....####....####....####....
+					 #####.....#####.....#####.....#####.....
+					 ######......######......######......####
+					 #######.......#######.......#######.....`,
 				}
 
 				for i, sample := range samples {
@@ -115,12 +131,16 @@ func Test_Day%DAYNUM%(t *testing.T) {
 					}
 
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
-						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-						err := day%DAYNUM%.LoadInput(sample)
+						day10 := &d10.Day10{}
+						err := day10.LoadInput(sample)
 						require.NoError(t, err)
-						output := day%DAYNUM%.Part2()
+						output := day10.Part2()
 
-						assert.EqualValues(t, EXPECTED[i], output)
+						expected := strings.ReplaceAll(EXPECTED[i], "\n", "")
+						expected = strings.ReplaceAll(expected, "\t", "")
+						expected = strings.ReplaceAll(expected, " ", "")
+
+						assert.EqualValues(t, expected, output)
 					})
 				}
 			})
@@ -131,10 +151,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
-			day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-			err := day%DAYNUM%.LoadInput(actual)
+			day10 := &d10.Day10{}
+			err := day10.LoadInput(actual)
 			require.NoError(t, err)
-			output := day%DAYNUM%.Part2()
+			output := day10.Part2()
 			t.Log("=================================")
 			t.Log("")
 			t.Log("ACTUAL INPUT")
@@ -158,7 +178,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 
 				require.True(t, false, "AUTOSUBMISSION GATE")
 
-				switch lib.Submit(t, %YEARNUM%, %DAYNUM%, 2, output) {
+				switch lib.Submit(t, 2022, 10, 2, output) {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.2.txt", []byte(lib.AsJSON(output)), 0644)
 				case lib.SubmissionIncorrect:
