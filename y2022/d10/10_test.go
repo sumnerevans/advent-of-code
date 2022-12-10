@@ -136,8 +136,7 @@ func Test_Day10(t *testing.T) {
 						require.NoError(t, err)
 						output := day10.Part2()
 
-						expected := strings.ReplaceAll(EXPECTED[i], "\n", "")
-						expected = strings.ReplaceAll(expected, "\t", "")
+						expected := strings.ReplaceAll(EXPECTED[i], "\t", "")
 						expected = strings.ReplaceAll(expected, " ", "")
 
 						assert.EqualValues(t, expected, output)
@@ -161,7 +160,9 @@ func Test_Day10(t *testing.T) {
 			t.Log("")
 			t.Log("Part 2:")
 			t.Log("")
-			t.Logf("%v", output)
+			for _, line := range strings.Split(output, "\n") {
+				t.Log(line)
+			}
 			t.Log("")
 
 			require.NotEqualValues(t, 0, output)
@@ -176,7 +177,7 @@ func Test_Day10(t *testing.T) {
 					}
 				}
 
-				require.True(t, false, "AUTOSUBMISSION GATE")
+				// require.True(t, false, "AUTOSUBMISSION GATE")
 
 				switch lib.Submit(t, 2022, 10, 2, output) {
 				case lib.SubmissionCorrect:
@@ -189,6 +190,7 @@ func Test_Day10(t *testing.T) {
 			} else if existingOutput == lib.AsJSON(output) {
 				t.Log(lib.ColorString("Answer already ACCEPTED", lib.ColorGreen))
 			} else {
+				fmt.Printf("%v\n", lib.AsJSON(output))
 				t.Fatal(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))
 			}
 
