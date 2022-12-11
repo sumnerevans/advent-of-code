@@ -71,7 +71,6 @@ func (m Item) DoOp(op func(int64) int64) Item {
 
 func (m Item) Test(divisor int64) bool {
 	switch divisor {
-
 	case 2:
 		return (m.Mod2 == 0)
 	case 3:
@@ -179,7 +178,12 @@ func (d *Day11) Part1() int {
 	return y[0] * y[1]
 }
 
-func (d *Day11) Part2() int {
+func (d *Day11) Part2Old() int {
+	// The non-stupid way of doing this is to realize that all of the divisors
+	// for the test are prime numbers, and will not remove any important
+	// factors. Thus, instead of doing all of this horrible logic with Items, I
+	// could have just done modulo by the product of all of the test divisors
+	// instead.
 
 	touches := map[int]int{}
 	for i := range d.Monkeys {
@@ -200,17 +204,36 @@ func (d *Day11) Part2() int {
 			}
 			d.Monkeys[mIdx].NewItems = []Item{}
 		}
+	}
 
-		switch i + 1 {
-		case 1, 20, 1000, 2000:
-			fmt.Printf("\nRound %d\n", i+1)
-			for i, _ := range d.Monkeys {
-				fmt.Printf("Monkey %d: %v\n", i, touches[i])
+	y := lib.TopN(lib.Values(touches), 2)
+	return y[0] * y[1]
+}
+
+func (d *Day11) Part2() int {
+	touches := map[int]int{}
+	var testProd int64 = 1
+	for i, m := range d.Monkeys {
+		touches[i] = 0
+		testProd *= m.Test
+	}
+
+	for i := 0; i < 10000; i++ {
+		for mIdx, monkey := range d.Monkeys {
+			for _, item := range monkey.Items {
+				touches[mIdx]++
+				newWorry := monkey.Operation(item) % testProd
+
+				if newWorry%monkey.Test == 0 {
+					d.Monkeys[monkey.DestTrue].Items = append(d.Monkeys[monkey.DestTrue].Items, newWorry)
+				} else {
+					d.Monkeys[monkey.DestFalse].Items = append(d.Monkeys[monkey.DestFalse].Items, newWorry)
+				}
 			}
+			d.Monkeys[mIdx].Items = []int64{}
 		}
 	}
 
-	fmt.Printf("%v\n", lib.Values(touches))
 	y := lib.TopN(lib.Values(touches), 2)
 	return y[0] * y[1]
 }
