@@ -125,6 +125,31 @@ const (
 	SubmissionCorrect
 )
 
+func WrapString(s string, chars int) []string {
+	lines := []string{}
+	for _, originalLine := range strings.Split(s, "\n") {
+		var line strings.Builder
+		lineLen := 0
+		for _, word := range strings.Fields(originalLine) {
+			if lineLen+len(word) > chars {
+				lineLen = 0
+				lines = append(lines, line.String())
+				line = strings.Builder{}
+			}
+
+			if lineLen > 0 {
+				line.WriteString(" ")
+				lineLen++
+			}
+
+			line.WriteString(word)
+			lineLen += len(word)
+		}
+		lines = append(lines, line.String())
+	}
+	return lines
+}
+
 func Submit(t *testing.T, year, day, part int, answer any) (SubmissionResult, string) {
 	projectRoot, found := os.LookupEnv("PROJECT_ROOT")
 	require.True(t, found)
@@ -160,43 +185,32 @@ func Submit(t *testing.T, year, day, part int, answer any) (SubmissionResult, st
 
 	answerText := doc.Find("article").Text()
 
-	printAnswer := func(color Color) string {
-		var line strings.Builder
-		lineLen := 0
-		for _, word := range strings.Fields(strings.TrimSpace(answerText)) {
-			if lineLen+len(word) > 40 {
-				lineLen = 0
-				t.Log(ColorString(line.String(), color))
-				line = strings.Builder{}
-			}
-
-			if lineLen > 0 {
-				line.WriteString(" ")
-			}
-
-			line.WriteString(word)
-			lineLen += len(word)
+	wrapSize := 60
+	printWrapped := func(color Color) {
+		for _, line := range WrapString(answerText, wrapSize) {
+			t.Log(ColorString(line, color))
 		}
-		answerText := line.String()
-		t.Log(ColorString(answerText, color))
-		return answerText
 	}
 
 	switch {
 	case strings.Contains(answerText, "That's not the right answer"):
-		return SubmissionIncorrect, printAnswer(ColorRed)
+		printWrapped(ColorRed)
+		return SubmissionIncorrect, answerText
 
 	case strings.Contains(answerText, "You gave an answer too recently"):
-		return SubmissionTooSoon, printAnswer(ColorRed)
+		printWrapped(ColorRed)
+		return SubmissionTooSoon, answerText
 
 	case strings.Contains(answerText, "Did you already complete it"):
-		return SubmissionAlreadyComplete, printAnswer(ColorYellow)
+		printWrapped(ColorYellow)
+		return SubmissionAlreadyComplete, answerText
 
 	case strings.Contains(answerText, "That's the right answer"):
-		return SubmissionCorrect, printAnswer(ColorGreen)
+		printWrapped(ColorGreen)
+		return SubmissionCorrect, answerText
 
 	default:
-		printAnswer(ColorRed)
+		printWrapped(ColorRed)
 		panic("no idea what the output means")
 	}
 }

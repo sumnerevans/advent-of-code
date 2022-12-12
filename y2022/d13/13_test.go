@@ -1,4 +1,4 @@
-package d%DAYNUM%_test
+package d13_test
 
 import (
 	"embed"
@@ -10,18 +10,18 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	"github.com/sumnerevans/advent-of-code/y%YEARNUM%/d%DAYNUM%"
+	"github.com/sumnerevans/advent-of-code/y2022/d13"
 )
 
 //go:embed *.txt
 var inputs embed.FS
 
-func Test_Day%DAYNUM%(t *testing.T) {
+func Test_Day13(t *testing.T) {
 	t.Log(lib.ColorString("============================================", lib.ColorGreen))
 	t.Log(lib.ColorString("=                START TEST                =", lib.ColorGreen))
 	t.Log(lib.ColorString("============================================", lib.ColorGreen))
 
-	_, samples, actual := lib.SetupTest(t, inputs, "%DAYNUM%")
+	_, samples, actual := lib.SetupTest(t, inputs, "13")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
 		if len(samples) > 0 {
@@ -36,10 +36,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 					}
 
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
-						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-						err := day%DAYNUM%.LoadInput(sample)
+						day13 := &d13.Day13{}
+						err := day13.LoadInput(sample)
 						require.NoError(t, err)
-						output := day%DAYNUM%.Part1()
+						output := day13.Part1()
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -52,10 +52,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
-			day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-			err := day%DAYNUM%.LoadInput(actual)
+			day13 := &d13.Day13{}
+			err := day13.LoadInput(actual)
 			require.NoError(t, err)
-			output := day%DAYNUM%.Part1()
+			output := day13.Part1()
 			t.Log("=================================")
 			t.Log("")
 			t.Log("ACTUAL INPUT")
@@ -79,7 +79,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 
 				require.True(t, false, "AUTOSUBMISSION GATE")
 
-				result, answerText := lib.Submit(t, %YEARNUM%, %DAYNUM%, 1, output)
+				result, answerText := lib.Submit(t, 2022, 13, 1, output)
 				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.1.txt", []byte(lib.AsJSON(output)), 0644)
@@ -93,11 +93,8 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				t.Log(lib.ColorString("Answer already ACCEPTED", lib.ColorGreen))
 				if answerText, err := os.ReadFile("answertext.1.txt"); err == nil {
 					t.Log("")
-					t.Log("Original server response:")
-					t.Log("")
-					for _, s := range lib.WrapString(string(answerText), 60) {
-						t.Log(lib.ColorString(s, lib.ColorGreen))
-					}
+					t.Log(lib.ColorString("Original server response:", lib.ColorGreen))
+					t.Log(lib.ColorString(string(answerText), lib.ColorGreen))
 				}
 			} else {
 				t.Fatal(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))
@@ -125,10 +122,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 					}
 
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
-						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-						err := day%DAYNUM%.LoadInput(sample)
+						day13 := &d13.Day13{}
+						err := day13.LoadInput(sample)
 						require.NoError(t, err)
-						output := day%DAYNUM%.Part2()
+						output := day13.Part2()
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -141,10 +138,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
-			day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
-			err := day%DAYNUM%.LoadInput(actual)
+			day13 := &d13.Day13{}
+			err := day13.LoadInput(actual)
 			require.NoError(t, err)
-			output := day%DAYNUM%.Part2()
+			output := day13.Part2()
 			t.Log("=================================")
 			t.Log("")
 			t.Log("ACTUAL INPUT")
@@ -168,7 +165,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 
 				require.True(t, false, "AUTOSUBMISSION GATE")
 
-				result, answerText := lib.Submit(t, %YEARNUM%, %DAYNUM%, 2, output)
+				result, answerText := lib.Submit(t, 2022, 13, 2, output)
 				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.2.txt", []byte(lib.AsJSON(output)), 0644)
@@ -180,13 +177,10 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				}
 			} else if existingOutput == lib.AsJSON(output) {
 				t.Log(lib.ColorString("Answer already ACCEPTED", lib.ColorGreen))
-				if answerText, err := os.ReadFile("answertext.2.txt"); err == nil {
+				if answerText, err := os.ReadFile("answertext.1.txt"); err == nil {
 					t.Log("")
-					t.Log("Original server response:")
-					t.Log("")
-					for _, s := range lib.WrapString(string(answerText), 60) {
-						t.Log(lib.ColorString(s, lib.ColorGreen))
-					}
+					t.Log(lib.ColorString("Original server response:", lib.ColorGreen))
+					t.Log(lib.ColorString(string(answerText), lib.ColorGreen))
 				}
 			} else {
 				t.Fatal(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))

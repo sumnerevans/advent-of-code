@@ -1,5 +1,8 @@
 package ds
 
+// See the documentation for container/heap from:
+// https://pkg.go.dev/container/heap#Interface
+
 import (
 	"container/heap"
 	"fmt"
