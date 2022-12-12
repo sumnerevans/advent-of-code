@@ -14,6 +14,10 @@ func (p Point[T]) String() string {
 	return fmt.Sprintf("(%d, %d)", p.X, p.Y)
 }
 
+func (p Point[T]) ToGridIdx() GridPoint[T] {
+	return GridPoint[T]{R: p.Y, C: p.X}
+}
+
 var Quadrants = map[int]Point[int]{
 	1: {1, 1},
 	2: {-1, 1},

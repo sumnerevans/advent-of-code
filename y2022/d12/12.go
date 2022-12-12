@@ -22,121 +22,82 @@ func (d *Day12) LoadInput(lines []string) error {
 }
 
 func (d *Day12) Part1() int {
-	var start, end lib.Point[int]
+	var start, end lib.GridPoint[int]
 
 	for r, row := range d.Map {
 		for c, char := range row {
 			if char == 'S' {
-				start = lib.Point[int]{c, r}
+				start = lib.NewGridPoint(r, c)
+				d.Map[r][c] = 'a'
 			} else if char == 'E' {
-				end = lib.Point[int]{c, r}
+				end = lib.NewGridPoint(r, c)
+				d.Map[r][c] = 'z'
 			}
 		}
 	}
 
 	return lib.Dijkstra(
-		func(loc lib.Point[int]) ds.Set[ds.Edge[lib.Point[int], int]] {
-			curVal := d.Map[loc.Y][loc.X]
-			if curVal == 'S' {
-				curVal = 'a'
+		func(loc lib.GridPoint[int]) ds.Set[ds.Edge[lib.GridPoint[int], int]] {
+			curVal := d.Map[loc.R][loc.C]
+			adj := ds.Set[ds.Edge[lib.GridPoint[int], int]]{}
+			if loc.R > 0 && d.Map[loc.R-1][loc.C] <= curVal+1 {
+				adj.Add(ds.Edge[lib.GridPoint[int], int]{
+					Weight: 1,
+					Vertex: lib.NewGridPoint(loc.R-1, loc.C),
+				})
 			}
-			if curVal == 'E' {
-				curVal = 'z'
+			if loc.R < len(d.Map)-1 && d.Map[loc.R+1][loc.C] <= curVal+1 {
+				adj.Add(ds.Edge[lib.GridPoint[int], int]{
+					Weight: 1,
+					Vertex: lib.NewGridPoint(loc.R+1, loc.C),
+				})
 			}
-			adj := ds.Set[ds.Edge[lib.Point[int], int]]{}
-			if loc.Y > 0 {
-				ohea := d.Map[loc.Y-1][loc.X]
-				if ohea == 'S' {
-					ohea = 'a'
-				}
-				if ohea == 'E' {
-					ohea = 'z'
-				}
-				if ohea <= curVal+1 {
-					adj.Add(ds.Edge[lib.Point[int], int]{
-						Weight: 1,
-						Vertex: lib.Point[int]{loc.X, loc.Y - 1},
-					})
-				}
+			if loc.C > 0 && d.Map[loc.R][loc.C-1] <= curVal+1 {
+				adj.Add(ds.Edge[lib.GridPoint[int], int]{
+					Weight: 1,
+					Vertex: lib.NewGridPoint(loc.R, loc.C-1),
+				})
 			}
-
-			if loc.Y < len(d.Map)-1 {
-				ohea := d.Map[loc.Y+1][loc.X]
-				if ohea == 'S' {
-					ohea = 'a'
-				}
-				if ohea == 'E' {
-					ohea = 'z'
-				}
-				if ohea <= curVal+1 {
-					adj.Add(ds.Edge[lib.Point[int], int]{
-						Weight: 1,
-						Vertex: lib.Point[int]{loc.X, loc.Y + 1},
-					})
-				}
-			}
-			if loc.X > 0 {
-				ohea := d.Map[loc.Y][loc.X-1]
-				if ohea == 'S' {
-					ohea = 'a'
-				}
-				if ohea == 'E' {
-					ohea = 'z'
-				}
-				if ohea <= curVal+1 {
-					adj.Add(ds.Edge[lib.Point[int], int]{
-						Weight: 1,
-						Vertex: lib.Point[int]{loc.X - 1, loc.Y},
-					})
-				}
-			}
-			if loc.X < len(d.Map[0])-1 {
-				ohea := d.Map[loc.Y][loc.X+1]
-				if ohea == 'S' {
-					ohea = 'a'
-				}
-				if ohea == 'E' {
-					ohea = 'z'
-				}
-				if ohea <= curVal+1 {
-					adj.Add(ds.Edge[lib.Point[int], int]{
-						Weight: 1,
-						Vertex: lib.Point[int]{loc.X + 1, loc.Y},
-					})
-				}
+			if loc.C < len(d.Map[0])-1 && d.Map[loc.R][loc.C+1] <= curVal+1 {
+				adj.Add(ds.Edge[lib.GridPoint[int], int]{
+					Weight: 1,
+					Vertex: lib.NewGridPoint(loc.R, loc.C+1),
+				})
 			}
 			return adj
 		},
 		start,
-		func(loc lib.Point[int]) bool {
-			return loc.X == end.X && loc.Y == end.Y
+		func(loc lib.GridPoint[int]) bool {
+			return loc == end
 		},
 	)
 }
 
 func (d *Day12) Part2() int {
-	var start, end lib.Point[int]
+	var start, end lib.GridPoint[int]
+	start = lib.NewGridPoint(-1, -1)
 
 	for r, row := range d.Map {
 		for c, char := range row {
 			if char == 'S' {
-				start = lib.Point[int]{-1, -1}
+				d.Map[r][c] = 'a'
 			} else if char == 'E' {
-				end = lib.Point[int]{c, r}
+				end = lib.NewGridPoint(r, c)
+				d.Map[r][c] = 'z'
 			}
 		}
 	}
 
 	return lib.Dijkstra(
-		func(loc lib.Point[int]) ds.Set[ds.Edge[lib.Point[int], int]] {
-			adj := ds.Set[ds.Edge[lib.Point[int], int]]{}
-			if loc.X == -1 {
+		func(loc lib.GridPoint[int]) ds.Set[ds.Edge[lib.GridPoint[int], int]] {
+			adj := ds.Set[ds.Edge[lib.GridPoint[int], int]]{}
+			if loc.C == -1 {
 				for r, row := range d.Map {
 					for c, char := range row {
-						if char == 'S' || char == 'a' {
-							adj.Add(ds.Edge[lib.Point[int], int]{
+						if char == 'a' {
+							adj.Add(ds.Edge[lib.GridPoint[int], int]{
 								Weight: 0,
-								Vertex: lib.Point[int]{c, r},
+								Vertex: lib.NewGridPoint(r, c),
 							})
 						}
 					}
@@ -144,79 +105,36 @@ func (d *Day12) Part2() int {
 				return adj
 			}
 
-			curVal := d.Map[loc.Y][loc.X]
-			if curVal == 'S' {
-				curVal = 'a'
+			curVal := d.Map[loc.R][loc.C]
+			if loc.R > 0 && d.Map[loc.R-1][loc.C] <= curVal+1 {
+				adj.Add(ds.Edge[lib.GridPoint[int], int]{
+					Weight: 1,
+					Vertex: lib.NewGridPoint(loc.R-1, loc.C),
+				})
 			}
-			if curVal == 'E' {
-				curVal = 'z'
+			if loc.R < len(d.Map)-1 && d.Map[loc.R+1][loc.C] <= curVal+1 {
+				adj.Add(ds.Edge[lib.GridPoint[int], int]{
+					Weight: 1,
+					Vertex: lib.NewGridPoint(loc.R+1, loc.C),
+				})
 			}
-			if loc.Y > 0 {
-				ohea := d.Map[loc.Y-1][loc.X]
-				if ohea == 'S' {
-					ohea = 'a'
-				}
-				if ohea == 'E' {
-					ohea = 'z'
-				}
-				if ohea <= curVal+1 {
-					adj.Add(ds.Edge[lib.Point[int], int]{
-						Weight: 1,
-						Vertex: lib.Point[int]{loc.X, loc.Y - 1},
-					})
-				}
+			if loc.C > 0 && d.Map[loc.R][loc.C-1] <= curVal+1 {
+				adj.Add(ds.Edge[lib.GridPoint[int], int]{
+					Weight: 1,
+					Vertex: lib.NewGridPoint(loc.R, loc.C-1),
+				})
 			}
-
-			if loc.Y < len(d.Map)-1 {
-				ohea := d.Map[loc.Y+1][loc.X]
-				if ohea == 'S' {
-					ohea = 'a'
-				}
-				if ohea == 'E' {
-					ohea = 'z'
-				}
-				if ohea <= curVal+1 {
-					adj.Add(ds.Edge[lib.Point[int], int]{
-						Weight: 1,
-						Vertex: lib.Point[int]{loc.X, loc.Y + 1},
-					})
-				}
-			}
-			if loc.X > 0 {
-				ohea := d.Map[loc.Y][loc.X-1]
-				if ohea == 'S' {
-					ohea = 'a'
-				}
-				if ohea == 'E' {
-					ohea = 'z'
-				}
-				if ohea <= curVal+1 {
-					adj.Add(ds.Edge[lib.Point[int], int]{
-						Weight: 1,
-						Vertex: lib.Point[int]{loc.X - 1, loc.Y},
-					})
-				}
-			}
-			if loc.X < len(d.Map[0])-1 {
-				ohea := d.Map[loc.Y][loc.X+1]
-				if ohea == 'S' {
-					ohea = 'a'
-				}
-				if ohea == 'E' {
-					ohea = 'z'
-				}
-				if ohea <= curVal+1 {
-					adj.Add(ds.Edge[lib.Point[int], int]{
-						Weight: 1,
-						Vertex: lib.Point[int]{loc.X + 1, loc.Y},
-					})
-				}
+			if loc.C < len(d.Map[0])-1 && d.Map[loc.R][loc.C+1] <= curVal+1 {
+				adj.Add(ds.Edge[lib.GridPoint[int], int]{
+					Weight: 1,
+					Vertex: lib.NewGridPoint(loc.R, loc.C+1),
+				})
 			}
 			return adj
 		},
 		start,
-		func(loc lib.Point[int]) bool {
-			return loc.X == end.X && loc.Y == end.Y
+		func(loc lib.GridPoint[int]) bool {
+			return loc == end
 		},
 	)
 }
