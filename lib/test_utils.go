@@ -125,7 +125,7 @@ const (
 	SubmissionCorrect
 )
 
-func Submit(t *testing.T, year, day, part int, answer any) (result SubmissionResult) {
+func Submit(t *testing.T, year, day, part int, answer any) (SubmissionResult, string) {
 	projectRoot, found := os.LookupEnv("PROJECT_ROOT")
 	require.True(t, found)
 	sessionTokenBytes, err := ioutil.ReadFile(projectRoot + "/.session_token")
@@ -160,7 +160,7 @@ func Submit(t *testing.T, year, day, part int, answer any) (result SubmissionRes
 
 	answerText := doc.Find("article").Text()
 
-	printAnswer := func(color Color) {
+	printAnswer := func(color Color) string {
 		var line strings.Builder
 		lineLen := 0
 		for _, word := range strings.Fields(strings.TrimSpace(answerText)) {
@@ -177,26 +177,24 @@ func Submit(t *testing.T, year, day, part int, answer any) (result SubmissionRes
 			line.WriteString(word)
 			lineLen += len(word)
 		}
-		t.Log(ColorString(line.String(), color))
+		answerText := line.String()
+		t.Log(ColorString(answerText, color))
+		return answerText
 	}
 
-	result = SubmissionIncorrect
 	switch {
 	case strings.Contains(answerText, "That's not the right answer"):
-		printAnswer(ColorRed)
-		return SubmissionIncorrect
+		return SubmissionIncorrect, printAnswer(ColorRed)
 
 	case strings.Contains(answerText, "You gave an answer too recently"):
-		printAnswer(ColorRed)
-		return SubmissionTooSoon
+		return SubmissionTooSoon, printAnswer(ColorRed)
 
 	case strings.Contains(answerText, "Did you already complete it"):
-		printAnswer(ColorYellow)
-		return SubmissionAlreadyComplete
+		return SubmissionAlreadyComplete, printAnswer(ColorYellow)
 
 	case strings.Contains(answerText, "That's the right answer"):
-		printAnswer(ColorGreen)
-		return SubmissionCorrect
+		return SubmissionCorrect, printAnswer(ColorGreen)
+
 	default:
 		printAnswer(ColorRed)
 		panic("no idea what the output means")

@@ -34,34 +34,8 @@ func (d *Day12) Part1() int {
 		}
 	}
 
-	seen := ds.Set[lib.Point[int]]{}
-
 	return lib.Dijkstra(
 		func(loc lib.Point[int]) ds.Set[ds.Edge[lib.Point[int], int]] {
-			// fmt.Printf("VISIT %d\n", loc)
-			// for r := 0; r < len(d.Map); r++ {
-			// 	for c := 0; c < len(d.Map[0]); c++ {
-			// 		fmt.Printf("%c", d.Map[r][c])
-			// 	}
-			// 	fmt.Printf("\n")
-			// }
-			// for r := 0; r < len(d.Map); r++ {
-			// 	for c := 0; c < len(d.Map[0]); c++ {
-			// 		if start.X == c && start.Y == r {
-			// 			fmt.Printf("S")
-			// 		} else if end.X == c && end.Y == r {
-			// 			fmt.Printf("E")
-			// 		} else if seen.Contains(lib.Point[int]{c, r}) {
-			// 			fmt.Printf("%s", "#")
-			// 		} else {
-			// 			fmt.Printf(".")
-			// 		}
-			// 	}
-			// 	fmt.Printf("\n")
-			// }
-
-			seen.Add(loc)
-
 			curVal := d.Map[loc.Y][loc.X]
 			if curVal == 'S' {
 				curVal = 'a'
@@ -131,7 +105,6 @@ func (d *Day12) Part1() int {
 					})
 				}
 			}
-			// fmt.Printf("NEXT STATES %v\n", adj)
 			return adj
 		},
 		start,
@@ -154,8 +127,6 @@ func (d *Day12) Part2() int {
 		}
 	}
 
-	// seen := ds.Set[lib.Point[int]]{}
-
 	return lib.Dijkstra(
 		func(loc lib.Point[int]) ds.Set[ds.Edge[lib.Point[int], int]] {
 			adj := ds.Set[ds.Edge[lib.Point[int], int]]{}
@@ -172,29 +143,6 @@ func (d *Day12) Part2() int {
 				}
 				return adj
 			}
-			// fmt.Printf("VISIT %d\n", loc)
-			// for r := 0; r < len(d.Map); r++ {
-			// 	for c := 0; c < len(d.Map[0]); c++ {
-			// 		fmt.Printf("%c", d.Map[r][c])
-			// 	}
-			// 	fmt.Printf("\n")
-			// }
-			// for r := 0; r < len(d.Map); r++ {
-			// 	for c := 0; c < len(d.Map[0]); c++ {
-			// 		if start.X == c && start.Y == r {
-			// 			fmt.Printf("S")
-			// 		} else if end.X == c && end.Y == r {
-			// 			fmt.Printf("E")
-			// 		} else if seen.Contains(lib.Point[int]{c, r}) {
-			// 			fmt.Printf("%s", "#")
-			// 		} else {
-			// 			fmt.Printf(".")
-			// 		}
-			// 	}
-			// 	fmt.Printf("\n")
-			// }
-
-			// seen.Add(loc)
 
 			curVal := d.Map[loc.Y][loc.X]
 			if curVal == 'S' {
@@ -264,7 +212,6 @@ func (d *Day12) Part2() int {
 					})
 				}
 			}
-			// fmt.Printf("NEXT STATES %v\n", adj)
 			return adj
 		},
 		start,

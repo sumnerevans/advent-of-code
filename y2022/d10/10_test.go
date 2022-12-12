@@ -82,7 +82,7 @@ func Test_Day10(t *testing.T) {
 
 				// require.True(t, false, "AUTOSUBMISSION GATE")
 
-				switch lib.Submit(t, 2022, 10, 1, output) {
+				switch result, _ := lib.Submit(t, 2022, 10, 1, output); result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.1.txt", []byte(lib.AsJSON(output)), 0644)
 				case lib.SubmissionIncorrect:
@@ -179,7 +179,7 @@ func Test_Day10(t *testing.T) {
 
 				// require.True(t, false, "AUTOSUBMISSION GATE")
 
-				switch lib.Submit(t, 2022, 10, 2, output) {
+				switch result, _ := lib.Submit(t, 2022, 10, 2, output); result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.2.txt", []byte(lib.AsJSON(output)), 0644)
 				case lib.SubmissionIncorrect:

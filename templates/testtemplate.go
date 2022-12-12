@@ -79,9 +79,11 @@ func Test_Day%DAYNUM%(t *testing.T) {
 
 				require.True(t, false, "AUTOSUBMISSION GATE")
 
-				switch lib.Submit(t, %YEARNUM%, %DAYNUM%, 1, output) {
+				result, answerText := lib.Submit(t, %YEARNUM%, %DAYNUM%, 1, output)
+				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.1.txt", []byte(lib.AsJSON(output)), 0644)
+					os.WriteFile("answertext.1.txt", []byte(answerText), 0644)
 				case lib.SubmissionIncorrect:
 					require.NoError(t, lib.WriteIncorrect(1, lib.AsJSON(output)))
 				case lib.SubmissionTooSoon:
@@ -89,6 +91,11 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				}
 			} else if existingOutput == lib.AsJSON(output) {
 				t.Log(lib.ColorString("Answer already ACCEPTED", lib.ColorGreen))
+				if answerText, err := os.ReadFile("answertext.1.txt"); err == nil {
+					t.Log("")
+					t.Log(lib.ColorString("Original server response:", lib.ColorGreen))
+					t.Log(lib.ColorString(string(answerText), lib.ColorGreen))
+				}
 			} else {
 				t.Fatal(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))
 			}
@@ -158,9 +165,11 @@ func Test_Day%DAYNUM%(t *testing.T) {
 
 				require.True(t, false, "AUTOSUBMISSION GATE")
 
-				switch lib.Submit(t, %YEARNUM%, %DAYNUM%, 2, output) {
+				result, answerText := lib.Submit(t, %YEARNUM%, %DAYNUM%, 2, output)
+				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.2.txt", []byte(lib.AsJSON(output)), 0644)
+					os.WriteFile("answertext.2.txt", []byte(answerText), 0644)
 				case lib.SubmissionIncorrect:
 					require.NoError(t, lib.WriteIncorrect(2, lib.AsJSON(output)))
 				case lib.SubmissionTooSoon:
@@ -168,6 +177,11 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				}
 			} else if existingOutput == lib.AsJSON(output) {
 				t.Log(lib.ColorString("Answer already ACCEPTED", lib.ColorGreen))
+				if answerText, err := os.ReadFile("answertext.1.txt"); err == nil {
+					t.Log("")
+					t.Log(lib.ColorString("Original server response:", lib.ColorGreen))
+					t.Log(lib.ColorString(string(answerText), lib.ColorGreen))
+				}
 			} else {
 				t.Fatal(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))
 			}

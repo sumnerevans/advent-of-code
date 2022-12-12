@@ -79,9 +79,11 @@ func Test_Day01(t *testing.T) {
 
 				// require.True(t, false, "AUTOSUBMISSION GATE")
 
-				switch lib.Submit(t, 2015, 1, 1, output) {
+				result, answerText := lib.Submit(t, 2015, 1, 1, output)
+				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.1.txt", []byte(lib.AsJSON(output)), 0644)
+					os.WriteFile("answertext.1.txt", []byte(answerText), 0644)
 				case lib.SubmissionIncorrect:
 					require.NoError(t, lib.WriteIncorrect(1, lib.AsJSON(output)))
 				case lib.SubmissionTooSoon:
@@ -89,6 +91,12 @@ func Test_Day01(t *testing.T) {
 				}
 			} else if existingOutput == lib.AsJSON(output) {
 				t.Log(lib.ColorString("Answer already ACCEPTED", lib.ColorGreen))
+				answerText, err := os.ReadFile("answertext.1.txt")
+				if err == nil {
+					t.Log("")
+					t.Log(lib.ColorString("Original server response:", lib.ColorGreen))
+					t.Log(lib.ColorString(string(answerText), lib.ColorGreen))
+				}
 			}
 
 			t.Log("")
@@ -154,11 +162,11 @@ func Test_Day01(t *testing.T) {
 					}
 				}
 
-				// require.True(t, false, "AUTOSUBMISSION GATE")
-
-				switch lib.Submit(t, 2015, 1, 2, output) {
+				result, answerText := lib.Submit(t, 2015, 1, 2, output)
+				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.2.txt", []byte(lib.AsJSON(output)), 0644)
+					os.WriteFile("answertext.1.txt", []byte(answerText), 0644)
 				case lib.SubmissionIncorrect:
 					require.NoError(t, lib.WriteIncorrect(2, lib.AsJSON(output)))
 				case lib.SubmissionTooSoon:
@@ -166,6 +174,12 @@ func Test_Day01(t *testing.T) {
 				}
 			} else if existingOutput == lib.AsJSON(output) {
 				t.Log(lib.ColorString("Answer already ACCEPTED", lib.ColorGreen))
+				answerText, err := os.ReadFile("answertext.2.txt")
+				if err == nil {
+					t.Log("")
+					t.Log(lib.ColorString("Original server response:", lib.ColorGreen))
+					t.Log(lib.ColorString(string(answerText), lib.ColorGreen))
+				}
 			}
 
 			t.Log("")
