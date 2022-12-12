@@ -79,3 +79,7 @@ func (g Graph[V]) Nodes() (nodes Set[V]) {
 func (g Graph[V]) Invert() Graph[V] {
 	return g.underlying.Invert().AsUnweighted()
 }
+
+func (g Graph[V]) AsWeighted() WeightedGraph[V, int] {
+	return g.underlying
+}

@@ -35,14 +35,14 @@ func Dijkstra[K comparable](
 	panic("No path found to any end state")
 }
 
-func DijkstraG[K comparable](
-	graph ds.WeightedGraph[K, int],
-	start K,
-	endState K,
-) int {
+func DijkstraG[K comparable](graph ds.WeightedGraph[K, int], start K, end K) int {
 	return Dijkstra(
 		func(cur K) ds.Set[ds.Edge[K, int]] { return graph[cur] },
 		start,
-		func(cur K) bool { return cur == endState },
+		func(cur K) bool { return cur == end },
 	)
+}
+
+func ShortestPath[K comparable](graph ds.Graph[K], start K, end K) int {
+	return DijkstraG(graph.AsWeighted(), start, end)
 }
