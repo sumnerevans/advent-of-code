@@ -1,50 +1,118 @@
 package ds
 
 import (
+	"container/heap"
 	"fmt"
 )
 
-// An Item is something we manage in a priority queue.
-type Item struct {
-	Value    any // The value of the item; arbitrary.
-	Priority int // The priority of the item in the queue.
-	// The index is needed by update and is maintained by the heap.Interface methods.
-	index int // The index of the item in the heap.
+type priorityQueueItem struct {
+	value    any
+	priority int
+	index    int
 }
 
-func (i *Item) String() string {
-	return fmt.Sprintf("p: %d, v:%v", i.Priority, i.Value)
+func (pqi priorityQueueItem) String() string {
+	return fmt.Sprintf("{p:%d, v:%v}", pqi.priority, pqi.value)
 }
 
-// A PriorityQueue implements heap.Interface and holds Items.
-type PriorityQueue []*Item
-
-func (pq PriorityQueue) Len() int { return len(pq) }
-
-func (pq PriorityQueue) Less(i, j int) bool {
-	// We want Pop to give us the highest, not lowest, priority so we use greater than here.
-	return pq[i].Priority < pq[j].Priority
+// priorityQueueInner implements the heap.Interface interface. It is then
+// wrapped by PriorityQueue.
+type priorityQueueInner struct {
+	items []*priorityQueueItem
+	less  func(p1, p2 int) bool
 }
 
-func (pq PriorityQueue) Swap(i, j int) {
-	pq[i], pq[j] = pq[j], pq[i]
-	pq[i].index = i
-	pq[j].index = j
+// Implementation of the functions for sort.Interface.
+
+func (pq priorityQueueInner) Len() int {
+	return len(pq.items)
 }
 
-func (pq *PriorityQueue) Push(x any) {
-	n := len(*pq)
-	item := x.(Item)
+func (pq priorityQueueInner) Less(i, j int) bool {
+	return pq.less(pq.items[i].priority, pq.items[j].priority)
+}
+
+func (pq priorityQueueInner) Swap(i, j int) {
+	pq.items[i], pq.items[j] = pq.items[j], pq.items[i]
+	pq.items[i].index = i
+	pq.items[j].index = j
+}
+
+func (pq *priorityQueueInner) Push(x any) {
+	n := len(pq.items)
+	item := x.(*priorityQueueItem)
 	item.index = n
-	*pq = append(*pq, &item)
+	pq.items = append(pq.items, item)
 }
 
-func (pq *PriorityQueue) Pop() any {
-	old := *pq
+func (pq *priorityQueueInner) Pop() any {
+	old := pq.items
 	n := len(old)
 	item := old[n-1]
 	old[n-1] = nil  // avoid memory leak
 	item.index = -1 // for safety
-	*pq = old[0 : n-1]
+	pq.items = old[0 : n-1]
 	return item
+}
+
+// PriorityQueue is a min priority queue.
+type PriorityQueue[V any] struct {
+	inner priorityQueueInner
+}
+
+func NewPriorityQueue[V any](items ...Pair[int, V]) PriorityQueue[V] {
+	pq := PriorityQueue[V]{
+		inner: priorityQueueInner{
+			items: make([]*priorityQueueItem, len(items)),
+			less:  func(p1, p2 int) bool { return p1 < p2 },
+		},
+	}
+	for i, item := range items {
+		pq.inner.items[i] = &priorityQueueItem{
+			priority: item.First(),
+			value:    item.Second(),
+			index:    i,
+		}
+	}
+	heap.Init(&pq.inner)
+	return pq
+}
+
+func NewMaxPriorityQueue[V any](items ...Pair[int, V]) PriorityQueue[V] {
+	pq := PriorityQueue[V]{
+		inner: priorityQueueInner{
+			items: make([]*priorityQueueItem, len(items)),
+			less:  func(p1, p2 int) bool { return p1 > p2 },
+		},
+	}
+	for i, item := range items {
+		pq.inner.items[i] = &priorityQueueItem{
+			priority: item.First(),
+			value:    item.Second(),
+			index:    i,
+		}
+	}
+	heap.Init(&pq.inner)
+	return pq
+}
+
+func (pq *PriorityQueue[V]) String() string {
+	return fmt.Sprintf("%v", pq.inner)
+}
+
+func (pq *PriorityQueue[V]) Len() int {
+	return pq.inner.Len()
+}
+
+func (pq *PriorityQueue[V]) Push(priority int, val V) {
+	item := &priorityQueueItem{
+		value:    val,
+		priority: priority,
+	}
+	heap.Push(&pq.inner, item)
+}
+
+func (pq *PriorityQueue[V]) Pop() (int, V) {
+	next := heap.Pop(&pq.inner).(*priorityQueueItem)
+	return next.priority, next.value.(V)
 }

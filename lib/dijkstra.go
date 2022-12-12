@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"container/heap"
-
 	"github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
@@ -11,20 +9,12 @@ func Dijkstra[K comparable](
 	start K,
 	endState func(K) bool,
 ) int {
-	pq := ds.PriorityQueue{}
+	pq := ds.NewPriorityQueue(ds.NewPair(0, start))
 	dists := map[K]int{}
 	seen := ds.Set[K]{}
 
-	pq.Push(ds.Item{
-		Value:    start,
-		Priority: 0,
-	})
-	heap.Init(&pq)
-
-	for len(pq) > 0 {
-		next := heap.Pop(&pq).(*ds.Item)
-		cost := next.Priority
-		el := next.Value.(K)
+	for pq.Len() > 0 {
+		cost, el := pq.Pop()
 		if seen.Contains(el) {
 			continue
 		}
@@ -38,10 +28,7 @@ func Dijkstra[K comparable](
 		for e := range nextStates(el) {
 			if curdist, ok := dists[e.Vertex]; !ok || cost+e.Weight < curdist {
 				dists[e.Vertex] = cost + e.Weight
-				heap.Push(&pq, ds.Item{
-					Value:    e.Vertex,
-					Priority: cost + e.Weight,
-				})
+				pq.Push(cost+e.Weight, e.Vertex)
 			}
 		}
 	}
