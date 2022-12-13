@@ -29,17 +29,6 @@ func (d *Day13) LoadInput(lines []string) error {
 		d.All = append(d.All, l)
 	}
 
-	for _, line := range lines {
-		if line == "" {
-			continue
-		}
-		l := []any{}
-		err := json.Unmarshal([]byte(line), &l)
-		if err != nil {
-			panic(err)
-		}
-		d.All = append(d.All, l)
-	}
 	d.Pairs = lib.ParseGroups(lines, func(s []string) Pair {
 		fst := []any{}
 		err := json.Unmarshal([]byte(s[0]), &fst)
@@ -51,6 +40,7 @@ func (d *Day13) LoadInput(lines []string) error {
 		if err != nil {
 			panic(err)
 		}
+		d.All = append(d.All, fst, snd)
 		return Pair{fst, snd}
 	})
 	return nil
