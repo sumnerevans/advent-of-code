@@ -78,8 +78,6 @@ func Test_Day13(t *testing.T) {
 					}
 				}
 
-				// require.True(t, false, "AUTOSUBMISSION GATE")
-
 				result, answerText := lib.Submit(t, 2022, 13, 1, output)
 				switch result {
 				case lib.SubmissionCorrect:
@@ -164,8 +162,6 @@ func Test_Day13(t *testing.T) {
 						t.Fatal(lib.ColorString("You already submitted that and it was incorrect\n", lib.ColorRed))
 					}
 				}
-
-				// require.True(t, false, "AUTOSUBMISSION GATE")
 
 				result, answerText := lib.Submit(t, 2022, 13, 2, output)
 				switch result {

@@ -2,12 +2,9 @@ package d13
 
 import (
 	"encoding/json"
-	"fmt"
 	"sort"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type Pair struct {
@@ -64,7 +61,6 @@ func Cmp(l, r any) int {
 	sndLst, sndIsList := r.([]any)
 
 	if !fstIsList && !sndIsList {
-		// fmt.Printf("l %f r %f\n", l.(float64), r.(float64))
 		if l.(float64) < r.(float64) {
 			return 1
 		} else if l.(float64) == r.(float64) {
@@ -103,12 +99,7 @@ func (d *Day13) Part1() int {
 	var ans int
 
 	for i, p := range d.Pairs {
-		// fmt.Printf("PAIR %d\n", i+1)
-		// fmt.Printf("PAIR %v %v\n", p.Fst, p.Snd)
-		c := Cmp(p.Fst, p.Snd)
-		// fmt.Printf("CMP %d\n", c)
-		if c > 0 {
-			fmt.Printf("%d IN RIGHT ORDER\n", i+1)
+		if Cmp(p.Fst, p.Snd) > 0 {
 			ans += i + 1
 		}
 	}
@@ -119,11 +110,7 @@ func (d *Day13) Part1() int {
 func (d *Day13) Part2() int64 {
 	var ans int64 = 1
 
-	fmt.Printf("%v\n", d.All)
-	sort.Slice(d.All, func(i, j int) bool {
-		return Cmp(d.All[i], d.All[j]) > 0
-	})
-	fmt.Printf("%v\n", d.All)
+	sort.Slice(d.All, func(i, j int) bool { return Cmp(d.All[i], d.All[j]) > 0 })
 	for i := 0; i < len(d.All); i++ {
 		if outer, ok := d.All[i].([]any); ok {
 			if len(outer) != 1 {
