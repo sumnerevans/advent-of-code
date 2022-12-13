@@ -28,6 +28,7 @@ func Test_Day13(t *testing.T) {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
 					// Test cases
+					13,
 				}
 
 				for i, sample := range samples {
@@ -77,7 +78,7 @@ func Test_Day13(t *testing.T) {
 					}
 				}
 
-				require.True(t, false, "AUTOSUBMISSION GATE")
+				// require.True(t, false, "AUTOSUBMISSION GATE")
 
 				result, answerText := lib.Submit(t, 2022, 13, 1, output)
 				switch result {
@@ -114,6 +115,7 @@ func Test_Day13(t *testing.T) {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
 					// Test cases
+					140,
 				}
 
 				for i, sample := range samples {
@@ -163,7 +165,7 @@ func Test_Day13(t *testing.T) {
 					}
 				}
 
-				require.True(t, false, "AUTOSUBMISSION GATE")
+				// require.True(t, false, "AUTOSUBMISSION GATE")
 
 				result, answerText := lib.Submit(t, 2022, 13, 2, output)
 				switch result {
