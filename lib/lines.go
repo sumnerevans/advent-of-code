@@ -57,3 +57,36 @@ func IntPointsBetween[T constraints.Signed](start Point[T], end Point[T]) (point
 		return
 	}
 }
+
+// IntPointsBetween return an iterator of all of the integer points between two
+// given points. Note that you are *not* guaranteed that the points will be
+// given from `start` to `end`, but all points will be included.
+func GridPointsBetween[T constraints.Signed](start GridPoint[T], end GridPoint[T]) (points []GridPoint[T]) {
+	if start.R == end.R {
+		return Map(func(c T) GridPoint[T] { return GridPoint[T]{R: start.R, C: c} })(IRange(start.C, end.C))
+	} else if start.C == end.C {
+		return Map(func(r T) GridPoint[T] { return GridPoint[T]{R: r, C: start.C} })(IRange(start.R, end.R))
+	} else {
+		// If the start C > end C, that means that "start" is to the right of
+		// "end", so we need to switch the points around so iteration always
+		// goes in the positive "c" direction
+		if start.C > end.C {
+			start.C, start.R, end.C, end.R = end.C, end.R, start.C, start.R
+		}
+
+		dr := end.R - start.R
+		dc := end.C - start.C
+		common := GCD(dr, dc)
+		dr /= common
+		dc /= common
+
+		r := start.R
+		c := start.C
+		for c <= end.C {
+			points = append(points, GridPoint[T]{R: r, C: c})
+			c += dc
+			r += dr
+		}
+		return
+	}
+}
