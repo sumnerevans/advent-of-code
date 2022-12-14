@@ -61,7 +61,7 @@ func NewSet[T comparable](values []T) Set[T] {
 	return set
 }
 
-func SetFromValues[T comparable](values ...T) Set[T] {
+func NewSetFromValues[T comparable](values ...T) Set[T] {
 	set := Set[T]{}
 	for _, v := range values {
 		set[v] = struct{}{}

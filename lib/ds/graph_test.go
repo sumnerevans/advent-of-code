@@ -13,7 +13,7 @@ func TestGraph_Create(t *testing.T) {
 	g.AddEdge(2, 3)
 	g.AddEdge(2, 4)
 
-	assert.Equal(t, ds.SetFromValues(1, 2, 3, 4), g.Nodes())
+	assert.Equal(t, ds.NewSetFromValues(1, 2, 3, 4), g.Nodes())
 }
 
 func TestGraph_Invert(t *testing.T) {

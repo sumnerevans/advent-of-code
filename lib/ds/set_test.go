@@ -13,7 +13,7 @@ func TestSetIntersection(t *testing.T) {
 		b        ds.Set[int]
 		expected ds.Set[int]
 	}{
-		{ds.SetFromValues(1, 2, 3), ds.SetFromValues(2, 3, 4), ds.SetFromValues(2, 3)},
+		{ds.NewSetFromValues(1, 2, 3), ds.NewSetFromValues(2, 3, 4), ds.NewSetFromValues(2, 3)},
 	}
 	for _, test := range tests {
 		assert.True(t, test.expected.Equal(test.a.Intersection(test.b)), "test: %+v", test)
