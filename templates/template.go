@@ -19,13 +19,13 @@ func (d *Day%DAYNUM%) LoadInput(lines []string) error {
 	return nil
 }
 
-func (d *Day%DAYNUM%) Part1() int {
+func (d *Day%DAYNUM%) Part1(isTest bool) int {
 	var ans int
 
 	return ans
 }
 
-func (d *Day%DAYNUM%) Part2() int {
+func (d *Day%DAYNUM%) Part2(isTest bool) int {
 	var ans int
 
 	return ans

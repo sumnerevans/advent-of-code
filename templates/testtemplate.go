@@ -39,7 +39,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
 						err := day%DAYNUM%.LoadInput(sample)
 						require.NoError(t, err)
-						output := day%DAYNUM%.Part1()
+						output := day%DAYNUM%.Part1(true)
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -55,7 +55,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 			day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
 			err := day%DAYNUM%.LoadInput(actual)
 			require.NoError(t, err)
-			output := day%DAYNUM%.Part1()
+			output := day%DAYNUM%.Part1(false)
 			t.Log("=================================")
 			t.Log("")
 			t.Log("ACTUAL INPUT")
@@ -128,7 +128,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 						day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
 						err := day%DAYNUM%.LoadInput(sample)
 						require.NoError(t, err)
-						output := day%DAYNUM%.Part2()
+						output := day%DAYNUM%.Part2(true)
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -144,7 +144,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 			day%DAYNUM% := &d%DAYNUM%.Day%DAYNUM%{}
 			err := day%DAYNUM%.LoadInput(actual)
 			require.NoError(t, err)
-			output := day%DAYNUM%.Part2()
+			output := day%DAYNUM%.Part2(false)
 			t.Log("=================================")
 			t.Log("")
 			t.Log("ACTUAL INPUT")

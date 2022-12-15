@@ -166,7 +166,6 @@ func Test_Day15(t *testing.T) {
 					}
 				}
 
-
 				result, answerText := lib.Submit(t, 2022, 15, 2, output)
 				switch result {
 				case lib.SubmissionCorrect:

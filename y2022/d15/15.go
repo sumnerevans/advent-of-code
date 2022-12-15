@@ -9,24 +9,21 @@ import (
 	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
-type Sensor lib.Point[int]
-type Beacon lib.Point[int]
-
-type Pair struct {
-	S Sensor
-	B Beacon
+type SensorBeaconPair struct {
+	Sensor lib.Point[int]
+	Beacon lib.Point[int]
 }
 
 type Day15 struct {
-	SBPairs []Pair
+	Pairs []SensorBeaconPair
 }
 
 func (d *Day15) LoadInput(lines []string) error {
 	for _, line := range lines {
 		x := lib.AllInts(line)
-		d.SBPairs = append(d.SBPairs, Pair{
-			S: Sensor{X: x[0], Y: x[1]},
-			B: Beacon{X: x[2], Y: x[3]},
+		d.Pairs = append(d.Pairs, SensorBeaconPair{
+			Sensor: lib.Point[int]{X: x[0], Y: x[1]},
+			Beacon: lib.Point[int]{X: x[2], Y: x[3]},
 		})
 	}
 	return nil
@@ -40,19 +37,19 @@ func (d *Day15) Part1(istest bool) int {
 
 	nobeacon := ds.Set[int]{}
 
-	for _, p := range d.SBPairs {
-		maxDist := lib.AbsInt(p.S.X-p.B.X) + lib.AbsInt(p.S.Y-p.B.Y)
-		eachSide := maxDist - lib.AbsInt(p.S.Y-line)
+	for _, p := range d.Pairs {
+		maxDist := lib.AbsInt(p.Sensor.X-p.Beacon.X) + lib.AbsInt(p.Sensor.Y-p.Beacon.Y)
+		eachSide := maxDist - lib.AbsInt(p.Sensor.Y-line)
 		if eachSide >= 0 {
-			nobeacon.Add(p.S.X)
-			for i := p.S.X - eachSide; i <= p.S.X+eachSide; i++ {
+			nobeacon.Add(p.Sensor.X)
+			for i := p.Sensor.X - eachSide; i <= p.Sensor.X+eachSide; i++ {
 				nobeacon.Add(i)
 			}
 		}
 	}
-	for _, p := range d.SBPairs {
-		if p.B.Y == line {
-			nobeacon.Remove(p.B.X)
+	for _, p := range d.Pairs {
+		if p.Beacon.Y == line {
+			nobeacon.Remove(p.Beacon.X)
 		}
 	}
 
@@ -76,70 +73,33 @@ func (d *Day15) Part2(istest bool) int64 {
 		boundhi = 20
 	}
 
-	// fmt.Printf("%v\n", d.SBPairs)
-	// candidate := ds.Set[lib.Point[int]]{}
-
 	for y := boundlo; y < boundhi; y++ {
-		// covers := ds.Set[struct{ lo, hi int }]{}
-		sort.Slice(d.SBPairs, func(i, j int) bool {
-			pi := d.SBPairs[i]
-			pj := d.SBPairs[j]
-			maxDistI := lib.AbsInt(pi.S.X-pi.B.X) + lib.AbsInt(pi.S.Y-pi.B.Y)
-			maxDistJ := lib.AbsInt(pj.S.X-pj.B.X) + lib.AbsInt(pj.S.Y-pj.B.Y)
-			eachSideI := maxDistI - lib.AbsInt(pi.S.Y-y)
-			eachSideJ := maxDistJ - lib.AbsInt(pj.S.Y-y)
+		sort.Slice(d.Pairs, func(i, j int) bool {
+			pi := d.Pairs[i]
+			pj := d.Pairs[j]
+			maxDistI := lib.AbsInt(pi.Sensor.X-pi.Beacon.X) + lib.AbsInt(pi.Sensor.Y-pi.Beacon.Y)
+			maxDistJ := lib.AbsInt(pj.Sensor.X-pj.Beacon.X) + lib.AbsInt(pj.Sensor.Y-pj.Beacon.Y)
+			eachSideI := maxDistI - lib.AbsInt(pi.Sensor.Y-y)
+			eachSideJ := maxDistJ - lib.AbsInt(pj.Sensor.Y-y)
 
-			return pi.S.X - eachSideI < pj.S.X - eachSideJ
-
-			// return d.SBPairs[i].S.X < d.SBPairs[j].S.X
+			return pi.Sensor.X-eachSideI < pj.Sensor.X-eachSideJ
 		})
-		// fmt.Printf("Y %d\n", y)
-		// fmt.Printf("%v\n", d.SBPairs)
+
 		var coveredhi, coveredlo int
-		for _, p := range d.SBPairs {
-			maxDist := lib.AbsInt(p.S.X-p.B.X) + lib.AbsInt(p.S.Y-p.B.Y)
-			eachSide := maxDist - lib.AbsInt(p.S.Y-y)
+		for _, p := range d.Pairs {
+			maxDist := lib.AbsInt(p.Sensor.X-p.Beacon.X) + lib.AbsInt(p.Sensor.Y-p.Beacon.Y)
+			eachSide := maxDist - lib.AbsInt(p.Sensor.Y-y)
 			if eachSide < 0 {
 				continue
 			}
-			// unioned := false
-			// for cover := range covers {
-			// 	coveredlo := lib.Min(cover.lo, p.S.X-eachSide)
-			// 	coveredhi := lib.Max(cover.hi, p.S.X+eachSide)
-			// 	covers.Add(struct {
-			// 		lo int
-			// 		hi int
-			// 	}{coveredlo, coveredhi})
-			// 	covers.Remove(cover)
-			// 	unioned
-			// }
 
-			// // fmt.Printf("%d %d\n", p.S.X-eachSide, p.S.X+eachSide)
-			if coveredhi < p.S.X-eachSide -1{
-				// candidate.Add(lib.Point[int]{p.S.X - eachSide - 1, y})
-				return int64(p.S.X-eachSide-1)*4000000 + int64(y)
+			if coveredhi < p.Sensor.X-eachSide-1 {
+				return int64(p.Sensor.X-eachSide-1)*4000000 + int64(y)
 			}
 
-			coveredlo = lib.Min(coveredlo, p.S.X-eachSide)
-			coveredhi = lib.Max(coveredhi, p.S.X+eachSide)
-			// if eachSide >= 0 {
-			// 	for i := lib.Max(boundlo, p.S.X-eachSide); i <= lib.Min(boundhi-1, p.S.X+eachSide); i++ {
-			// 		nobeacon.Add(i)
-			// 	}
-			// }
+			coveredlo = lib.Min(coveredlo, p.Sensor.X-eachSide)
+			coveredhi = lib.Max(coveredhi, p.Sensor.X+eachSide)
 		}
-		// fmt.Printf("covers %v\n", covers)
-		// fmt.Printf("%d %d\n", coveredhi, coveredlo)
-
-		// if len(nobeacon) < boundhi {
-		// 	for x := boundlo; x < boundhi; x++ {
-		// 		if !nobeacon.Contains(x) {
-		// 			fmt.Printf("%d %d\n", x, y)
-		// 			return x*4000000 + y
-		// 		}
-		// 	}
-		// }
 	}
-	// fmt.Printf("candidae %v\n", candidate)
-	panic("ohea")
+	panic("no answer found!")
 }
