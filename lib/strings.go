@@ -12,7 +12,7 @@ func Lines(s string) []string {
 	return strings.Split(s, "\n")
 }
 
-var IntegerRegex = regexp.MustCompile(`\d+`)
+var IntegerRegex = regexp.MustCompile(`-?\d+`)
 
 func AllInts(s string) []int {
 	return MapStrInt(IntegerRegex.FindAllString(s, -1))

@@ -43,6 +43,24 @@ func DijkstraG[K comparable](graph ds.WeightedGraph[K, int], start K, end K) int
 	)
 }
 
-func ShortestPath[K comparable](graph ds.Graph[K], start K, end K) int {
+func ShortestPath[K comparable](
+	nextStates func(K) ds.Set[K],
+	start K,
+	endState func(K) bool,
+) int {
+	return Dijkstra(
+		func(cur K) ds.Set[ds.Edge[K, int]] {
+			nexts := ds.Set[ds.Edge[K, int]]{}
+			for s := range nextStates(cur) {
+				nexts.Add(ds.Edge[K, int]{Vertex: s, Weight: 1})
+			}
+			return nexts
+		},
+		start,
+		endState,
+	)
+}
+
+func ShortestPathG[K comparable](graph ds.Graph[K], start K, end K) int {
 	return DijkstraG(graph.AsWeighted(), start, end)
 }

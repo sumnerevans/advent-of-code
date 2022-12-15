@@ -57,8 +57,9 @@ type Color string
 const (
 	ColorReset Color = "\033[0m"
 
-	ColorRed    Color = "\033[31m"
+	ColorBlue   Color = "\033[34m"
 	ColorGreen  Color = "\033[32m"
+	ColorRed    Color = "\033[31m"
 	ColorYellow Color = "\033[33m"
 )
 
