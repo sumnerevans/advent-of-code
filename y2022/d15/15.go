@@ -83,7 +83,7 @@ func (d *Day15) Part2(istest bool) int64 {
 			return pi.Sensor.X-eachSideI < pj.Sensor.X-eachSideJ
 		})
 
-		var coveredhi, coveredlo int
+		var coveredhi int
 		for _, p := range d.Pairs {
 			maxDist := lib.AbsInt(p.Sensor.X-p.Beacon.X) + lib.AbsInt(p.Sensor.Y-p.Beacon.Y)
 			eachSide := maxDist - lib.AbsInt(p.Sensor.Y-y)
@@ -95,7 +95,6 @@ func (d *Day15) Part2(istest bool) int64 {
 				return int64(p.Sensor.X-eachSide-1)*4000000 + int64(y)
 			}
 
-			coveredlo = lib.Min(coveredlo, p.Sensor.X-eachSide)
 			coveredhi = lib.Max(coveredhi, p.Sensor.X+eachSide)
 		}
 	}
