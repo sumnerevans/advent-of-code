@@ -5,8 +5,6 @@ import (
 	"regexp"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 // Each monkey has several attributes:

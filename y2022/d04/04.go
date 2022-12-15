@@ -28,7 +28,7 @@ type Day04 struct {
 
 func (d *Day04) LoadInput(log *zerolog.Logger, lines []string) error {
 	for _, line := range lines {
-		ints := lib.AllInts(line)
+		ints := lib.MapStrInt(lib.ReGroups(`(\d+?)-(\d+?),(\d+?)-(\d+)`, line))
 		d.Pairs = append(d.Pairs, Pair{
 			Section1: Section{Start: ints[0], End: ints[1]},
 			Section2: Section{Start: ints[2], End: ints[3]},

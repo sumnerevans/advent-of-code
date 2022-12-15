@@ -4,9 +4,7 @@ import (
 	"sort"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib"
 	"github.com/sumnerevans/advent-of-code/lib/ds"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type SensorBeaconPair struct {

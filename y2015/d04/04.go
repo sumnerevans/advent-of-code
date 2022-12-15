@@ -4,9 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type Day04 struct {

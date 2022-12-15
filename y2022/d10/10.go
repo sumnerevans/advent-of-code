@@ -4,8 +4,6 @@ import (
 	"strings"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type Type int

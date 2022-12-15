@@ -21,3 +21,8 @@ func AllInts(s string) []int {
 func AllInts64(s string) []int64 {
 	return MapStrInt64(IntegerRegex.FindAllString(s, -1))
 }
+
+func ReGroups(regexStr, str string) []string {
+	re := regexp.MustCompile(regexStr)
+	return re.FindStringSubmatch(str)[1:]
+}

@@ -2,8 +2,6 @@ package d02
 
 import (
 	"github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib"
-	_ "github.com/sumnerevans/advent-of-code/lib/ds"
 )
 
 type Dimension struct {
