@@ -114,6 +114,25 @@ func (co CurOpens) IsOpen(mask int64) bool {
 	return int64(co)&mask > 0
 }
 
+func (co CurOpens) Count() (count int) {
+	var i int64
+	for ; i < 64; i++ {
+		if int64(co)&i > 0 {
+			count++
+		}
+	}
+	return count
+}
+
+func (co CurOpens) AllOpen(maskMap map[string]int64, valves map[string]Valve) bool {
+	for name, valve := range valves {
+		if valve.Flow > 0 && int64(co)&maskMap[name] == 0 {
+			return false
+		}
+	}
+	return true
+}
+
 func (co CurOpens) TotalFlow(maskMap map[string]int64, flows map[string]Valve) int {
 	maskToName := map[int64]string{}
 	for k, v := range maskMap {
@@ -213,24 +232,35 @@ func DFS(
 	nextStates func(CurState) ds.Set[CurState],
 	start CurState,
 	endState func(CurState) bool,
-	maxFLowPerMinute int,
+	maxFlowPerMinute int,
 ) int {
 	// endStates := []CurState{}
 
-	stack := Stack[CurState]{}
-	stack.Push(start)
+	pq := ds.NewMaxPriorityQueue(ds.NewPair(0, start))
+	// stack := Stack[CurState]{}
+	// stack.Push(start)
 	// pq := ds.NewPriorityQueue(ds.NewPair(0, start))
 	// seen := ds.Set[CurState]{}
 
 	i := 0
 	best := 0
 
-	for stack.Peek() != nil {
-		if i%10000000 == 0 {
-			fmt.Printf("%d %d\n", stack.Len(), i)
+	pruning := 0
+
+	// for stack.Peek() != nil {
+	for pq.Len() > 0 {
+		if i%1000000 == 0 {
+			// fmt.Printf("%d %d\n", stack.Len(), i)
+			fmt.Printf("%d %d\n", pq.Len(), i)
+			// cur := stack.head
+			// for cur != nil {
+			// 	fmt.Printf("%v\n", cur.Car.String(d.ValveMasks))
+			// 	cur = cur.Cdr
+			// }
 		}
 		i++
-		el := stack.Pop()
+		// el := stack.Pop()
+		_, el := pq.Pop()
 		// fmt.Printf("el %v\n", el.String(d.ValveMasks))
 		// if seen.Contains(el) {
 		// 	continue
@@ -238,33 +268,48 @@ func DFS(
 
 		if endState(el) {
 			if el.Flow > best {
-				fmt.Printf("%v\n", el.String(d.ValveMasks))
+				// fmt.Printf("%v\n", el.String(d.ValveMasks))
 				best = el.Flow
-				fmt.Printf("best %d\n", best)
+				fmt.Printf("best %d: %s\n", best, el.String(d.ValveMasks))
 			}
 			// fmt.Printf("ES %v\n", el)
 			// endStates = append(endStates, el)
 			continue
 		}
 
-		if el.Flow+(maxFLowPerMinute)*(29-el.Time) < best {
+		if el.Flow+(maxFlowPerMinute)*(30-el.Time) < best {
+			pruning++
 			continue
 		}
 
-		// if el.Open.AllOpen() {
-		// 	continue
-		// }
-
 		// seen.Add(el)
 
+		// nexts := nextStates(el).List()
+		// sort.Slice(nexts, func(i, j int) bool {
+		// 	if nexts[i].Open.Count() < nexts[j].Open.Count() {
+		// 		return true
+		// 	} else if nexts[i].Flow < nexts[j].Flow {
+		// 		return true
+		// 	}
+		// 	return false
+		// 	// return nexts[i].Flow < nexts[j].Flow
+		// })
+
+		// for _, e := range nexts {
 		for e := range nextStates(el) {
+			// if seen.Contains(e) {
+			// 	fmt.Printf("=============HERE\n", )
+			// 	continue
+			// }
 			// fmt.Printf("NEXT %v\n", e.String(d.ValveMasks))
 			// if seen.Contains(e) {
 			// 	continue
 			// }
-			stack.Push(e)
+			pq.Push(e.Open.Count(), e)
 		}
 	}
+
+	fmt.Printf("PRUNED %d\n", pruning)
 
 	return best
 }
@@ -284,7 +329,7 @@ func (d *Day16) Part1(isTest bool) int {
 	start := CurState{
 		Open:   0,
 		CurPos: "AA",
-		Time:   1,
+		Time:   0,
 		Flow:   0,
 	}
 
@@ -297,42 +342,68 @@ func (d *Day16) Part1(isTest bool) int {
 		func(cur CurState) ds.Set[CurState] {
 			// fmt.Printf("cur %v\n", cur)
 			next := ds.Set[CurState]{}
+			// if cur.Open.AllOpen(d.ValveMasks, d.Valves) {
+			// 	next.Add(
+			// 		CurState{
+			// 			Open:   cur.Open,
+			// 			CurPos: cur.CurPos,
+			// 			Time:   30,
+			// 			Flow:   cur.Flow + (30-cur.Time)*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+			// 		},
+			// 	)
+			// 	return next
+			// }
 
-			// Open the valve
-			if !cur.Open.IsOpen(d.ValveMasks[cur.CurPos]) {
+			// Stay
+			if cur.Open.AllOpen(d.ValveMasks, d.Valves) {
 				next.Add(
 					CurState{
-						Open:   cur.Open.WithOpen(d.ValveMasks[cur.CurPos]),
+						Open:   cur.Open,
 						CurPos: cur.CurPos,
-						Time:   cur.Time + 1,
-						Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+						Time:   30,
+						Flow:   cur.Flow + (30-cur.Time)*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
 					},
 				)
-			}
-
-			// Move
-			for v := range d.Valves[cur.CurPos].Adj {
-				if cur.Time+v.Weight <= 30 {
+			} else {
+				// Open the valve
+				if d.Valves[cur.CurPos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.CurPos]) {
 					next.Add(
 						CurState{
-							Open:   cur.Open,
-							CurPos: v.Vertex,
-							Time:   cur.Time + v.Weight,
+							Open:   cur.Open.WithOpen(d.ValveMasks[cur.CurPos]),
+							CurPos: cur.CurPos,
+							Time:   cur.Time + 1,
 							Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
 						},
 					)
 				}
+
+				// Move
+				// for vert, dist := range d.Distances[cur.CurPos] {
+				// 	if cur.Time+dist <= 30 && !cur.Open.IsOpen(d.ValveMasks[vert]) && d.Valves[vert].Flow > 0 {
+				// 		next.Add(
+				// 			CurState{
+				// 				Open:   cur.Open,
+				// 				CurPos: vert,
+				// 				Time:   cur.Time + dist,
+				// 				Flow:   cur.Flow + dist*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+				// 			},
+				// 		)
+				// 	}
+				// }
+				for v := range d.Valves[cur.CurPos].Adj {
+					if cur.Time+1 <= 30 {
+						next.Add(
+							CurState{
+								Open:   cur.Open,
+								CurPos: v.Vertex,
+								Time:   cur.Time + 1,
+								Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+							},
+						)
+					}
+				}
 			}
 
-			// Stay
-			next.Add(
-				CurState{
-					Open:   cur.Open,
-					CurPos: cur.CurPos,
-					Time:   cur.Time + 1,
-					Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
-				},
-			)
 			return next
 		},
 		start,

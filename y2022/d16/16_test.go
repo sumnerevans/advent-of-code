@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -40,7 +41,9 @@ func Test_Day16(t *testing.T) {
 						day16 := &d16.Day16{}
 						err := day16.LoadInput(sample)
 						require.NoError(t, err)
+						start := time.Now()
 						output := day16.Part1(true)
+						fmt.Printf("TOOK %s\n", time.Now().Sub(start))
 						// output2 := day16.Part1(true)
 
 						// assert.EqualValues(t, output, output2, "NONDETERMINISTIC")
@@ -170,7 +173,7 @@ func Test_Day16(t *testing.T) {
 					}
 				}
 
-				require.True(t, false, "AUTOSUBMISSION GATE")
+				// require.True(t, false, "AUTOSUBMISSION GATE")
 
 				result, answerText := lib.Submit(t, 2022, 16, 2, output)
 				switch result {
