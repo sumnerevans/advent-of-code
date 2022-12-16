@@ -124,6 +124,7 @@ func Test_Day16(t *testing.T) {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
 					// Test cases
+					1707,
 				}
 
 				for i, sample := range samples {

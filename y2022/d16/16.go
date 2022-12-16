@@ -240,7 +240,7 @@ func DFS(
 	// stack := Stack[CurState]{}
 	// stack.Push(start)
 	// pq := ds.NewPriorityQueue(ds.NewPair(0, start))
-	// seen := ds.Set[CurState]{}
+	seen := ds.Set[CurState]{}
 
 	i := 0
 	best := 0
@@ -251,7 +251,7 @@ func DFS(
 	for pq.Len() > 0 {
 		if i%1000000 == 0 {
 			// fmt.Printf("%d %d\n", stack.Len(), i)
-			fmt.Printf("%d %d\n", pq.Len(), i)
+			fmt.Printf("%d %d %d\n", pq.Len(), i, len(seen))
 			// cur := stack.head
 			// for cur != nil {
 			// 	fmt.Printf("%v\n", cur.Car.String(d.ValveMasks))
@@ -262,9 +262,10 @@ func DFS(
 		// el := stack.Pop()
 		_, el := pq.Pop()
 		// fmt.Printf("el %v\n", el.String(d.ValveMasks))
-		// if seen.Contains(el) {
-		// 	continue
-		// }
+		if seen.Contains(el) {
+				// fmt.Printf("BAR\n", )
+			continue
+		}
 
 		if endState(el) {
 			if el.Flow > best {
@@ -282,7 +283,7 @@ func DFS(
 			continue
 		}
 
-		// seen.Add(el)
+		seen.Add(el)
 
 		// nexts := nextStates(el).List()
 		// sort.Slice(nexts, func(i, j int) bool {
@@ -302,9 +303,10 @@ func DFS(
 			// 	continue
 			// }
 			// fmt.Printf("NEXT %v\n", e.String(d.ValveMasks))
-			// if seen.Contains(e) {
-			// 	continue
-			// }
+			if seen.Contains(e) {
+				// fmt.Printf("FOO\n", )
+				continue
+			}
 			pq.Push(e.Open.Count(), e)
 		}
 	}
