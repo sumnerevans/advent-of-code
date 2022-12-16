@@ -14,7 +14,8 @@ type Valve struct {
 }
 
 type Day16 struct {
-	Valves map[string]Valve
+	Valves    map[string]Valve
+	Distances map[string]map[string]int
 }
 
 func (d *Day16) LoadInput(lines []string) error {
@@ -30,38 +31,64 @@ func (d *Day16) LoadInput(lines []string) error {
 		valves[name] = Valve{Flow: flow, Adj: adj}
 	}
 
-	for {
-		haszero := false
-		for name, valve := range valves {
-			if name != "AA" && valve.Flow == 0 {
-				fmt.Printf("%v\n", valves)
-				fmt.Printf("ZERO %s %v\n", name, valve)
-				haszero = true
-
-				for n, v := range valves {
-					for a := range v.Adj {
-						if a.Vertex == name {
-							valves[n].Adj.Remove(a)
-							for a := range valve.Adj {
-								valves[n].Adj.Add(ds.Edge[string, int]{a.Weight + 1, a.Vertex})
-							}
-							break
-						}
-					}
+	d.Distances = map[string]map[string]int{}
+	for name := range valves {
+		d.Distances[name] = map[string]int{}
+		pq := ds.NewPriorityQueue(ds.NewPair(0, name))
+		seen := ds.Set[string]{}
+		for pq.Len() > 0 {
+			cost, el := pq.Pop()
+			seen.Add(el)
+			if _, ok := d.Distances[name][el]; !ok {
+				d.Distances[name][el] = cost
+			}
+			for a := range valves[el].Adj {
+				if !seen.Contains(a.Vertex) {
+					pq.Push(cost+1, a.Vertex)
 				}
-
-				delete(valves, name)
-
-				break
 			}
 		}
-		fmt.Printf("%v\n", valves)
-		if !haszero {
-			break
-		}
 	}
+	fmt.Printf("dist %v\n", d.Distances)
 
-	d.Valves = valves
+	panic(1)
+
+	// 	handled := ds.Set[string]{}
+	// 	for {
+	// 		haszero := false
+	// 		for name, valve := range valves {
+	// 			if handled.Contains(name) || valve.Flow > 0 {
+	// 				continue
+	// 			}
+	// 			fmt.Printf("%v\n", valves)
+	// 			fmt.Printf("ZERO %s %v\n", name, valve)
+	// 			haszero = true
+
+	// 			for n, v := range valves {
+	// 				for a := range v.Adj {
+	// 					if a.Vertex == name {
+	// 						valves[n].Adj.Remove(a)
+	// 						for a := range valve.Adj {
+	// 							valves[n].Adj.Add(ds.Edge[string, int]{a.Weight + 1, a.Vertex})
+	// 						}
+	// 						break
+	// 					}
+	// 				}
+	// 			}
+
+	// 			handled.Add(name)
+
+	// 			break
+	// 		}
+	// 		fmt.Printf("%v\n", valves)
+	// 		if !haszero {
+	// 			break
+	// 		}
+	// 	}
+
+	// d.Valves = valves
+	// fmt.Printf("FINAL\n\n%v\n", d.Valves)
+	// panic("ohea")
 
 	return nil
 }
