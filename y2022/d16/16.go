@@ -58,11 +58,11 @@ func (d *Day16) LoadInput(lines []string) error {
 		d.ValveMasks[name] = 1 << i
 		i++
 	}
-	fmt.Printf("VM %v\n", d.ValveMasks)
-	for k, v := range d.ValveMasks {
-		fmt.Printf("k: %s\n", k)
-		fmt.Printf("v: %v\n", lib.BitsOfInt64(v).String())
-	}
+	// fmt.Printf("VM %v\n", d.ValveMasks)
+	// for k, v := range d.ValveMasks {
+	// 	fmt.Printf("k: %s\n", k)
+	// 	fmt.Printf("v: %v\n", lib.BitsOfInt64(v).String())
+	// }
 
 	// 	handled := ds.Set[string]{}
 	// 	for {
@@ -106,8 +106,12 @@ func (d *Day16) LoadInput(lines []string) error {
 
 type CurOpens int64
 
+func (co CurOpens) String(maskMap map[string]int64) string {
+	return "[" + strings.Join(co.Opens(maskMap), ", ") + "]"
+}
+
 func (co CurOpens) IsOpen(mask int64) bool {
-	return int64(co)&mask != 0
+	return int64(co)&mask > 0
 }
 
 func (co CurOpens) TotalFlow(maskMap map[string]int64, flows map[string]Valve) int {
@@ -118,8 +122,8 @@ func (co CurOpens) TotalFlow(maskMap map[string]int64, flows map[string]Valve) i
 	var i int64
 	total := 0
 	for ; i < 64; i++ {
-		if co.IsOpen(i) {
-			total += flows[maskToName[i]].Flow
+		if int64(co)&(1<<i) > 0 {
+			total += flows[maskToName[1<<i]].Flow
 		}
 	}
 	return total
@@ -141,8 +145,8 @@ func (co CurOpens) Opens(maskMap map[string]int64) []string {
 	var i int64
 	opens := []string{}
 	for ; i < 64; i++ {
-		if co.IsOpen(i) {
-			opens = append(opens, maskToName[i])
+		if int64(co)&(1<<i) > 0 {
+			opens = append(opens, maskToName[1<<i])
 		}
 	}
 	return opens
@@ -153,6 +157,10 @@ type CurState struct {
 	CurPos string
 	Time   int
 	Flow   int
+}
+
+func (cs CurState) String(maskMap map[string]int64) string {
+	return fmt.Sprintf("{%s @%s t=%d f=%d}", cs.Open.String(maskMap), cs.CurPos, cs.Time, cs.Flow)
 }
 
 type Cons[T any] struct {
@@ -177,6 +185,8 @@ func (s *Stack[T]) Len() int {
 func (s *Stack[T]) Push(x T) {
 	if s.head == nil {
 		s.head = &Cons[T]{Car: x}
+	} else {
+		s.head = &Cons[T]{Car: x, Cdr: s.head}
 	}
 }
 
@@ -221,14 +231,14 @@ func DFS(
 		}
 		i++
 		el := stack.Pop()
-		fmt.Printf("el %v\n", el.Open.Opens(d.ValveMasks))
+		// fmt.Printf("el %v\n", el.String(d.ValveMasks))
 		// if seen.Contains(el) {
 		// 	continue
 		// }
 
 		if endState(el) {
 			if el.Flow > best {
-				fmt.Printf("%v\n", el)
+				fmt.Printf("%v\n", el.String(d.ValveMasks))
 				best = el.Flow
 				fmt.Printf("best %d\n", best)
 			}
@@ -248,6 +258,7 @@ func DFS(
 		// seen.Add(el)
 
 		for e := range nextStates(el) {
+			// fmt.Printf("NEXT %v\n", e.String(d.ValveMasks))
 			// if seen.Contains(e) {
 			// 	continue
 			// }
