@@ -276,73 +276,279 @@ func (co CurOpens) IsOpen(v string) bool {
 		panic(v)
 	}
 }
-func (co CurOpens) AllOpen() bool {
-	return (co.ValveAA &&
-		co.ValveBB &&
-		co.ValveCC &&
-		co.ValveDD &&
-		co.ValveEE &&
-		co.ValveFF &&
-		co.ValveGG &&
-		co.ValveHH &&
-		co.ValveII &&
-		co.ValveJJ) || (co.ValveAA &&
-		co.ValveAD &&
-		co.ValveAN &&
-		co.ValveBU &&
-		co.ValveBV &&
-		co.ValveCK &&
-		co.ValveDS &&
-		co.ValveDV &&
-		co.ValveDW &&
-		co.ValveEG &&
-		co.ValveEL &&
-		co.ValveEV &&
-		co.ValveFB &&
-		co.ValveFE &&
-		co.ValveFT &&
-		co.ValveGC &&
-		co.ValveGE &&
-		co.ValveGI &&
-		co.ValveGS &&
-		co.ValveGV &&
-		co.ValveHB &&
-		co.ValveHI &&
-		co.ValveHO &&
-		co.ValveHS &&
-		co.ValveIQ &&
-		co.ValveJA &&
-		co.ValveJG &&
-		co.ValveJH &&
-		co.ValveJV &&
-		co.ValveKS &&
-		co.ValveKU &&
-		co.ValveLS &&
-		co.ValveLT &&
-		co.ValveNK &&
-		co.ValveNY &&
-		co.ValveOI &&
-		co.ValveQU &&
-		co.ValveRD &&
-		co.ValveRM &&
-		co.ValveSD &&
-		co.ValveSS &&
-		co.ValveSV &&
-		co.ValveTC &&
-		co.ValveTJ &&
-		co.ValveTV &&
-		co.ValveUU &&
-		co.ValveUY &&
-		co.ValveVA &&
-		co.ValveWB &&
-		co.ValveWI &&
-		co.ValveWJ &&
-		co.ValveYC &&
-		co.ValveYP &&
-		co.ValveYZ &&
-		co.ValveZH &&
-		co.ValveZN &&
-		co.ValveZV)
+
+// func (co CurOpens) AllOpen() bool {
+// 	return (co.ValveAA &&
+// 		co.ValveBB &&
+// 		co.ValveCC &&
+// 		co.ValveDD &&
+// 		co.ValveEE &&
+// 		co.ValveFF &&
+// 		co.ValveGG &&
+// 		co.ValveHH &&
+// 		co.ValveII &&
+// 		co.ValveJJ) || (co.ValveAA &&
+// 		co.ValveAD &&
+// 		co.ValveAN &&
+// 		co.ValveBU &&
+// 		co.ValveBV &&
+// 		co.ValveCK &&
+// 		co.ValveDS &&
+// 		co.ValveDV &&
+// 		co.ValveDW &&
+// 		co.ValveEG &&
+// 		co.ValveEL &&
+// 		co.ValveEV &&
+// 		co.ValveFB &&
+// 		co.ValveFE &&
+// 		co.ValveFT &&
+// 		co.ValveGC &&
+// 		co.ValveGE &&
+// 		co.ValveGI &&
+// 		co.ValveGS &&
+// 		co.ValveGV &&
+// 		co.ValveHB &&
+// 		co.ValveHI &&
+// 		co.ValveHO &&
+// 		co.ValveHS &&
+// 		co.ValveIQ &&
+// 		co.ValveJA &&
+// 		co.ValveJG &&
+// 		co.ValveJH &&
+// 		co.ValveJV &&
+// 		co.ValveKS &&
+// 		co.ValveKU &&
+// 		co.ValveLS &&
+// 		co.ValveLT &&
+// 		co.ValveNK &&
+// 		co.ValveNY &&
+// 		co.ValveOI &&
+// 		co.ValveQU &&
+// 		co.ValveRD &&
+// 		co.ValveRM &&
+// 		co.ValveSD &&
+// 		co.ValveSS &&
+// 		co.ValveSV &&
+// 		co.ValveTC &&
+// 		co.ValveTJ &&
+// 		co.ValveTV &&
+// 		co.ValveUU &&
+// 		co.ValveUY &&
+// 		co.ValveVA &&
+// 		co.ValveWB &&
+// 		co.ValveWI &&
+// 		co.ValveWJ &&
+// 		co.ValveYC &&
+// 		co.ValveYP &&
+// 		co.ValveYZ &&
+// 		co.ValveZH &&
+// 		co.ValveZN &&
+// 		co.ValveZV)
+// }
+
+func (co CurOpens) TotalFlow(flows map[string]Valve) int {
+	sum := 0
+	if co.ValveAA {
+		sum += flows["AA"].Flow
+	}
+	if co.ValveBB {
+		sum += flows["BB"].Flow
+	}
+	if co.ValveCC {
+		sum += flows["CC"].Flow
+	}
+	if co.ValveDD {
+		sum += flows["DD"].Flow
+	}
+	if co.ValveEE {
+		sum += flows["EE"].Flow
+	}
+	if co.ValveFF {
+		sum += flows["FF"].Flow
+	}
+	if co.ValveGG {
+		sum += flows["GG"].Flow
+	}
+	if co.ValveHH {
+		sum += flows["HH"].Flow
+	}
+	if co.ValveII {
+		sum += flows["II"].Flow
+	}
+	if co.ValveJJ {
+		sum += flows["JJ"].Flow
+	}
+
+	if co.ValveAD {
+		sum += flows["AD"].Flow
+	}
+	if co.ValveAN {
+		sum += flows["AN"].Flow
+	}
+	if co.ValveBU {
+		sum += flows["BU"].Flow
+	}
+	if co.ValveBV {
+		sum += flows["BV"].Flow
+	}
+	if co.ValveCK {
+		sum += flows["CK"].Flow
+	}
+	if co.ValveDS {
+		sum += flows["DS"].Flow
+	}
+	if co.ValveDV {
+		sum += flows["DV"].Flow
+	}
+	if co.ValveDW {
+		sum += flows["DW"].Flow
+	}
+	if co.ValveEG {
+		sum += flows["EG"].Flow
+	}
+	if co.ValveEL {
+		sum += flows["EL"].Flow
+	}
+	if co.ValveEV {
+		sum += flows["EV"].Flow
+	}
+	if co.ValveFB {
+		sum += flows["FB"].Flow
+	}
+	if co.ValveFE {
+		sum += flows["FE"].Flow
+	}
+	if co.ValveFT {
+		sum += flows["FT"].Flow
+	}
+	if co.ValveGC {
+		sum += flows["GC"].Flow
+	}
+	if co.ValveGE {
+		sum += flows["GE"].Flow
+	}
+	if co.ValveGI {
+		sum += flows["GI"].Flow
+	}
+	if co.ValveGS {
+		sum += flows["GS"].Flow
+	}
+	if co.ValveGV {
+		sum += flows["GV"].Flow
+	}
+
+	if co.ValveHB {
+		sum += flows["HB"].Flow
+	}
+	if co.ValveHI {
+		sum += flows["HI"].Flow
+	}
+	if co.ValveHO {
+		sum += flows["HO"].Flow
+	}
+	if co.ValveHS {
+		sum += flows["HS"].Flow
+	}
+	if co.ValveIQ {
+		sum += flows["IQ"].Flow
+	}
+	if co.ValveJA {
+		sum += flows["JA"].Flow
+	}
+	if co.ValveJG {
+		sum += flows["JG"].Flow
+	}
+	if co.ValveJH {
+		sum += flows["JH"].Flow
+	}
+	if co.ValveJV {
+		sum += flows["JV"].Flow
+	}
+	if co.ValveKS {
+		sum += flows["KS"].Flow
+	}
+	if co.ValveKU {
+		sum += flows["KU"].Flow
+	}
+	if co.ValveLS {
+		sum += flows["LS"].Flow
+	}
+	if co.ValveLT {
+		sum += flows["LT"].Flow
+	}
+	if co.ValveNK {
+		sum += flows["NK"].Flow
+	}
+	if co.ValveNY {
+		sum += flows["NY"].Flow
+	}
+	if co.ValveOI {
+		sum += flows["OI"].Flow
+	}
+	if co.ValveQU {
+		sum += flows["QU"].Flow
+	}
+	if co.ValveRD {
+		sum += flows["RD"].Flow
+	}
+	if co.ValveRM {
+		sum += flows["RM"].Flow
+	}
+	if co.ValveSD {
+		sum += flows["SD"].Flow
+	}
+	if co.ValveSS {
+		sum += flows["SS"].Flow
+	}
+	if co.ValveSV {
+		sum += flows["SV"].Flow
+	}
+	if co.ValveTC {
+		sum += flows["TC"].Flow
+	}
+	if co.ValveTJ {
+		sum += flows["TJ"].Flow
+	}
+	if co.ValveTV {
+		sum += flows["TV"].Flow
+	}
+	if co.ValveUU {
+		sum += flows["UU"].Flow
+	}
+	if co.ValveUY {
+		sum += flows["UY"].Flow
+	}
+	if co.ValveVA {
+		sum += flows["VA"].Flow
+	}
+	if co.ValveWB {
+		sum += flows["WB"].Flow
+	}
+	if co.ValveWI {
+		sum += flows["WI"].Flow
+	}
+	if co.ValveWJ {
+		sum += flows["WJ"].Flow
+	}
+	if co.ValveYC {
+		sum += flows["YC"].Flow
+	}
+	if co.ValveYP {
+		sum += flows["YP"].Flow
+	}
+	if co.ValveYZ {
+		sum += flows["YZ"].Flow
+	}
+	if co.ValveZH {
+		sum += flows["ZH"].Flow
+	}
+	if co.ValveZN {
+		sum += flows["ZN"].Flow
+	}
+	if co.ValveZV {
+		sum += flows["ZV"].Flow
+	}
+	return sum
 }
 
 func (co CurOpens) WithOpen(v string) CurOpens {
@@ -491,6 +697,7 @@ type CurState struct {
 	Flow   int
 }
 
+// This isn't really BFS, I have no idea what it is
 func BFS(
 	nextStates func(CurState) ds.Set[CurState],
 	start CurState,
@@ -517,6 +724,7 @@ func BFS(
 
 		if endState(el) {
 			if el.Flow > best {
+				fmt.Printf("%v\n", el)
 				best = el.Flow
 				fmt.Printf("best %d\n", best)
 			}
@@ -525,13 +733,13 @@ func BFS(
 			continue
 		}
 
-		if el.Flow+(maxFLowPerMinute)*(30-el.Time) < best {
+		if el.Flow+(maxFLowPerMinute)*(29-el.Time) < best {
 			continue
 		}
 
-		if el.Open.AllOpen() {
-			continue
-		}
+		// if el.Open.AllOpen() {
+		// 	continue
+		// }
 
 		// seen.Add(el)
 
@@ -549,146 +757,68 @@ func BFS(
 func (d *Day16) Part1(isTest bool) int {
 	var ans int
 
-	open := map[string]bool{}
-	for x := range d.Valves {
-		open[x] = false
+	start := CurState{
+		Open:   CurOpens{},
+		CurPos: "AA",
+		Time:   1,
+		Flow:   0,
 	}
 
-	// start := CurState{
-	// 	Open:   CurOpens{},
-	// 	CurPos: "AA",
-	// 	Time:   0,
-	// }
+	maxFlowPerMinute := lib.Sum(lib.Map(func(v Valve) int {
+		return v.Flow
+	})(lib.Values(d.Valves)))
 
-	// next := []CurState{}
-	// if !start.Open[start.CurPos] {
-	// 	newOpen := map[string]bool{}
-	// 	for k, v := range start.Open {
-	// 		if k == start.CurPos {
-	// 			newOpen[k] = true
-	// 		} else {
-	// 			newOpen[k] = v
-	// 		}
-	// 	}
-	// 	next = append(next, CurState{
-	// 		Open:   newOpen,
-	// 		CurPos: start.CurPos,
-	// 		Time:   start.Time + 1,
-	// 	})
-	// }
+	return BFS(
+		func(cur CurState) ds.Set[CurState] {
+			// fmt.Printf("cur %v\n", cur)
+			next := ds.Set[CurState]{}
 
-	// maxFlowPerMinute := lib.Sum(lib.Map(func(v Valve) int {
-	// 	return v.Flow
-	// })(lib.Values(d.Valves)))
+			// Open the valve
+			if !cur.Open.IsOpen(cur.CurPos) {
+				next.Add(
+					CurState{
+						Open:   cur.Open.WithOpen(cur.CurPos),
+						CurPos: cur.CurPos,
+						Time:   cur.Time + 1,
+						Flow:   cur.Flow + cur.Open.TotalFlow(d.Valves),
+					},
+				)
+			}
 
-	// ends := BFS(
-	// 	func(cur CurState) ds.Set[CurState] {
-	// 		// fmt.Printf("cur %v\n", cur)
-	// 		next := ds.Set[CurState]{}
-	// 		if !cur.Open.IsOpen(cur.CurPos) {
-	// 			newOpen := cur.Open
-	// 			newOpen.WithOpen(cur.CurPos)
-	// 			// fmt.Printf("ADDING %v\n",
-	// 			// 	CurState{
-	// 			// 		Open:   cur.Open.WithOpen(cur.CurPos),
-	// 			// 		CurPos: "AA",
-	// 			// 		Time:   cur.Time + 1,
-	// 			// 		Flow:   cur.Flow + ((30 - cur.Time - 1) * d.Valves[cur.CurPos].Flow),
-	// 			// 	},
-	// 			// )
-	// 			next.Add(
-	// 				CurState{
-	// 					Open:   cur.Open.WithOpen(cur.CurPos),
-	// 					CurPos: "AA",
-	// 					Time:   cur.Time + 1,
-	// 					Flow:   cur.Flow + ((30 - cur.Time) * d.Valves[cur.CurPos].Flow),
-	// 				},
-	// 			)
-	// 		}
-	// 		for v := range d.Valves[cur.CurPos].Adj {
-	// 			// fmt.Printf("ADDING %v\n",
-	// 			// 	ds.Edge[CurState, int]{
-	// 			// 		0,
-	// 			// 		CurState{
-	// 			// 			Open:   cur.Open,
-	// 			// 			CurPos: v,
-	// 			// 			Time:   cur.Time + 1,
-	// 			// 		Flow:   cur.Flow ,
-	// 			// 		},
-	// 			// 	},
-	// 			// )
-	// 			if d.Valves[v].Flow == 0 && cur.Time < 29 {
-	// 				for v2 := range d.Valves[v].Adj {
-	// 					if d.Valves[v2].Flow == 0 && cur.Time < 28 {
-	// 						for v3 := range d.Valves[v2].Adj {
-	// 							if d.Valves[v3].Flow == 0 && cur.Time < 27 {
-	// 								for v4 := range d.Valves[v3].Adj {
-	// 									next.Add(
-	// 										CurState{
-	// 											Open:   cur.Open,
-	// 											CurPos: v4,
-	// 											Time:   cur.Time + 4,
-	// 											Flow:   cur.Flow,
-	// 										},
-	// 									)
-	// 								}
-	// 							} else {
-	// 								next.Add(
-	// 									CurState{
-	// 										Open:   cur.Open,
-	// 										CurPos: v3,
-	// 										Time:   cur.Time + 3,
-	// 										Flow:   cur.Flow,
-	// 									},
-	// 								)
-	// 							}
-	// 						}
-	// 					} else {
-	// 						next.Add(
-	// 							CurState{
-	// 								Open:   cur.Open,
-	// 								CurPos: v2,
-	// 								Time:   cur.Time + 2,
-	// 								Flow:   cur.Flow,
-	// 							},
-	// 						)
-	// 					}
-	// 					// next.Add(
-	// 					// 	CurState{
-	// 					// 		Open:   cur.Open,
-	// 					// 		CurPos: v2,
-	// 					// 		Time:   cur.Time + 2,
-	// 					// 		Flow:   cur.Flow,
-	// 					// 	},
-	// 					// )
-	// 				}
-	// 			} else {
-	// 				next.Add(
-	// 					CurState{
-	// 						Open:   cur.Open,
-	// 						CurPos: v,
-	// 						Time:   cur.Time + 1,
-	// 						Flow:   cur.Flow,
-	// 					},
-	// 				)
-	// 			}
-	// 		}
-	// 		next.Add(
-	// 			CurState{
-	// 				Open:   cur.Open,
-	// 				CurPos: cur.CurPos,
-	// 				Time:   cur.Time + 1,
-	// 				Flow:   cur.Flow,
-	// 			},
-	// 		)
-	// 		return next
-	// 	},
-	// 	start,
-	// 	func(cur CurState) bool {
-	// 		return cur.Time == 30
-	// 	}, maxFlowPerMinute)
+			// Move
+			for v := range d.Valves[cur.CurPos].Adj {
+				if cur.Time+v.Weight <= 30 {
+					next.Add(
+						CurState{
+							Open:   cur.Open,
+							CurPos: v.Vertex,
+							Time:   cur.Time + v.Weight,
+							Flow:   cur.Flow + cur.Open.TotalFlow(d.Valves),
+						},
+					)
+				}
+			}
 
-	// fmt.Printf("%v\n", ends)
+			// Stay
+			next.Add(
+				CurState{
+					Open:   cur.Open,
+					CurPos: cur.CurPos,
+					Time:   cur.Time + 1,
+					Flow:   cur.Flow + cur.Open.TotalFlow(d.Valves),
+				},
+			)
+			return next
+		},
+		start,
+		func(cur CurState) bool {
+			if cur.Time > 30 {
+				panic(">30")
+			}
+			return cur.Time == 30
+		}, maxFlowPerMinute)
+
+	// fmt.Printf("%v\n", best)
 	// fmt.Printf("d %v\n", lib.MaxList(lib.Values(dists)))
 	// fmt.Printf("d %v\n", lib.MinList(lib.Values(dists)))
 	// return x
