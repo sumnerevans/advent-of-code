@@ -1,4 +1,4 @@
-package d16_test
+package d17_test
 
 import (
 	"embed"
@@ -10,25 +10,25 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/sumnerevans/advent-of-code/lib"
-	"github.com/sumnerevans/advent-of-code/y2022/d16"
+	"github.com/sumnerevans/advent-of-code/y2022/d17"
 )
 
 //go:embed *.txt
 var inputs embed.FS
 
-func Test_Day16(t *testing.T) {
+func Test_Day17(t *testing.T) {
 	t.Log(lib.ColorString("============================================", lib.ColorGreen))
 	t.Log(lib.ColorString("=                START TEST                =", lib.ColorGreen))
 	t.Log(lib.ColorString("============================================", lib.ColorGreen))
 
-	_, samples, actual := lib.SetupTest(t, inputs, "16")
+	_, samples, actual := lib.SetupTest(t, inputs, "17")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
 		if len(samples) > 0 {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
 					// Test cases
-					1651,
+					3068,
 				}
 
 				for i, sample := range samples {
@@ -37,10 +37,10 @@ func Test_Day16(t *testing.T) {
 					}
 
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
-						day16 := &d16.Day16{}
-						err := day16.LoadInput(sample)
+						day17 := &d17.Day17{}
+						err := day17.LoadInput(sample)
 						require.NoError(t, err)
-						output := day16.Part1(true)
+						output := day17.Part1(true)
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -53,10 +53,10 @@ func Test_Day16(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
-			day16 := &d16.Day16{}
-			err := day16.LoadInput(actual)
+			day17 := &d17.Day17{}
+			err := day17.LoadInput(actual)
 			require.NoError(t, err)
-			output := day16.Part1(false)
+			output := day17.Part1(false)
 			t.Log("=================================")
 			t.Log("")
 			t.Log("ACTUAL INPUT")
@@ -78,9 +78,7 @@ func Test_Day16(t *testing.T) {
 					}
 				}
 
-				// require.True(t, false, "AUTOSUBMISSION GATE")
-
-				result, answerText := lib.Submit(t, 2022, 16, 1, output)
+				result, answerText := lib.Submit(t, 2022, 17, 1, output)
 				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.1.txt", []byte(lib.AsJSON(output)), 0644)
@@ -118,7 +116,7 @@ func Test_Day16(t *testing.T) {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
 					// Test cases
-					1707,
+					1514285714288,
 				}
 
 				for i, sample := range samples {
@@ -127,10 +125,10 @@ func Test_Day16(t *testing.T) {
 					}
 
 					t.Run(fmt.Sprintf("Test %d", i+1), func(t *testing.T) {
-						day16 := &d16.Day16{}
-						err := day16.LoadInput(sample)
+						day17 := &d17.Day17{}
+						err := day17.LoadInput(sample)
 						require.NoError(t, err)
-						output := day16.Part2(true)
+						output := day17.Part2(true)
 
 						assert.EqualValues(t, EXPECTED[i], output)
 					})
@@ -143,10 +141,10 @@ func Test_Day16(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
-			day16 := &d16.Day16{}
-			err := day16.LoadInput(actual)
+			day17 := &d17.Day17{}
+			err := day17.LoadInput(actual)
 			require.NoError(t, err)
-			output := day16.Part2(false)
+			output := day17.Part2(false)
 			t.Log("=================================")
 			t.Log("")
 			t.Log("ACTUAL INPUT")
@@ -168,9 +166,7 @@ func Test_Day16(t *testing.T) {
 					}
 				}
 
-				// require.True(t, false, "AUTOSUBMISSION GATE")
-
-				result, answerText := lib.Submit(t, 2022, 16, 2, output)
+				result, answerText := lib.Submit(t, 2022, 17, 2, output)
 				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.2.txt", []byte(lib.AsJSON(output)), 0644)
