@@ -2,6 +2,7 @@ package d17
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/sumnerevans/advent-of-code/lib"
 	"github.com/sumnerevans/advent-of-code/lib/ds"
@@ -107,49 +108,51 @@ func PrintChamberWithShape(chamber ds.Set[lib.GridPoint[int64]], shape Shape, sh
 
 type FloorShape struct {
 	// Bitmap of presence of something per-row, lowest bit is top of the row
-	Space1 int64
-	Space2 int64
-	Space3 int64
-	Space4 int64
-	Space5 int64
-	Space6 int64
-	Space7 int64
+	Space1 *big.Int
+	Space2 *big.Int
+	Space3 *big.Int
+	Space4 *big.Int
+	Space5 *big.Int
+	Space6 *big.Int
+	Space7 *big.Int
 }
 
 func (fs FloorShape) Print() {
-	var i int64
-	for ; i < 32; i++ {
-		if fs.Space1&(1<<i) > 0 {
+	var i int
+	for ; i < 64; i++ {
+		mask := big.NewInt(0)
+		mask = mask.SetBit(mask, i, 1)
+		if fs.Space1.And(fs.Space1, mask).Cmp(big.NewInt(0)) > 0 {
 			fmt.Printf("#")
 		} else {
 			fmt.Printf(" ")
 		}
-		if fs.Space2&(1<<i) > 0 {
+		if fs.Space2.And(fs.Space2, mask).Cmp(big.NewInt(0)) > 0 {
 			fmt.Printf("#")
 		} else {
 			fmt.Printf(" ")
 		}
-		if fs.Space3&(1<<i) > 0 {
+		if fs.Space3.And(fs.Space3, mask).Cmp(big.NewInt(0)) > 0 {
 			fmt.Printf("#")
 		} else {
 			fmt.Printf(" ")
 		}
-		if fs.Space4&(1<<i) > 0 {
+		if fs.Space4.And(fs.Space4, mask).Cmp(big.NewInt(0)) > 0 {
 			fmt.Printf("#")
 		} else {
 			fmt.Printf(" ")
 		}
-		if fs.Space5&(1<<i) > 0 {
+		if fs.Space5.And(fs.Space5, mask).Cmp(big.NewInt(0)) > 0 {
 			fmt.Printf("#")
 		} else {
 			fmt.Printf(" ")
 		}
-		if fs.Space6&(1<<i) > 0 {
+		if fs.Space6.And(fs.Space6, mask).Cmp(big.NewInt(0)) > 0 {
 			fmt.Printf("#")
 		} else {
 			fmt.Printf(" ")
 		}
-		if fs.Space7&(1<<i) > 0 {
+		if fs.Space7.And(fs.Space7, mask).Cmp(big.NewInt(0)) > 0 {
 			fmt.Printf("#")
 		} else {
 			fmt.Printf(" ")
@@ -176,7 +179,7 @@ func (d *Day17) Solve(iters int64) int64 {
 
 	floorShapePerIdx := map[FloorShape]map[int]map[int]ShapeHeight{}
 
-	currentFloorShape := FloorShape{2, 2, 2, 2, 2, 2, 2}
+	currentFloorShape := FloorShape{big.NewInt(2), big.NewInt(2), big.NewInt(2), big.NewInt(2), big.NewInt(2), big.NewInt(2), big.NewInt(2)}
 	var i int64
 	foundCycle := false
 	for ; i < iters; i++ {
@@ -217,7 +220,8 @@ func (d *Day17) Solve(iters int64) int64 {
 
 		// fmt.Printf("cfs %v\n", currentFloorShape)
 		chamber := ds.Set[lib.GridPoint[int64]]{}
-		for dr := 0; dr < 64; dr++ {
+		for dr := 0; dr < 128; dr++ {
+		if currentFloorShape.Space1.And(fs.Space1, mask).Cmp(big.NewInt(0)) > 0 {
 			if currentFloorShape.Space1&(1<<dr) > 0 {
 				chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: 0})
 			}
@@ -319,7 +323,7 @@ func (d *Day17) Solve(iters int64) int64 {
 		// }
 
 		newFloorShape := FloorShape{}
-		for dr := 0; dr < 64; dr++ {
+		for dr := 0; dr < 128; dr++ {
 			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 0}) {
 				newFloorShape.Space1 |= 1 << dr
 			}
@@ -341,6 +345,10 @@ func (d *Day17) Solve(iters int64) int64 {
 			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 6}) {
 				newFloorShape.Space7 |= 1 << dr
 			}
+		}
+		if newFloorShape.Space1 == 0 || newFloorShape.Space2 == 0 || newFloorShape.Space3 == 0 || newFloorShape.Space4 == 0 || newFloorShape.Space5 == 0 || newFloorShape.Space6 == 0 || newFloorShape.Space7 == 0 {
+			fmt.Printf("%v\n", newFloorShape)
+			panic("something bad happened!")
 		}
 		// fmt.Printf("%v\n", newFloorShape)
 		if _, ok := floorShapePerIdx[currentFloorShape]; !ok {
