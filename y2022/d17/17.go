@@ -2,7 +2,6 @@ package d17
 
 import (
 	"fmt"
-	"math/big"
 
 	"github.com/sumnerevans/advent-of-code/lib"
 	"github.com/sumnerevans/advent-of-code/lib/ds"
@@ -106,59 +105,29 @@ func PrintChamberWithShape(chamber ds.Set[lib.GridPoint[int64]], shape Shape, sh
 	fmt.Printf("---------\n")
 }
 
-type FloorShape struct {
-	// Bitmap of presence of something per-row, lowest bit is top of the row
-	Space1 *big.Int
-	Space2 *big.Int
-	Space3 *big.Int
-	Space4 *big.Int
-	Space5 *big.Int
-	Space6 *big.Int
-	Space7 *big.Int
-}
+const ROWS int = 200
+
+type FloorShape [ROWS][7]bool
 
 func (fs FloorShape) Print() {
-	var i int
-	for ; i < 64; i++ {
-		mask := big.NewInt(0)
-		mask = mask.SetBit(mask, i, 1)
-		if fs.Space1.And(fs.Space1, mask).Cmp(big.NewInt(0)) > 0 {
-			fmt.Printf("#")
-		} else {
-			fmt.Printf(" ")
-		}
-		if fs.Space2.And(fs.Space2, mask).Cmp(big.NewInt(0)) > 0 {
-			fmt.Printf("#")
-		} else {
-			fmt.Printf(" ")
-		}
-		if fs.Space3.And(fs.Space3, mask).Cmp(big.NewInt(0)) > 0 {
-			fmt.Printf("#")
-		} else {
-			fmt.Printf(" ")
-		}
-		if fs.Space4.And(fs.Space4, mask).Cmp(big.NewInt(0)) > 0 {
-			fmt.Printf("#")
-		} else {
-			fmt.Printf(" ")
-		}
-		if fs.Space5.And(fs.Space5, mask).Cmp(big.NewInt(0)) > 0 {
-			fmt.Printf("#")
-		} else {
-			fmt.Printf(" ")
-		}
-		if fs.Space6.And(fs.Space6, mask).Cmp(big.NewInt(0)) > 0 {
-			fmt.Printf("#")
-		} else {
-			fmt.Printf(" ")
-		}
-		if fs.Space7.And(fs.Space7, mask).Cmp(big.NewInt(0)) > 0 {
-			fmt.Printf("#")
-		} else {
-			fmt.Printf(" ")
+	for r := 0; r < ROWS; r++ {
+		for c := 0; c < 7; c++ {
+			if fs[r][c] {
+				fmt.Printf("#")
+			} else {
+				fmt.Printf(" ")
+			}
 		}
 		fmt.Printf("\n")
 	}
+}
+
+func NewFloorShape() FloorShape {
+	fs := FloorShape{}
+	for c := 0; c < 7; c++ {
+		fs[1][c] = true
+	}
+	return fs
 }
 
 type ShapeHeight struct {
@@ -179,7 +148,7 @@ func (d *Day17) Solve(iters int64) int64 {
 
 	floorShapePerIdx := map[FloorShape]map[int]map[int]ShapeHeight{}
 
-	currentFloorShape := FloorShape{big.NewInt(2), big.NewInt(2), big.NewInt(2), big.NewInt(2), big.NewInt(2), big.NewInt(2), big.NewInt(2)}
+	currentFloorShape := NewFloorShape()
 	var i int64
 	foundCycle := false
 	for ; i < iters; i++ {
@@ -220,28 +189,11 @@ func (d *Day17) Solve(iters int64) int64 {
 
 		// fmt.Printf("cfs %v\n", currentFloorShape)
 		chamber := ds.Set[lib.GridPoint[int64]]{}
-		for dr := 0; dr < 128; dr++ {
-		if currentFloorShape.Space1.And(fs.Space1, mask).Cmp(big.NewInt(0)) > 0 {
-			if currentFloorShape.Space1&(1<<dr) > 0 {
-				chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: 0})
-			}
-			if currentFloorShape.Space2&(1<<dr) > 0 {
-				chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: 1})
-			}
-			if currentFloorShape.Space3&(1<<dr) > 0 {
-				chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: 2})
-			}
-			if currentFloorShape.Space4&(1<<dr) > 0 {
-				chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: 3})
-			}
-			if currentFloorShape.Space5&(1<<dr) > 0 {
-				chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: 4})
-			}
-			if currentFloorShape.Space6&(1<<dr) > 0 {
-				chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: 5})
-			}
-			if currentFloorShape.Space7&(1<<dr) > 0 {
-				chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: 6})
+		for dr := 0; dr < ROWS; dr++ {
+			for c := 0; c < 7; c++ {
+				if currentFloorShape[dr][c] {
+					chamber.Add(lib.GridPoint[int64]{R: top - int64(dr), C: int64(c)})
+				}
 			}
 		}
 
@@ -251,8 +203,8 @@ func (d *Day17) Solve(iters int64) int64 {
 			// fmt.Printf("x %d\n", shape)
 			// fmt.Printf("START\n")
 			// fmt.Printf("\n")
-			if shapeBottomLeftPos.R < top-70 {
-				// PrintChamberWithShape(chamber, shape, shapeBottomLeftPos)
+			if shapeBottomLeftPos.R < top-int64(ROWS) {
+				PrintChamberWithShape(chamber, shape, shapeBottomLeftPos)
 				panic("falling!")
 			}
 
@@ -323,33 +275,17 @@ func (d *Day17) Solve(iters int64) int64 {
 		// }
 
 		newFloorShape := FloorShape{}
-		for dr := 0; dr < 128; dr++ {
-			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 0}) {
-				newFloorShape.Space1 |= 1 << dr
-			}
-			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 1}) {
-				newFloorShape.Space2 |= 1 << dr
-			}
-			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 2}) {
-				newFloorShape.Space3 |= 1 << dr
-			}
-			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 3}) {
-				newFloorShape.Space4 |= 1 << dr
-			}
-			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 4}) {
-				newFloorShape.Space5 |= 1 << dr
-			}
-			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 5}) {
-				newFloorShape.Space6 |= 1 << dr
-			}
-			if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: 6}) {
-				newFloorShape.Space7 |= 1 << dr
+		for dr := 0; dr < ROWS; dr++ {
+			for c := 0; c < 7; c++ {
+				if chamber.Contains(lib.GridPoint[int64]{R: newTop - int64(dr), C: int64(c)}) {
+					newFloorShape[dr][c] = true
+				}
 			}
 		}
-		if newFloorShape.Space1 == 0 || newFloorShape.Space2 == 0 || newFloorShape.Space3 == 0 || newFloorShape.Space4 == 0 || newFloorShape.Space5 == 0 || newFloorShape.Space6 == 0 || newFloorShape.Space7 == 0 {
-			fmt.Printf("%v\n", newFloorShape)
-			panic("something bad happened!")
-		}
+		// if newFloorShape.Space1.Cmp(big.NewInt(0)) == 0 || newFloorShape.Space2.Cmp(big.NewInt(0)) == 0 || newFloorShape.Space3.Cmp(big.NewInt(0)) == 0 || newFloorShape.Space4.Cmp(big.NewInt(0)) == 0 || newFloorShape.Space5.Cmp(big.NewInt(0)) == 0 || newFloorShape.Space6.Cmp(big.NewInt(0)) == 0 || newFloorShape.Space7.Cmp(big.NewInt(0)) == 0 {
+		// 	fmt.Printf("%v\n", newFloorShape)
+		// 	panic("something bad happened!")
+		// }
 		// fmt.Printf("%v\n", newFloorShape)
 		if _, ok := floorShapePerIdx[currentFloorShape]; !ok {
 			floorShapePerIdx[currentFloorShape] = map[int]map[int]ShapeHeight{}
