@@ -99,7 +99,8 @@ func Test_Day17(t *testing.T) {
 					}
 				}
 			} else {
-				t.Fatal(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))
+				t.Error(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))
+				t.Fatalf("Expected %v", existingOutput)
 			}
 
 			t.Log("")
@@ -187,7 +188,8 @@ func Test_Day17(t *testing.T) {
 					}
 				}
 			} else {
-				t.Fatal(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))
+				t.Error(lib.ColorString("Answer is not equal to accepted output", lib.ColorRed))
+				t.Fatalf("Expected %v", existingOutput)
 			}
 
 			t.Log("")
