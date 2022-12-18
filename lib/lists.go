@@ -71,7 +71,7 @@ func MinList[T constraints.Ordered](l []T) T {
 	return min
 }
 
-func MinListFn[T, U constraints.Ordered](l []T, f func(T) U) U {
+func MinListFn[T any, U constraints.Ordered](l []T, f func(T) U) U {
 	min, _ := MinMaxListFn(l, f)
 	return min
 }

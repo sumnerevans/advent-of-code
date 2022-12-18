@@ -25,6 +25,10 @@ type priorityQueueInner struct {
 	less  func(p1, p2 int) bool
 }
 
+func (pq priorityQueueInner) String() string {
+	return fmt.Sprintf("%v", pq.items)
+}
+
 // Implementation of the functions for sort.Interface.
 
 func (pq priorityQueueInner) Len() int {
