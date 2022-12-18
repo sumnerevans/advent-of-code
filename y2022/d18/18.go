@@ -1,9 +1,6 @@
 package d18
 
 import (
-	"fmt"
-	"sort"
-
 	"github.com/sumnerevans/advent-of-code/lib"
 	"github.com/sumnerevans/advent-of-code/lib/ds"
 )
@@ -78,65 +75,21 @@ func (d *Day18) Part2(isTest bool) int {
 	}
 
 	outer := ds.Set[Point3]{}
-	frontier := ds.NewPriorityQueue(ds.NewPair(0, Point3{minx - 1, miny - 1, minz - 1}))
-	fmt.Printf("f %v\n", frontier.String())
-	for frontier.Len() > 0 {
-		_, cur := frontier.Pop()
+	frontier := ds.NewSetFromValues(Point3{minx - 1, miny - 1, minz - 1})
+	for len(frontier) > 0 {
+		cur := frontier.Pop()
 		if outer.Contains(cur) || !inverted.Contains(cur) {
 			continue
 		}
 		outer.Add(cur)
 
-		// up
-		// if cur.y <= maxy+1 {
-			up := Point3{cur.x, cur.y + 1, cur.z}
-			// if inverted.Contains(up) {
-			frontier.Push(0, up)
-			// }
-		// }
-		// down
-		// if cur.y >= miny-1 {
-			down := Point3{cur.x, cur.y - 1, cur.z}
-			// if inverted.Contains(down) {
-			frontier.Push(0, down)
-			// }
-		// }
-		// left
-		// if cur.x <= minx+1 {
-			left := Point3{cur.x + 1, cur.y, cur.z}
-			// if inverted.Contains(left) {
-			frontier.Push(0, left)
-			// }
-		// }
-		// right
-		// if cur.x >= minx-1 {
-			right := Point3{cur.x - 1, cur.y, cur.z}
-			// if inverted.Contains(right) {
-			frontier.Push(0, right)
-			// }
-		// }
-		// back
-		// if cur.z <= minz+1 {
-			back := Point3{cur.x, cur.y, cur.z + 1}
-			// if inverted.Contains(back) {
-			frontier.Push(0, back)
-			// }
-		// }
-		// front
-		// if cur.z >= minz-1 {
-			front := Point3{cur.x, cur.y, cur.z - 1}
-			// if inverted.Contains(front) {
-			frontier.Push(0, front)
-			// }
-		// }
+		frontier.Add(Point3{cur.x, cur.y + 1, cur.z})
+		frontier.Add(Point3{cur.x, cur.y - 1, cur.z})
+		frontier.Add(Point3{cur.x + 1, cur.y, cur.z})
+		frontier.Add(Point3{cur.x - 1, cur.y, cur.z})
+		frontier.Add(Point3{cur.x, cur.y, cur.z + 1})
+		frontier.Add(Point3{cur.x, cur.y, cur.z - 1})
 	}
-
-	fmt.Printf("cs %v\n", cubesSet)
-	fmt.Printf("inverted %v\n", inverted)
-	fmt.Printf("inverted %v\n", len(inverted))
-	fmt.Printf("outer %v\n", len(outer))
-	fmt.Printf("inter %v\n", len(inverted.Intersection(outer)))
-	// panic("ohea")
 
 	filledIn := ds.Set[Point3]{}
 	for x := minx; x <= maxx; x++ {
@@ -148,25 +101,6 @@ func (d *Day18) Part2(isTest bool) int {
 			}
 		}
 	}
-
-	csl := cubesSet.List()
-	sort.Slice(csl, func(i, j int) bool {
-		return csl[i].x < csl[j].x || csl[i].y < csl[j].y || csl[i].z < csl[j].z
-	})
-
-	fil := filledIn.List()
-	sort.Slice(fil, func(i, j int) bool {
-		return fil[i].x < fil[j].x || fil[i].y < fil[j].y || fil[i].z < fil[j].z
-	})
-
-	fics := filledIn.Sub(cubesSet).List()
-	sort.Slice(fics, func(i, j int) bool {
-		return fics[i].x < fics[j].x || fics[i].y < fics[j].y || fics[i].z < fics[j].z
-	})
-
-	fmt.Printf("cs   : %d %v\n", len(cubesSet), csl)
-	fmt.Printf("fi   : %d %v\n", len(filledIn), fil)
-	fmt.Printf("fi-cs: %d %v\n", len(filledIn.Sub(cubesSet)), fics)
 
 	for c1 := range filledIn {
 		shaded := []bool{false, false, false, false, false, false}
