@@ -4,13 +4,8 @@ import (
 	"github.com/sumnerevans/advent-of-code/lib"
 )
 
-type X struct {
-	Offset int
-	Val    int
-}
-
 type LL struct {
-	Dat  X
+	Dat  int
 	Next *LL
 	Prev *LL
 }
@@ -24,7 +19,7 @@ func (d *Day20) LoadInput(lines []string) error {
 	var cur *LL
 	d.Len = len(lines)
 	for _, line := range lines {
-		newCur := &LL{Dat: X{Offset: lib.ToInt(line) % (d.Len - 1), Val: lib.ToInt(line)}, Prev: cur}
+		newCur := &LL{Dat: lib.ToInt(line), Prev: cur}
 		if d.Seq == nil {
 			d.Seq = newCur
 		} else {
@@ -39,30 +34,21 @@ func (d *Day20) LoadInput(lines []string) error {
 
 func Mix(d *Day20, moveOrder []*LL) {
 	for _, cur := range moveOrder {
-		// fmt.Printf("%v\n", cur)
-		// x := cur
-		// for i := 0; i < d.Len; i++ {
-		// 	fmt.Printf("%d -> ", x.Dat.Val)
-		// 	x = x.Next
-		// }
-		// fmt.Printf("\n")
+		offset := cur.Dat % (d.Len - 1)
 
-		if cur.Dat.Offset == 0 {
+		if offset == 0 {
 			continue
-		}
-
-		if cur.Dat.Offset < 0 {
+		} else if offset < 0 {
 			// Remove element
 			cur.Prev.Next = cur.Next
 			cur.Next.Prev = cur.Prev
 
 			// Go backwards
 			insert := cur
-			for dx := 0; dx < (-cur.Dat.Offset); dx++ {
+			for dx := 0; dx < -offset; dx++ {
 				insert = insert.Prev
 			}
 
-			// fmt.Printf("%v\n", insert)
 			// Insert before
 			insert.Prev.Next = cur
 			cur.Prev = insert.Prev
@@ -75,7 +61,7 @@ func Mix(d *Day20, moveOrder []*LL) {
 
 			// Go forwards
 			insert := cur
-			for dx := 0; dx < cur.Dat.Offset; dx++ {
+			for dx := 0; dx < offset; dx++ {
 				insert = insert.Next
 			}
 
@@ -85,13 +71,6 @@ func Mix(d *Day20, moveOrder []*LL) {
 			insert.Next = cur
 			cur.Prev = insert
 		}
-
-		// x := cur
-		// for i := 0; i < d.Len; i++ {
-		// 	fmt.Printf("%d -> ", x.Dat)
-		// 	x = x.Next
-		// }
-		// fmt.Printf("\n", )
 	}
 }
 
@@ -106,13 +85,13 @@ func (d *Day20) Part1(isTest bool) int {
 
 	Mix(d, moveOrder)
 
-	for d.Seq.Dat.Val != 0 {
+	for d.Seq.Dat != 0 {
 		d.Seq = d.Seq.Next
 	}
 
 	for i := 0; i <= 3000; i++ {
 		if i == 1000 || i == 2000 || i == 3000 {
-			ans += d.Seq.Dat.Val
+			ans += d.Seq.Dat
 		}
 		d.Seq = d.Seq.Next
 	}
@@ -124,8 +103,7 @@ func (d *Day20) Part2(isTest bool) int {
 	var ans int
 
 	for i := 0; i < d.Len; i++ {
-		d.Seq.Dat.Val *= 811589153
-		d.Seq.Dat.Offset = d.Seq.Dat.Val % (d.Len - 1)
+		d.Seq.Dat *= 811589153
 		d.Seq = d.Seq.Next
 	}
 
@@ -139,13 +117,13 @@ func (d *Day20) Part2(isTest bool) int {
 		Mix(d, moveOrder)
 	}
 
-	for d.Seq.Dat.Val != 0 {
+	for d.Seq.Dat != 0 {
 		d.Seq = d.Seq.Next
 	}
 
 	for i := 0; i <= 3000; i++ {
 		if i == 1000 || i == 2000 || i == 3000 {
-			ans += d.Seq.Dat.Val
+			ans += d.Seq.Dat
 		}
 		d.Seq = d.Seq.Next
 	}
