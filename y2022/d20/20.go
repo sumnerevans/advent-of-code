@@ -1,13 +1,16 @@
 package d20
 
 import (
-	"fmt"
-
 	"github.com/sumnerevans/advent-of-code/lib"
 )
 
+type X struct {
+	Offset int
+	Val    int
+}
+
 type LL struct {
-	Dat  int
+	Dat  X
 	Next *LL
 	Prev *LL
 }
@@ -19,8 +22,9 @@ type Day20 struct {
 
 func (d *Day20) LoadInput(lines []string) error {
 	var cur *LL
+	d.Len = len(lines)
 	for _, line := range lines {
-		newCur := &LL{Dat: lib.ToInt(line), Prev: cur}
+		newCur := &LL{Dat: X{Offset: lib.ToInt(line) % (d.Len - 1), Val: lib.ToInt(line)}, Prev: cur}
 		if d.Seq == nil {
 			d.Seq = newCur
 		} else {
@@ -30,7 +34,6 @@ func (d *Day20) LoadInput(lines []string) error {
 	}
 	cur.Next = d.Seq
 	d.Seq.Prev = cur
-	d.Len = len(lines)
 	return nil
 }
 
@@ -44,18 +47,18 @@ func Mix(d *Day20, moveOrder []*LL) {
 		// }
 		// fmt.Printf("\n")
 
-		if cur.Dat == 0 {
+		if cur.Dat.Offset == 0 {
 			continue
 		}
 
-		if cur.Dat < 0 {
+		if cur.Dat.Offset < 0 {
 			// Remove element
 			cur.Prev.Next = cur.Next
 			cur.Next.Prev = cur.Prev
 
 			// Go backwards
 			insert := cur
-			for dx := 0; dx < (-cur.Dat); dx++ {
+			for dx := 0; dx < (-cur.Dat.Offset); dx++ {
 				insert = insert.Prev
 			}
 
@@ -72,7 +75,7 @@ func Mix(d *Day20, moveOrder []*LL) {
 
 			// Go forwards
 			insert := cur
-			for dx := 0; dx < cur.Dat; dx++ {
+			for dx := 0; dx < cur.Dat.Offset; dx++ {
 				insert = insert.Next
 			}
 
@@ -103,13 +106,13 @@ func (d *Day20) Part1(isTest bool) int {
 
 	Mix(d, moveOrder)
 
-	for d.Seq.Dat != 0 {
+	for d.Seq.Dat.Val != 0 {
 		d.Seq = d.Seq.Next
 	}
 
 	for i := 0; i <= 3000; i++ {
 		if i == 1000 || i == 2000 || i == 3000 {
-			ans += d.Seq.Dat
+			ans += d.Seq.Dat.Val
 		}
 		d.Seq = d.Seq.Next
 	}
@@ -121,7 +124,8 @@ func (d *Day20) Part2(isTest bool) int {
 	var ans int
 
 	for i := 0; i < d.Len; i++ {
-		d.Seq.Dat *= 811589153
+		d.Seq.Dat.Val *= 811589153
+		d.Seq.Dat.Offset = d.Seq.Dat.Val % (d.Len - 1)
 		d.Seq = d.Seq.Next
 	}
 
@@ -133,18 +137,15 @@ func (d *Day20) Part2(isTest bool) int {
 
 	for i := 0; i < 10; i++ {
 		Mix(d, moveOrder)
-		fmt.Printf(" iter %d\n", i)
-		x := d.Seq
-		for i := 0; i < d.Len; i++ {
-			fmt.Printf("%d -> ", x.Dat)
-			x = x.Next
-		}
-		fmt.Printf("\n")
+	}
+
+	for d.Seq.Dat.Val != 0 {
+		d.Seq = d.Seq.Next
 	}
 
 	for i := 0; i <= 3000; i++ {
 		if i == 1000 || i == 2000 || i == 3000 {
-			ans += d.Seq.Dat
+			ans += d.Seq.Dat.Val
 		}
 		d.Seq = d.Seq.Next
 	}
