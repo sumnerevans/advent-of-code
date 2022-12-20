@@ -60,19 +60,18 @@ func (d *Day19) LoadInput(lines []string) error {
 }
 
 type DPKey struct {
-	b                                                                             Blueprint
 	t, ores, clays, obsidians, oreRobots, clayRobots, obsidianRobots, geodeRobots int
 }
 
 func (d DPKey) String() string {
-	return fmt.Sprintf("b={%v}, t=%d, quants=[%d, %d, %d], robots=[%d, %d, %d, %d]", d.b, d.t, d.ores, d.clays, d.obsidians, d.oreRobots, d.clayRobots, d.obsidianRobots, d.geodeRobots)
+	return fmt.Sprintf("t=%d, quants=[%d, %d, %d], robots=[%d, %d, %d, %d]", d.t, d.ores, d.clays, d.obsidians, d.oreRobots, d.clayRobots, d.obsidianRobots, d.geodeRobots)
 }
 
 var DP map[DPKey]int
 var hits = 0
 
-func GeodeCount(k DPKey) int {
-	// fmt.Printf("%v %d %d\n", k, len(DP), hits)
+func GeodeCount(b Blueprint, k DPKey) int {
+	// fmt.Printf("b={%v} k=%v %d %d\n", b, k, len(DP), hits)
 	// if len(DP) > 10 {
 	// 	panic("debug")
 	// }
@@ -88,48 +87,48 @@ func GeodeCount(k DPKey) int {
 	// Option don't make any robots
 	best := k.geodeRobots
 
-	if k.ores >= k.b.GeodeCost.OreCost && k.obsidians >= k.b.GeodeCost.ObsidianCost {
+	if k.ores >= b.GeodeCost.OreCost && k.obsidians >= b.GeodeCost.ObsidianCost {
 		// Option: make geode robot
-		best = lib.Max(best, k.geodeRobots+GeodeCount(DPKey{
-			k.b, k.t - 1,
-			k.ores + k.oreRobots - k.b.GeodeCost.OreCost, k.clays + k.clayRobots, k.obsidians + k.obsidianRobots - k.b.GeodeCost.ObsidianCost,
+		best = lib.Max(best, k.geodeRobots+GeodeCount(b, DPKey{
+			k.t - 1,
+			k.ores + k.oreRobots - b.GeodeCost.OreCost, k.clays + k.clayRobots, k.obsidians + k.obsidianRobots - b.GeodeCost.ObsidianCost,
 			k.oreRobots, k.clayRobots, k.obsidianRobots, k.geodeRobots + 1,
 		}))
 	} else {
-		if k.ores >= k.b.ObsidianCost.OreCost && k.clays >= k.b.ObsidianCost.ClayCost {
+		if k.ores >= b.ObsidianCost.OreCost && k.clays >= b.ObsidianCost.ClayCost {
 			// Option: make obsidian robot
-			best = lib.Max(best, k.geodeRobots+GeodeCount(DPKey{
-				k.b, k.t - 1,
-				k.ores + k.oreRobots - k.b.ObsidianCost.OreCost, k.clays + k.clayRobots - k.b.ObsidianCost.ClayCost, k.obsidians + k.obsidianRobots,
+			best = lib.Max(best, k.geodeRobots+GeodeCount(b, DPKey{
+				k.t - 1,
+				k.ores + k.oreRobots - b.ObsidianCost.OreCost, k.clays + k.clayRobots - b.ObsidianCost.ClayCost, k.obsidians + k.obsidianRobots,
 				k.oreRobots, k.clayRobots, k.obsidianRobots + 1, k.geodeRobots,
 			}))
-		} else {
-			if k.ores >= k.b.ClayCost {
-				// Option: make clay robot
-				best = lib.Max(best, k.geodeRobots+GeodeCount(DPKey{
-					k.b, k.t - 1,
-					k.ores + k.oreRobots - k.b.ClayCost, k.clays + k.clayRobots, k.obsidians + k.obsidianRobots,
-					k.oreRobots, k.clayRobots + 1, k.obsidianRobots, k.geodeRobots,
-				}))
-			}
+		}
 
-			// Option: make ore robot
-			if k.ores >= k.b.OreCost {
-				best = lib.Max(best, k.geodeRobots+GeodeCount(DPKey{
-					k.b, k.t - 1,
-					k.ores + k.oreRobots - k.b.OreCost, k.clays + k.clayRobots, k.obsidians + k.obsidianRobots,
-					k.oreRobots + 1, k.clayRobots, k.obsidianRobots, k.geodeRobots,
-				}))
-			}
+		if k.ores >= b.ClayCost {
+			// Option: make clay robot
+			best = lib.Max(best, k.geodeRobots+GeodeCount(b, DPKey{
+				k.t - 1,
+				k.ores + k.oreRobots - b.ClayCost, k.clays + k.clayRobots, k.obsidians + k.obsidianRobots,
+				k.oreRobots, k.clayRobots + 1, k.obsidianRobots, k.geodeRobots,
+			}))
+		}
 
-			maxOres := lib.MaxList([]int{k.b.OreCost, k.b.ClayCost, k.b.ObsidianCost.OreCost, k.b.GeodeCost.OreCost})
-			if k.ores < maxOres || k.clays < k.b.ClayCost || k.obsidians < k.b.GeodeCost.ObsidianCost {
-				best = lib.Max(best, k.geodeRobots+GeodeCount(DPKey{
-					k.b, k.t - 1,
-					k.ores + k.oreRobots, k.clays + k.clayRobots, k.obsidians + k.obsidianRobots,
-					k.oreRobots, k.clayRobots, k.obsidianRobots, k.geodeRobots,
-				}))
-			}
+		// Option: make ore robot
+		if k.ores >= b.OreCost {
+			best = lib.Max(best, k.geodeRobots+GeodeCount(b, DPKey{
+				k.t - 1,
+				k.ores + k.oreRobots - b.OreCost, k.clays + k.clayRobots, k.obsidians + k.obsidianRobots,
+				k.oreRobots + 1, k.clayRobots, k.obsidianRobots, k.geodeRobots,
+			}))
+		}
+
+		maxOres := lib.MaxList([]int{b.OreCost, b.ClayCost, b.ObsidianCost.OreCost, b.GeodeCost.OreCost})
+		if k.ores < maxOres || k.clays < b.ClayCost || k.obsidians < b.GeodeCost.ObsidianCost {
+			best = lib.Max(best, k.geodeRobots+GeodeCount(b, DPKey{
+				k.t - 1,
+				k.ores + k.oreRobots, k.clays + k.clayRobots, k.obsidians + k.obsidianRobots,
+				k.oreRobots, k.clayRobots, k.obsidianRobots, k.geodeRobots,
+			}))
 		}
 	}
 
@@ -144,7 +143,7 @@ func (d *Day19) Part1(isTest bool) int {
 		DP = map[DPKey]int{}
 		runtime.GC()
 		fmt.Printf("Test blueprint %d\n", i+1)
-		ans += (i + 1) * GeodeCount(DPKey{b, 24, 0, 0, 0, 1, 0, 0, 0})
+		ans += (i + 1) * GeodeCount(b, DPKey{24, 0, 0, 0, 1, 0, 0, 0})
 	}
 	// sum of quality level of each blueprint by multiplying that blueprint's ID number
 
@@ -162,7 +161,7 @@ func (d *Day19) Part2(isTest bool) int {
 		DP = map[DPKey]int{}
 		runtime.GC()
 		fmt.Printf("Test blueprint %d\n", i+1)
-		ans *= GeodeCount(DPKey{b, 32, 0, 0, 0, 1, 0, 0, 0})
+		ans *= GeodeCount(b, DPKey{32, 0, 0, 0, 1, 0, 0, 0})
 	}
 	return ans
 }
