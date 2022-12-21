@@ -76,32 +76,16 @@ func (m Monkey) ClosedFormForLHS(closed string) Monkey {
 	switch m.Op {
 	case Plus:
 		// l + r = c => l = c - r
-		return Monkey{
-			Op:    Minus,
-			Left:  closed,
-			Right: m.Right,
-		}
+		return Monkey{Op: Minus, Left: closed, Right: m.Right}
 	case Minus:
 		// l - r = c => l = c + r
-		return Monkey{
-			Op:    Plus,
-			Left:  closed,
-			Right: m.Right,
-		}
+		return Monkey{Op: Plus, Left: closed, Right: m.Right}
 	case Div:
 		// l / r = c => l = c * r
-		return Monkey{
-			Op:    Mul,
-			Left:  closed,
-			Right: m.Right,
-		}
+		return Monkey{Op: Mul, Left: closed, Right: m.Right}
 	case Mul:
 		// l * r = c => l = c / r
-		return Monkey{
-			Op:    Div,
-			Left:  closed,
-			Right: m.Right,
-		}
+		return Monkey{Op: Div, Left: closed, Right: m.Right}
 	default:
 		panic("il")
 	}
@@ -111,32 +95,16 @@ func (m Monkey) ClosedFormForRHS(closed string) Monkey {
 	switch m.Op {
 	case Plus:
 		// l + r = c => r = c - l
-		return Monkey{
-			Op:    Minus,
-			Left:  closed,
-			Right: m.Left,
-		}
+		return Monkey{Op: Minus, Left: closed, Right: m.Left}
 	case Minus:
 		// l - r = c => r = l - c
-		return Monkey{
-			Op:    Minus,
-			Left:  m.Left,
-			Right: closed,
-		}
+		return Monkey{Op: Minus, Left: m.Left, Right: closed}
 	case Div:
 		// l / r = c => r = l / c
-		return Monkey{
-			Op:    Div,
-			Left:  m.Left,
-			Right: closed,
-		}
+		return Monkey{Op: Div, Left: m.Left, Right: closed}
 	case Mul:
 		// l * r = c => r = c / l
-		return Monkey{
-			Op:    Div,
-			Left:  closed,
-			Right: m.Left,
-		}
+		return Monkey{Op: Div, Left: closed, Right: m.Left}
 	default:
 		panic("ir")
 	}
@@ -167,7 +135,7 @@ func (d *Day21) Part2(isTest bool) int64 {
 
 	// At this point, "open" contains the equation (monkey name) which depends
 	// on the human while "closed" contains an equation that will have an
-	// entirely closed-form since it's not dependent on the huma.n
+	// entirely closed-form since it's not dependent on the human.
 
 	// Find a closed form for the human by stripping of the side that isn't
 	// dependent on the human from the open side until it's just "humn" on one
