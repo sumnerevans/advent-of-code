@@ -1,7 +1,6 @@
 package d21
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -73,27 +72,31 @@ func (d *Day21) Part1(isTest bool) int64 {
 	return d.Solve(d.Monkeys["root"])
 }
 
-func (m Monkey) InverseL(closed string) Monkey {
+func (m Monkey) ClosedFormForLHS(closed string) Monkey {
 	switch m.Op {
 	case Plus:
+		// l + r = c => l = c - r
 		return Monkey{
 			Op:    Minus,
 			Left:  closed,
 			Right: m.Right,
 		}
 	case Minus:
+		// l - r = c => l = c + r
 		return Monkey{
 			Op:    Plus,
 			Left:  closed,
 			Right: m.Right,
 		}
 	case Div:
+		// l / r = c => l = c * r
 		return Monkey{
 			Op:    Mul,
 			Left:  closed,
 			Right: m.Right,
 		}
 	case Mul:
+		// l * r = c => l = c / r
 		return Monkey{
 			Op:    Div,
 			Left:  closed,
@@ -104,27 +107,31 @@ func (m Monkey) InverseL(closed string) Monkey {
 	}
 }
 
-func (m Monkey) InverseR(closed string) Monkey {
+func (m Monkey) ClosedFormForRHS(closed string) Monkey {
 	switch m.Op {
 	case Plus:
+		// l + r = c => r = c - l
 		return Monkey{
 			Op:    Minus,
 			Left:  closed,
 			Right: m.Left,
 		}
 	case Minus:
+		// l - r = c => r = l - c
 		return Monkey{
 			Op:    Minus,
 			Left:  m.Left,
 			Right: closed,
 		}
 	case Div:
+		// l / r = c => r = l / c
 		return Monkey{
 			Op:    Div,
 			Left:  m.Left,
 			Right: closed,
 		}
 	case Mul:
+		// l * r = c => r = c / l
 		return Monkey{
 			Op:    Div,
 			Left:  closed,
@@ -143,14 +150,13 @@ func (d *Day21) DependsOnHuman(ms string) bool {
 	if m.Op == "" {
 		return false
 	}
-	if m.Left == "humn" || m.Right == "humn" {
-		return true
-	}
 	return d.DependsOnHuman(m.Left) || d.DependsOnHuman(m.Right)
 }
 
 func (d *Day21) Part2(isTest bool) int64 {
 	var open, closed string
+
+	// Find which side of the root depends on the human. (It is only one side.)
 	if d.DependsOnHuman(d.Monkeys["root"].Left) {
 		open = d.Monkeys["root"].Left
 		closed = d.Monkeys["root"].Right
@@ -158,42 +164,31 @@ func (d *Day21) Part2(isTest bool) int64 {
 		open = d.Monkeys["root"].Right
 		closed = d.Monkeys["root"].Left
 	}
-	fmt.Printf("open %v\n", open)
-	fmt.Printf("closed %v\n", closed)
 
-	i := 0
+	// At this point, "open" contains the equation (monkey name) which depends
+	// on the human while "closed" contains an equation that will have an
+	// entirely closed-form since it's not dependent on the huma.n
+
+	// Find a closed form for the human by stripping of the side that isn't
+	// dependent on the human from the open side until it's just "humn" on one
+	// side of the equation.
 	for open != "humn" {
-		fmt.Printf("\n")
-		fmt.Printf("\n")
-		fmt.Printf("\n")
-		fmt.Printf("\n")
-		fmt.Printf("%v\n", d.Monkeys)
 		m := d.Monkeys[open]
 		if d.DependsOnHuman(m.Left) {
 			newName := lib.RandomString(10)
-			if _, ok := d.Monkeys[newName]; ok {
-				panic("dup")
-			}
-			d.Monkeys[newName] = m.InverseL(closed)
+			d.Monkeys[newName] = m.ClosedFormForLHS(closed)
 			closed = newName
 			open = m.Left
 		} else {
 			newName := lib.RandomString(10)
-			if _, ok := d.Monkeys[newName]; ok {
-				panic("dup")
-			}
-			d.Monkeys[newName] = m.InverseR(closed)
+			d.Monkeys[newName] = m.ClosedFormForRHS(closed)
 			closed = newName
 			open = m.Right
 		}
-		fmt.Printf("open %v\n", open)
-		fmt.Printf("closed %v\n", closed)
-		fmt.Printf("%v\n", d.Monkeys)
-		if i > 1 {
-			// break
-		}
-		i++
 	}
 
+	// The "closed" equation is entirely non-dependent on humn, so whatever its
+	// solution is will be the value that humn needs to be for the equation to
+	// be satisfied.
 	return d.Solve(d.Monkeys[closed])
 }
