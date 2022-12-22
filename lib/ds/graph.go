@@ -11,6 +11,10 @@ type Edge[V comparable, W constraints.Ordered] struct {
 	Weight W
 }
 
+func NewEdge[V comparable, W constraints.Ordered](vertex V, weight W) Edge[V, W] {
+	return Edge[V, W]{Vertex: vertex, Weight: weight}
+}
+
 type WeightedGraph[V comparable, W constraints.Ordered] map[V]Set[Edge[V, W]]
 
 func NewWeightedGraph[V comparable, W constraints.Ordered]() WeightedGraph[V, W] {
