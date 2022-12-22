@@ -29,6 +29,13 @@ type Day22 struct {
 
 func (d *Day22) LoadInput(lines []string) error {
 	d.Map = map[lib.GridPoint[int]]bool{}
+
+	// The first half of the monkeys' notes is a map of the board. It is
+	// comprised of a set of open tiles (on which you can move, drawn .) and
+	// solid walls (tiles which you cannot enter, drawn #).
+
+	// So, a path like 10R5 means "go forward 10 tiles, then turn clockwise 90
+	// degrees, then go forward 5 tiles".
 	for r, line := range lines {
 		if line == "" {
 			re := regexp.MustCompile(`(?:(\d+)|(L|R))`)
@@ -333,9 +340,3 @@ func (d *Day22) Part2(isTest bool) int {
 	// The final password is the sum of 1000 times the row, 4 times the column, and the facing.
 	return (pos.R+1)*1000 + (pos.C+1)*4 + facingNum
 }
-
-// The first half of the monkeys' notes is a map of the board. It is comprised
-// of a set of open tiles (on which you can move, drawn .) and solid walls
-// (tiles which you cannot enter, drawn #).
-
-// So, a path like 10R5 means "go forward 10 tiles, then turn clockwise 90 degrees, then go forward 5 tiles".
