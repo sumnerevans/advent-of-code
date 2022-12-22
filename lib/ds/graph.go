@@ -7,8 +7,8 @@ import (
 // Weighted
 
 type Edge[V comparable, W constraints.Ordered] struct {
-	Weight W
 	Vertex V
+	Weight W
 }
 
 type WeightedGraph[V comparable, W constraints.Ordered] map[V]Set[Edge[V, W]]

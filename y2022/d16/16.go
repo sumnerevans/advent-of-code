@@ -27,7 +27,7 @@ func (d *Day16) LoadInput(lines []string) error {
 		flow := lib.ToInt(grps[1])
 		adj := ds.Set[ds.Edge[string, int]]{}
 		for _, x := range strings.Split(grps[2], ", ") {
-			adj.Add(ds.Edge[string, int]{1, x})
+			adj.Add(ds.Edge[string, int]{x, 1})
 		}
 		d.Valves[name] = Valve{Flow: flow, Adj: adj}
 	}
@@ -117,7 +117,7 @@ func (co CurOpens) IsOpen(mask int64) bool {
 func (co CurOpens) Count() (count int) {
 	var i int64
 	for ; i < 64; i++ {
-		if int64(co)&i > 0 {
+		if int64(co)&(1<<i) > 0 {
 			count++
 		}
 	}
