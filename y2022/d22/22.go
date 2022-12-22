@@ -168,13 +168,6 @@ func (d *Day22) Part2(isTest bool) int {
 	sidelen := int(math.Sqrt(float64(len(d.Map) / 6)))
 	fmt.Printf("sidelen %d\n", sidelen)
 
-	// You begin the path in the leftmost open tile of the top row of tiles.
-	pos := d.TopLeft
-
-	// Initially, you are facing to the right (from the perspective of how the
-	// map is drawn).
-	dir := lib.GridPoint[int]{R: 0, C: 1}
-
 	// Form the groups
 	// sides := map[lib.GridPoint[int]](func(pos, dir lib.GridPoint[int]) (lib.GridPoint[int], lib.GridPoint[int])){}
 	// for rowgroup := 0; rowgroup < d.MaxR; rowgroup += sidelen {
@@ -191,23 +184,129 @@ func (d *Day22) Part2(isTest bool) int {
 	// 	}
 	// }
 
+	DirUp := lib.GridPoint[int]{R: -1, C: 0}
+	DirDown := lib.GridPoint[int]{R: 1, C: 0}
+	DirLeft := lib.GridPoint[int]{R: 0, C: -1}
+	DirRight := lib.GridPoint[int]{R: 0, C: 1}
+
 	nextPosDir := func(pos, dir lib.GridPoint[int]) (lib.GridPoint[int], lib.GridPoint[int]) {
-		fmt.Printf("%v %v -> ", pos, dir)
+		// fmt.Printf("%v %v -> ", pos, dir)
 		newPos := lib.GridPoint[int]{
 			R: pos.R + dir.R,
 			C: pos.C + dir.C,
 		}
-		if val, exists := d.Map[newPos]; !exists {
+		newDir := dir
+		if _, exists := d.Map[newPos]; !exists {
 			if isTest {
-				fmt.Printf("%v %v\n", newPos, dir)
 				panic("test")
 			} else {
-				panic("not done")
+				// Hard coding the map
+				//
+				//   1 2
+				//   3
+				// 4 5
+				// 6
+
+				switch dir.C {
+				case 1: // right
+					switch newPos.R / sidelen {
+					case 0:
+						// @2 going right
+						// Go to right of 5, going left
+						newPos = lib.GridPoint[int]{R: sidelen*2 + (sidelen - 1 - newPos.R), C: sidelen*2 - 1}
+						newDir = DirLeft
+					case 1:
+						// @3 going right
+						// Go to bottom of 2, going up
+						newPos = lib.GridPoint[int]{R: sidelen - 1, C: newPos.R + sidelen}
+						newDir = DirUp
+					case 2:
+						// @5 going right
+						// Go to right of 2, going left
+						newPos = lib.GridPoint[int]{R: sidelen*3 - 1 - newPos.R, C: sidelen*3 - 1}
+						newDir = DirLeft
+					case 3:
+						// @6 going right
+						// Go to bottom of 5, going up
+						newPos = lib.GridPoint[int]{R: 3*sidelen - 1, C: newPos.R - 2*sidelen}
+						newDir = DirUp
+					}
+				case -1: // left
+					switch newPos.R / sidelen {
+					case 0:
+						// @1 going left
+						// Go to right of 4, going right
+						newPos = lib.GridPoint[int]{R: 3*sidelen - 1 - newPos.R, C: 0}
+						newDir = DirRight
+					case 1:
+						// @3 going left
+						// Go to top of 4, going down
+						newPos = lib.GridPoint[int]{R: 2 * sidelen, C: newPos.R - sidelen}
+						newDir = DirDown
+					case 2:
+						// @4 going left
+						// Go to left of 1, going right
+						newPos = lib.GridPoint[int]{R: 3*sidelen - 1 - newPos.R, C: sidelen}
+						newDir = DirRight
+					case 3:
+						// @6 going left
+						// Go to top of 1, going down
+						newPos = lib.GridPoint[int]{R: 0, C: newPos.R - sidelen*2}
+						newDir = DirDown
+					}
+				}
+				switch dir.R {
+				case 1: // down
+					switch newPos.C / sidelen {
+					case 0:
+						// @6 going down
+						// Go to 2 going down
+						newPos = lib.GridPoint[int]{R: 0, C: newPos.C + sidelen*2}
+						newDir = DirDown
+					case 1:
+						// @5 going down
+						// Go to 6 going left
+						newPos = lib.GridPoint[int]{R: newPos.C + 2*sidelen, C: sidelen - 1}
+						newDir = DirLeft
+					case 2:
+						// @2 going down
+						// Go to right of 3 going left
+						newPos = lib.GridPoint[int]{R: newPos.C - sidelen, C: sidelen*2 - 1}
+						newDir = DirLeft
+					}
+				case -1: // up
+					switch newPos.C / sidelen {
+					case 0:
+						// @4 going up
+						// Go to left of 3 going right
+						newPos = lib.GridPoint[int]{R: newPos.C + sidelen, C: sidelen}
+						newDir = DirRight
+					case 1:
+						// @1 going up
+						// Go to left of 6 going right
+						newPos = lib.GridPoint[int]{R: newPos.C + 2*sidelen, C: 0}
+						newDir = DirRight
+					case 2:
+						// @2 going up
+						// Go to bottom of 6 going up
+						newPos = lib.GridPoint[int]{R: sidelen*4 - 1, C: newPos.C - 2*sidelen}
+						newDir = DirUp
+					}
+				}
+				// fmt.Printf(">>>>>>>>>>%v %v\n", pos, dir)
+				// fmt.Printf(">>>>>>>>>>%v %v\n", pos.R/sidelen, pos.C/sidelen)
+				// panic("fail!")
 			}
+		}
+		if val, exists := d.Map[newPos]; !exists {
+			panic("shouldn't happen")
 		} else if val {
+			fmt.Printf("%v %v\n", pos, dir)
+			fmt.Printf("blocked\n")
 			return pos, dir
 		} else {
-			return newPos, dir
+			fmt.Printf("%v %v\n", pos, dir)
+			return newPos, newDir
 		}
 	}
 
@@ -248,8 +347,43 @@ func (d *Day22) Part2(isTest bool) int {
 	// 	// fmt.Printf("====\n")
 	// }
 
-	for _, instr := range d.Instrs {
+	// You begin the path in the leftmost open tile of the top row of tiles.
+	pos := d.TopLeft
+
+	// Initially, you are facing to the right (from the perspective of how the
+	// map is drawn).
+	dir := lib.GridPoint[int]{R: 0, C: 1}
+
+	for i, instr := range d.Instrs {
+		fmt.Printf(">>>>>>>>>>%d %v<<<<<<<<\n", i, instr)
+		// for r := 0; r < d.MaxR; r++ {
+		// 	for c := 0; c < d.MaxC; c++ {
+		// 		if pos.R == r && pos.C == c {
+		// 			switch dir.C {
+		// 			case -1:
+		// 				fmt.Printf(lib.ColorString("<", lib.ColorRed))
+		// 			case 1:
+		// 				fmt.Printf(lib.ColorString(">", lib.ColorRed))
+		// 			default:
+		// 				switch dir.R {
+		// 				case -1:
+		// 					fmt.Printf(lib.ColorString("^", lib.ColorRed))
+		// 				case 1:
+		// 					fmt.Printf(lib.ColorString("v", lib.ColorRed))
+		// 				}
+		// 			}
+		// 		} else if val, exists := d.Map[lib.GridPoint[int]{r, c}]; !exists {
+		// 			fmt.Printf(" ")
+		// 		} else if val {
+		// 			fmt.Printf("#")
+		// 		} else {
+		// 			fmt.Printf(".")
+		// 		}
+		// 	}
+		// 	fmt.Printf("\n")
+		// }
 		if instr.Turn == "" {
+			fmt.Printf(">>>>>>>>>>\n")
 			// num
 			for x := 0; x < instr.Magnitude; x++ {
 				newPos, newDir := nextPosDir(pos, dir)
@@ -261,11 +395,13 @@ func (d *Day22) Part2(isTest bool) int {
 				}
 			}
 		} else if instr.Turn == Right {
+			fmt.Printf("TURN RIGHT\n")
 			dir = lib.GridPoint[int]{
 				R: dir.C,
 				C: -dir.R,
 			}
 		} else if instr.Turn == Left {
+			fmt.Printf("TURN LEFT\n")
 			dir = lib.GridPoint[int]{
 				R: -dir.C,
 				C: dir.R,
@@ -273,6 +409,35 @@ func (d *Day22) Part2(isTest bool) int {
 		} else {
 			panic("ohe")
 		}
+		// for r := 0; r < d.MaxR; r++ {
+		// 	for c := 0; c < d.MaxC; c++ {
+		// 		if pos.R == r && pos.C == c {
+		// 			switch dir.C {
+		// 			case -1:
+		// 				fmt.Printf(lib.ColorString("<", lib.ColorRed))
+		// 			case 1:
+		// 				fmt.Printf(lib.ColorString(">", lib.ColorRed))
+		// 			default:
+		// 				switch dir.R {
+		// 				case -1:
+		// 					fmt.Printf(lib.ColorString("^", lib.ColorRed))
+		// 				case 1:
+		// 					fmt.Printf(lib.ColorString("v", lib.ColorRed))
+		// 				}
+		// 			}
+		// 		} else if val, exists := d.Map[lib.GridPoint[int]{r, c}]; !exists {
+		// 			fmt.Printf(" ")
+		// 		} else if val {
+		// 			fmt.Printf("#")
+		// 		} else {
+		// 			fmt.Printf(".")
+		// 		}
+		// 	}
+		// 	fmt.Printf("\n")
+		// }
+		// if i == 10 {
+		// 	break
+		// }
 	}
 
 	// Facing is 0 for right (>), 1 for down (v), 2 for left (<), and 3 for up (^).
@@ -288,6 +453,7 @@ func (d *Day22) Part2(isTest bool) int {
 	}
 
 	// The final password is the sum of 1000 times the row, 4 times the column, and the facing.
+	fmt.Printf("ANS:%d\n", (pos.R+1)*1000+(pos.C+1)*4+facingNum)
 	return (pos.R+1)*1000 + (pos.C+1)*4 + facingNum
 
 	return ans
