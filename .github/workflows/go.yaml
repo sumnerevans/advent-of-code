@@ -5,6 +5,7 @@ on:
 
 env:
   GO_VERSION: 1.19
+  IS_CI: true
 
 jobs:
   test-lib:

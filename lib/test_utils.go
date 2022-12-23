@@ -24,6 +24,7 @@ import (
 var sampleFileRegex = regexp.MustCompile(`^\d+\.test\.\d+\.txt$`)
 
 func SetupTest(t *testing.T, inputs embed.FS, dayNum string) (log *zerolog.Logger, samples [][]string, actual []string) {
+	t.Helper()
 	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	logger := zerolog.New(output).With().Timestamp().Logger()
 	log = &logger
@@ -50,6 +51,13 @@ func SetupTest(t *testing.T, inputs embed.FS, dayNum string) (log *zerolog.Logge
 		actual = Lines(string(actualInput))
 	}
 	return
+}
+
+func SkipIfCI(t *testing.T) {
+	t.Helper()
+	if val, found := os.LookupEnv("IS_CI"); found && val == "true" {
+		t.Skip("Skipping run because we are in CI")
+	}
 }
 
 type Color string

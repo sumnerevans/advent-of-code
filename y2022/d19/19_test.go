@@ -24,7 +24,6 @@ func Test_Day19(t *testing.T) {
 	_, samples, actual := lib.SetupTest(t, inputs, "19")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
-		return
 		if len(samples) > 0 {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
@@ -57,6 +56,7 @@ func Test_Day19(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
+			lib.SkipIfCI(t)
 			day19 := &d19.Day19{}
 			err := day19.LoadInput(actual)
 			require.NoError(t, err)
@@ -121,8 +121,8 @@ func Test_Day19(t *testing.T) {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
 					// Test cases
-					// 56,
-					// 62,
+					56,
+					62,
 				}
 
 				for i, sample := range samples {
@@ -147,6 +147,7 @@ func Test_Day19(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
+			lib.SkipIfCI(t)
 			day19 := &d19.Day19{}
 			err := day19.LoadInput(actual)
 			require.NoError(t, err)
