@@ -83,7 +83,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.1.txt", []byte(lib.AsJSON(output)), 0644)
-					os.WriteFile("answertext.1.txt", []byte(answerText), 0644)
+					os.WriteFile("answertext.1.json", []byte(answerText), 0644)
 				case lib.SubmissionIncorrect:
 					require.NoError(t, lib.WriteIncorrect(1, lib.AsJSON(output)))
 				case lib.SubmissionTooSoon:
@@ -173,7 +173,7 @@ func Test_Day%DAYNUM%(t *testing.T) {
 				switch result {
 				case lib.SubmissionCorrect:
 					os.WriteFile("output.2.txt", []byte(lib.AsJSON(output)), 0644)
-					os.WriteFile("answertext.2.txt", []byte(answerText), 0644)
+					os.WriteFile("answertext.2.json", []byte(answerText), 0644)
 				case lib.SubmissionIncorrect:
 					require.NoError(t, lib.WriteIncorrect(2, lib.AsJSON(output)))
 				case lib.SubmissionTooSoon:

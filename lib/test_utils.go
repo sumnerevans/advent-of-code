@@ -90,7 +90,7 @@ type IncorrectSubmissions struct {
 }
 
 func ReadIncorrect(level int) ([]string, error) {
-	incorrectsJSON, err := os.ReadFile(fmt.Sprintf("incorrect.%d.txt", level))
+	incorrectsJSON, err := os.ReadFile(fmt.Sprintf("incorrect.%d.json", level))
 	if err != nil {
 		return nil, nil
 	}
@@ -112,7 +112,7 @@ func WriteIncorrect(level int, output string) error {
 	incorrectSubmissions = append(incorrectSubmissions, output)
 
 	return os.WriteFile(
-		fmt.Sprintf("incorrect.%d.txt", level),
+		fmt.Sprintf("incorrect.%d.json", level),
 		[]byte(AsJSON(IncorrectSubmissions{Previous: incorrectSubmissions})),
 		0644)
 }
