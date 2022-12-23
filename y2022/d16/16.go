@@ -247,7 +247,7 @@ func DFS(
 				continue
 			}
 
-			pq.Push(e.Open.Count(), e)
+			pq.Push(e.Open.Count()*1000+e.Flow, e)
 		}
 	}
 
