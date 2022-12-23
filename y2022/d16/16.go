@@ -251,6 +251,7 @@ func DFS(
 		}
 	}
 
+	fmt.Printf("ITERS %d\n", i)
 	fmt.Printf("PRUNED %d\n", pruning)
 
 	return best
