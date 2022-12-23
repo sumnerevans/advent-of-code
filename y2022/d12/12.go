@@ -34,7 +34,7 @@ func (d *Day12) Part1() int {
 		}
 	}
 
-	minDist, _ := lib.Dijkstra(
+	best, _ := lib.Dijkstra(
 		func(loc lib.GridPoint[int]) ds.Set[ds.Edge[lib.GridPoint[int], int]] {
 			curVal := d.Map[loc.R][loc.C]
 			adj := ds.Set[ds.Edge[lib.GridPoint[int], int]]{}
@@ -69,7 +69,7 @@ func (d *Day12) Part1() int {
 			return loc == end
 		},
 	)
-	return minDist
+	return best
 }
 
 func (d *Day12) Part2() int {
@@ -87,7 +87,7 @@ func (d *Day12) Part2() int {
 		}
 	}
 
-	minDist, _ := lib.Dijkstra(
+	best, _ := lib.Dijkstra(
 		func(loc lib.GridPoint[int]) ds.Set[ds.Edge[lib.GridPoint[int], int]] {
 			adj := ds.Set[ds.Edge[lib.GridPoint[int], int]]{}
 			if loc.C == -1 {
@@ -136,5 +136,5 @@ func (d *Day12) Part2() int {
 			return loc == end
 		},
 	)
-	return minDist
+	return best
 }

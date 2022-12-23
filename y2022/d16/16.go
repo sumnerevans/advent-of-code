@@ -188,7 +188,7 @@ func DFS(
 
 	// for stack.Peek() != nil {
 	for pq.Len() > 0 {
-		if i%1000000 == 0 {
+		if i%10000000 == 0 {
 			// fmt.Printf("%d %d\n", stack.Len(), i)
 			fmt.Printf("%d %d %d pruned=%d\n", pq.Len(), i, len(seen), pruning)
 			// cur := stack.head

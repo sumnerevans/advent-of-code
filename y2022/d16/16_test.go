@@ -24,7 +24,6 @@ func Test_Day16(t *testing.T) {
 	_, samples, actual := lib.SetupTest(t, inputs, "16")
 
 	ok := t.Run("Part 1", func(t *testing.T) {
-		return
 		if len(samples) > 0 {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []int64{
@@ -54,6 +53,7 @@ func Test_Day16(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
+			lib.SkipIfCI(t)
 			day16 := &d16.Day16{}
 			err := day16.LoadInput(actual)
 			require.NoError(t, err)
@@ -78,8 +78,6 @@ func Test_Day16(t *testing.T) {
 						t.Fatal(lib.ColorString("You already submitted that and it was incorrect\n", lib.ColorRed))
 					}
 				}
-
-				// require.True(t, false, "AUTOSUBMISSION GATE")
 
 				result, answerText := lib.Submit(t, 2022, 16, 1, output)
 				switch result {
@@ -145,6 +143,7 @@ func Test_Day16(t *testing.T) {
 		}
 
 		t.Run("2 Actual input", func(t *testing.T) {
+			lib.SkipIfCI(t)
 			day16 := &d16.Day16{}
 			err := day16.LoadInput(actual)
 			require.NoError(t, err)

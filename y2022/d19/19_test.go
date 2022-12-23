@@ -17,6 +17,7 @@ import (
 var inputs embed.FS
 
 func Test_Day19(t *testing.T) {
+	lib.SkipIfCI(t)
 	t.Log(lib.ColorString("============================================", lib.ColorGreen))
 	t.Log(lib.ColorString("=                START TEST                =", lib.ColorGreen))
 	t.Log(lib.ColorString("============================================", lib.ColorGreen))
