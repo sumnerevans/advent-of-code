@@ -16,7 +16,6 @@ type Valve struct {
 type Day16 struct {
 	Valves     map[string]Valve
 	ValveMasks map[string]int64
-	Distances  map[string]map[string]int
 }
 
 func (d *Day16) LoadInput(lines []string) error {
@@ -27,30 +26,10 @@ func (d *Day16) LoadInput(lines []string) error {
 		flow := lib.ToInt(grps[1])
 		adj := ds.Set[ds.Edge[string, int]]{}
 		for _, x := range strings.Split(grps[2], ", ") {
-			adj.Add(ds.Edge[string, int]{x, 1})
+			adj.Add(ds.NewEdge(x, 1))
 		}
 		d.Valves[name] = Valve{Flow: flow, Adj: adj}
 	}
-
-	d.Distances = map[string]map[string]int{}
-	for name := range d.Valves {
-		d.Distances[name] = map[string]int{}
-		pq := ds.NewPriorityQueue(ds.NewPair(0, name))
-		seen := ds.Set[string]{}
-		for pq.Len() > 0 {
-			cost, el := pq.Pop()
-			seen.Add(el)
-			if _, ok := d.Distances[name][el]; !ok {
-				d.Distances[name][el] = cost
-			}
-			for a := range d.Valves[el].Adj {
-				if !seen.Contains(a.Vertex) {
-					pq.Push(cost+1, a.Vertex)
-				}
-			}
-		}
-	}
-	fmt.Printf("dist %v\n", d.Distances)
 
 	d.ValveMasks = map[string]int64{}
 	i := 0
@@ -58,48 +37,6 @@ func (d *Day16) LoadInput(lines []string) error {
 		d.ValveMasks[name] = 1 << i
 		i++
 	}
-	// fmt.Printf("VM %v\n", d.ValveMasks)
-	// for k, v := range d.ValveMasks {
-	// 	fmt.Printf("k: %s\n", k)
-	// 	fmt.Printf("v: %v\n", lib.BitsOfInt64(v).String())
-	// }
-
-	// 	handled := ds.Set[string]{}
-	// 	for {
-	// 		haszero := false
-	// 		for name, valve := range valves {
-	// 			if handled.Contains(name) || valve.Flow > 0 {
-	// 				continue
-	// 			}
-	// 			fmt.Printf("%v\n", valves)
-	// 			fmt.Printf("ZERO %s %v\n", name, valve)
-	// 			haszero = true
-
-	// 			for n, v := range valves {
-	// 				for a := range v.Adj {
-	// 					if a.Vertex == name {
-	// 						valves[n].Adj.Remove(a)
-	// 						for a := range valve.Adj {
-	// 							valves[n].Adj.Add(ds.Edge[string, int]{a.Weight + 1, a.Vertex})
-	// 						}
-	// 						break
-	// 					}
-	// 				}
-	// 			}
-
-	// 			handled.Add(name)
-
-	// 			break
-	// 		}
-	// 		fmt.Printf("%v\n", valves)
-	// 		if !haszero {
-	// 			break
-	// 		}
-	// 	}
-
-	// d.Valves = valves
-	// fmt.Printf("FINAL\n\n%v\n", d.Valves)
-	// panic("ohea")
 
 	return nil
 }
@@ -180,7 +117,7 @@ type CurState struct {
 }
 
 func (cs CurState) String(maskMap map[string]int64) string {
-	return fmt.Sprintf("{%s @%s t=%d f=%d}", cs.Open.String(maskMap), cs.CurPos, cs.Time, cs.Flow)
+	return fmt.Sprintf("{%s Y@%s E@%s t=%d f=%d}", cs.Open.String(maskMap), cs.CurPos, cs.ElePos, cs.Time, cs.Flow)
 }
 
 type Cons[T any] struct {
@@ -227,7 +164,8 @@ func (s *Stack[T]) Pop() T {
 	return top
 }
 
-// This isn't really DFS, I have no idea what it is.
+// This isn't really DFS, I have no idea what it is. All I know that it's a
+// horrible mess and I'm very ashamed of it lol.
 func DFS(
 	d *Day16,
 	nextStates func(CurState) ds.Set[CurState],
@@ -252,7 +190,7 @@ func DFS(
 	for pq.Len() > 0 {
 		if i%1000000 == 0 {
 			// fmt.Printf("%d %d\n", stack.Len(), i)
-			fmt.Printf("%d %d %d\n", pq.Len(), i, len(seen))
+			fmt.Printf("%d %d %d pruned=%d\n", pq.Len(), i, len(seen), pruning)
 			// cur := stack.head
 			// for cur != nil {
 			// 	fmt.Printf("%v\n", cur.Car.String(d.ValveMasks))
@@ -265,22 +203,6 @@ func DFS(
 		// fmt.Printf("el %v\n", el.String(d.ValveMasks))
 		if seen.Contains(el) {
 			// fmt.Printf("BAR\n", )
-			continue
-		}
-
-		if endState(el) {
-			if el.Flow > best {
-				// fmt.Printf("%v\n", el.String(d.ValveMasks))
-				best = el.Flow
-				fmt.Printf("best %d: %s\n", best, el.String(d.ValveMasks))
-			}
-			// fmt.Printf("ES %v\n", el)
-			// endStates = append(endStates, el)
-			continue
-		}
-
-		if el.Flow+(maxFlowPerMinute)*(30-el.Time) < best {
-			pruning++
 			continue
 		}
 
@@ -349,19 +271,7 @@ func (d *Day16) Part1(isTest bool) int {
 	return DFS(
 		d,
 		func(cur CurState) ds.Set[CurState] {
-			// fmt.Printf("cur %v\n", cur)
 			next := ds.Set[CurState]{}
-			// if cur.Open.AllOpen(d.ValveMasks, d.Valves) {
-			// 	next.Add(
-			// 		CurState{
-			// 			Open:   cur.Open,
-			// 			CurPos: cur.CurPos,
-			// 			Time:   30,
-			// 			Flow:   cur.Flow + (30-cur.Time)*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
-			// 		},
-			// 	)
-			// 	return next
-			// }
 
 			// Stay
 			if cur.Open.AllOpen(d.ValveMasks, d.Valves) {
@@ -386,6 +296,7 @@ func (d *Day16) Part1(isTest bool) int {
 					)
 				}
 
+				// Move
 				for v := range d.Valves[cur.CurPos].Adj {
 					if cur.Time+1 <= 30 {
 						next.Add(
@@ -427,19 +338,7 @@ func (d *Day16) Part2(isTest bool) int {
 	return DFS(
 		d,
 		func(cur CurState) ds.Set[CurState] {
-			// fmt.Printf("cur %v\n", cur)
 			next := ds.Set[CurState]{}
-			// if cur.Open.AllOpen(d.ValveMasks, d.Valves) {
-			// 	next.Add(
-			// 		CurState{
-			// 			Open:   cur.Open,
-			// 			CurPos: cur.CurPos,
-			// 			Time:   30,
-			// 			Flow:   cur.Flow + (30-cur.Time)*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
-			// 		},
-			// 	)
-			// 	return next
-			// }
 
 			// Stay
 			if cur.Open.AllOpen(d.ValveMasks, d.Valves) {
@@ -487,7 +386,8 @@ func (d *Day16) Part2(isTest bool) int {
 					}
 				}
 				// Both open valves (must be at different valves)
-				if d.ValveMasks[cur.ElePos] != d.ValveMasks[cur.CurPos] && d.Valves[cur.ElePos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.ElePos]) &&
+				if d.ValveMasks[cur.ElePos] != d.ValveMasks[cur.CurPos] &&
+					d.Valves[cur.ElePos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.ElePos]) &&
 					d.Valves[cur.CurPos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.CurPos]) {
 					next.Add(
 						CurState{
@@ -502,7 +402,7 @@ func (d *Day16) Part2(isTest bool) int {
 
 				// Both move
 				for newCurPos := range d.Valves[cur.CurPos].Adj {
-					for newElePos := range d.Valves[cur.CurPos].Adj {
+					for newElePos := range d.Valves[cur.ElePos].Adj {
 						if cur.Time+1 <= 26 {
 							next.Add(
 								CurState{
