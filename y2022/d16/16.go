@@ -108,12 +108,38 @@ func (co CurOpens) Opens(maskMap map[string]int64) []string {
 	return opens
 }
 
+type StrippedCurState struct {
+	Open   CurOpens
+	CurPos string
+	ElePos string
+	Time   int
+}
+
+func (scs StrippedCurState) WithFlow(f int) CurState {
+	return CurState{
+		Open:   scs.Open,
+		CurPos: scs.CurPos,
+		ElePos: scs.ElePos,
+		Time:   scs.Time,
+		Flow:   f,
+	}
+}
+
 type CurState struct {
 	Open   CurOpens
 	CurPos string
 	ElePos string
 	Time   int
 	Flow   int
+}
+
+func (cs CurState) StripFlow() StrippedCurState {
+	return StrippedCurState{
+		Open:   cs.Open,
+		CurPos: cs.CurPos,
+		ElePos: cs.ElePos,
+		Time:   cs.Time,
+	}
 }
 
 func (cs CurState) String(maskMap map[string]int64) string {
@@ -175,20 +201,21 @@ func DFS(
 ) int {
 	// endStates := []CurState{}
 
-	pq := ds.NewMaxPriorityQueue(ds.NewPair(0, start))
+	pq := ds.NewMaxPriorityQueue(ds.NewPair(0, start.StripFlow()))
 	// stack := Stack[CurState]{}
 	// stack.Push(start)
 	// pq := ds.NewPriorityQueue(ds.NewPair(0, start))
-	seen := ds.Set[CurState]{}
+	seen := ds.Set[StrippedCurState]{}
 
 	i := 0
-	best := 0
+	best := 1000
 
-	pruning := 0
+	pruning := map[int]int{}
+	dists := map[StrippedCurState]int{start.StripFlow(): 0}
 
 	// for stack.Peek() != nil {
 	for pq.Len() > 0 {
-		if i%10000000 == 0 {
+		if i%10000 == 0 {
 			// fmt.Printf("%d %d\n", stack.Len(), i)
 			fmt.Printf("%d %d %d pruned=%d\n", pq.Len(), i, len(seen), pruning)
 			// cur := stack.head
@@ -220,21 +247,23 @@ func DFS(
 		// })
 
 		// for _, e := range nexts {
-		for e := range nextStates(el) {
+		for e := range nextStates(el.WithFlow(0)) {
 			// if seen.Contains(e) {
 			// 	fmt.Printf("=============HERE\n", )
 			// 	continue
 			// }
 			// fmt.Printf("NEXT %v\n", e.String(d.ValveMasks))
-			if seen.Contains(e) {
+			if seen.Contains(e.StripFlow()) {
 				// fmt.Printf("FOO\n", )
 				continue
 			}
 
+			f := dists[el] + e.Flow
 			if endState(e) {
-				if e.Flow > best {
+				if f > best {
 					// fmt.Printf("%v\n", el.String(d.ValveMasks))
-					best = e.Flow
+					fmt.Printf("PRUNED %v\n", pruning)
+					best = f
 					fmt.Printf("best2 %d: %s\n", best, e.String(d.ValveMasks))
 				}
 				// fmt.Printf("ES %v\n", el)
@@ -242,17 +271,18 @@ func DFS(
 				continue
 			}
 
-			if e.Flow+(maxFlowPerMinute)*(30-e.Time) < best {
-				pruning++
-				continue
-			}
+			// if f+(maxFlowPerMinute*(30-e.Time)) < best {
+			// 	pruning[e.Time]++
+			// 	continue
+			// }
+			dists[e.StripFlow()] = f
 
-			pq.Push(e.Open.Count()*1000+e.Flow, e)
+			pq.Push(e.Open.Count()*1000+f, e.StripFlow())
 		}
 	}
 
 	fmt.Printf("ITERS %d\n", i)
-	fmt.Printf("PRUNED %d\n", pruning)
+	fmt.Printf("PRUNED %v\n", pruning)
 
 	return best
 }
