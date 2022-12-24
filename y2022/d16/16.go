@@ -235,7 +235,7 @@ func DFS(
 				if e.Flow > best {
 					// fmt.Printf("%v\n", el.String(d.ValveMasks))
 					best = e.Flow
-					fmt.Printf("best2 %d: %s\n", best, e.String(d.ValveMasks))
+					fmt.Printf("best2 %d: %s pruned=%d\n", best, e.String(d.ValveMasks), pruning)
 				}
 				// fmt.Printf("ES %v\n", el)
 				// endStates = append(endStates, el)
@@ -336,13 +336,151 @@ func (d *Day16) Part2(isTest bool) int {
 		return v.Flow
 	})(lib.Values(d.Valves)))
 
-	return DFS(
+	useless := 0
+
+	result := DFS(
 		d,
 		func(cur CurState) ds.Set[CurState] {
 			next := ds.Set[CurState]{}
 
-			// Stay
-			if cur.Open.AllOpen(d.ValveMasks, d.Valves) {
+			// Just you open the valve, elephant moves
+			if d.Valves[cur.CurPos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.CurPos]) {
+				for v := range d.Valves[cur.ElePos].Adj {
+					if cur.Time+1 <= 26 {
+						next.Add(
+							CurState{
+								Open:   cur.Open.WithOpen(d.ValveMasks[cur.CurPos]),
+								CurPos: cur.CurPos,
+								ElePos: v.Vertex,
+								Time:   cur.Time + 1,
+								Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+							},
+						)
+					}
+				}
+			}
+
+			// Just elephant opens the valve, you move
+			if d.Valves[cur.ElePos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.ElePos]) {
+				for v := range d.Valves[cur.CurPos].Adj {
+					if cur.Time+1 <= 26 {
+						next.Add(
+							CurState{
+								Open:   cur.Open.WithOpen(d.ValveMasks[cur.ElePos]),
+								CurPos: v.Vertex,
+								ElePos: cur.ElePos,
+								Time:   cur.Time + 1,
+								Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+							},
+						)
+					}
+				}
+			}
+
+			// Both open valves (must be at different valves)
+			if d.ValveMasks[cur.ElePos] != d.ValveMasks[cur.CurPos] &&
+				d.Valves[cur.ElePos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.ElePos]) &&
+				d.Valves[cur.CurPos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.CurPos]) {
+				next.Add(
+					CurState{
+						Open:   cur.Open.WithOpen(d.ValveMasks[cur.ElePos]).WithOpen(d.ValveMasks[cur.CurPos]),
+						CurPos: cur.CurPos,
+						ElePos: cur.ElePos,
+						Time:   cur.Time + 1,
+						Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+					},
+				)
+			}
+
+			// Both move
+			if cur.Time+1 <= 26 {
+				for newCurPos1 := range d.Valves[cur.CurPos].Adj {
+					for newElePos1 := range d.Valves[cur.ElePos].Adj {
+						if (d.Valves[newCurPos1.Vertex].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[newCurPos1.Vertex])) ||
+							(d.Valves[newElePos1.Vertex].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[newElePos1.Vertex])) {
+							next.Add(
+								CurState{
+									Open:   cur.Open,
+									CurPos: newCurPos1.Vertex,
+									ElePos: newElePos1.Vertex,
+									Time:   cur.Time + 1,
+									Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+								},
+							)
+						} else if cur.Time+2 <= 26 {
+							// keep going
+							for newCurPos2 := range d.Valves[newCurPos1.Vertex].Adj {
+								for newElePos2 := range d.Valves[newElePos1.Vertex].Adj {
+									if (d.Valves[newCurPos2.Vertex].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[newCurPos2.Vertex])) ||
+										(d.Valves[newElePos2.Vertex].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[newElePos2.Vertex])) {
+										next.Add(
+											CurState{
+												Open:   cur.Open,
+												CurPos: newCurPos2.Vertex,
+												ElePos: newElePos2.Vertex,
+												Time:   cur.Time + 2,
+												Flow:   cur.Flow + 2*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+											},
+										)
+									} else if cur.Time+3 <= 26 {
+										// keep going
+										for newCurPos3 := range d.Valves[newCurPos2.Vertex].Adj {
+											for newElePos3 := range d.Valves[newElePos2.Vertex].Adj {
+												if (d.Valves[newCurPos3.Vertex].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[newCurPos3.Vertex])) ||
+													(d.Valves[newElePos3.Vertex].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[newElePos3.Vertex])) {
+													next.Add(
+														CurState{
+															Open:   cur.Open,
+															CurPos: newCurPos3.Vertex,
+															ElePos: newElePos3.Vertex,
+															Time:   cur.Time + 3,
+															Flow:   cur.Flow + 3*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+														},
+													)
+												} else if cur.Time+4 <= 26 {
+													for newCurPos4 := range d.Valves[newCurPos3.Vertex].Adj {
+														for newElePos4 := range d.Valves[newElePos3.Vertex].Adj {
+															if (d.Valves[newCurPos4.Vertex].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[newCurPos4.Vertex])) ||
+																(d.Valves[newElePos4.Vertex].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[newElePos4.Vertex])) {
+																next.Add(
+																	CurState{
+																		Open:   cur.Open,
+																		CurPos: newCurPos4.Vertex,
+																		ElePos: newElePos4.Vertex,
+																		Time:   cur.Time + 4,
+																		Flow:   cur.Flow + 4*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+																	},
+																)
+															} else if cur.Time+5 <= 26 {
+																for newCurPos5 := range d.Valves[newCurPos4.Vertex].Adj {
+																	for newElePos5 := range d.Valves[newElePos4.Vertex].Adj {
+																		next.Add(
+																			CurState{
+																				Open:   cur.Open,
+																				CurPos: newCurPos5.Vertex,
+																				ElePos: newElePos5.Vertex,
+																				Time:   cur.Time + 5,
+																				Flow:   cur.Flow + 5*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
+																			},
+																		)
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// Stay (if there are literally no other options for us to try)
+			if len(next) == 0 {
 				next.Add(
 					CurState{
 						Open:   cur.Open,
@@ -352,71 +490,6 @@ func (d *Day16) Part2(isTest bool) int {
 						Flow:   cur.Flow + (26-cur.Time)*cur.Open.TotalFlow(d.ValveMasks, d.Valves),
 					},
 				)
-				return next
-			} else {
-				// Just you open the valve, elephant moves
-				if d.Valves[cur.CurPos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.CurPos]) {
-					for v := range d.Valves[cur.ElePos].Adj {
-						if cur.Time+1 <= 26 {
-							next.Add(
-								CurState{
-									Open:   cur.Open.WithOpen(d.ValveMasks[cur.CurPos]),
-									CurPos: cur.CurPos,
-									ElePos: v.Vertex,
-									Time:   cur.Time + 1,
-									Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
-								},
-							)
-						}
-					}
-				}
-				// Just elephant opens the valve, you move
-				if d.Valves[cur.ElePos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.ElePos]) {
-					for v := range d.Valves[cur.CurPos].Adj {
-						if cur.Time+1 <= 26 {
-							next.Add(
-								CurState{
-									Open:   cur.Open.WithOpen(d.ValveMasks[cur.ElePos]),
-									CurPos: v.Vertex,
-									ElePos: cur.ElePos,
-									Time:   cur.Time + 1,
-									Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
-								},
-							)
-						}
-					}
-				}
-				// Both open valves (must be at different valves)
-				if d.ValveMasks[cur.ElePos] != d.ValveMasks[cur.CurPos] &&
-					d.Valves[cur.ElePos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.ElePos]) &&
-					d.Valves[cur.CurPos].Flow > 0 && !cur.Open.IsOpen(d.ValveMasks[cur.CurPos]) {
-					next.Add(
-						CurState{
-							Open:   cur.Open.WithOpen(d.ValveMasks[cur.ElePos]).WithOpen(d.ValveMasks[cur.CurPos]),
-							CurPos: cur.CurPos,
-							ElePos: cur.ElePos,
-							Time:   cur.Time + 1,
-							Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
-						},
-					)
-				}
-
-				// Both move
-				for newCurPos := range d.Valves[cur.CurPos].Adj {
-					for newElePos := range d.Valves[cur.ElePos].Adj {
-						if cur.Time+1 <= 26 {
-							next.Add(
-								CurState{
-									Open:   cur.Open,
-									CurPos: newCurPos.Vertex,
-									ElePos: newElePos.Vertex,
-									Time:   cur.Time + 1,
-									Flow:   cur.Flow + cur.Open.TotalFlow(d.ValveMasks, d.Valves),
-								},
-							)
-						}
-					}
-				}
 			}
 
 			return next
@@ -428,4 +501,6 @@ func (d *Day16) Part2(isTest bool) int {
 			}
 			return cur.Time == 26
 		}, maxFlowPerMinute)
+	fmt.Printf("USELESS %d\n", useless)
+	return result
 }
