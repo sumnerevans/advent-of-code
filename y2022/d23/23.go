@@ -111,6 +111,7 @@ func (d *Day23) Round(i int, poses ds.Set[lib.GridPoint[int]]) ds.Set[lib.GridPo
 			newPoses.Add(elf)
 		}
 	}
+	lib.Assert(len(poses) == len(newPoses), "lost elf")
 	return newPoses
 }
 

@@ -14,6 +14,9 @@ func Dijkstra[K comparable](
 	seen := ds.Set[K]{}
 
 	for pq.Len() > 0 {
+		if len(seen) > 1000000 {
+			panic("one million seen states. are you sure this is a good idea?")
+		}
 		cost, el := pq.Pop()
 		if seen.Contains(el) {
 			continue
