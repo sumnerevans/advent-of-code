@@ -451,9 +451,9 @@ func (d *Day16) DFS2(minutes int, maxFlowPerMinute int, opt Option) int {
 		}
 
 		step := d.DFS2(minutes, maxFlowPerMinute, o)
-		if opt.Time == 1 || opt.Time == 10 || opt.Time == 15 {
+		if opt.Time == 1 || opt.Time == 5 || opt.Time == 10 || opt.Time == 15 {
 			// fmt.Printf("STEP %v: %d\n", o.String(d.ValveMasks), step)
-			fmt.Printf("STAT %d h=%d m=%d\n", opt.Time, d.DFS2Hit, d.DFS2Miss)
+			fmt.Printf("%sSTAT %d h=%d m=%d p=%d\n", indent, opt.Time, d.DFS2Hit, d.DFS2Miss, d.DFS2Pruned)
 		}
 		best = lib.Max(best, flow+step)
 	}
