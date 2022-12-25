@@ -28,9 +28,9 @@ func Test_Day25(t *testing.T) {
 			ok := t.Run("1 Test cases", func(t *testing.T) {
 				EXPECTED := []string{
 					// Test cases
-					// "1=",
-					// "1-",
-					// "2=-1=0",
+					"1=",
+					"1-",
+					"2=-1=0",
 				}
 
 				for i, sample := range samples {

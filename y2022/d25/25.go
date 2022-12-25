@@ -50,18 +50,16 @@ func (d *Day25) LoadInput(lines []string) error {
 func (d *Day25) Part1(isTest bool) string {
 	var sum int64
 
-
 	for _, s := range d.Nums {
 		sum += s.ToInt()
 	}
 
-	fmt.Printf("SUM=%d\n", sum)
+	fmt.Printf("TARGET SUM=%d\n", sum)
 
 	var hipow int64 = 1
 	for Pow(5, int64(hipow))*2 < sum {
 		hipow *= 5
 	}
-	fmt.Printf("hipow %d\n", hipow)
 
 	res := ""
 	numMap := map[int64]string{-2: "=", -1: "-", 0: "0", 1: "1", 2: "2"}
@@ -72,10 +70,8 @@ func (d *Day25) Part1(isTest bool) string {
 		var hi, lo int64
 
 		place := Pow(5, exp)
-		fmt.Printf("PLACE = %d\n", place)
 
 		for ; m <= 3; m++ {
-			// fmt.Printf("%d\n", place*m)
 			if place*m <= target {
 				lo = m
 			}
@@ -85,19 +81,13 @@ func (d *Day25) Part1(isTest bool) string {
 			}
 		}
 
-		fmt.Printf("t = %d\n", target)
-		fmt.Printf("p*lo = %d\n", place*lo)
-		fmt.Printf("p*hi = %d\n", place*hi)
 		if target-place*lo < place*hi-target {
-			fmt.Printf("lo closer\n")
 			res += numMap[lo]
-			target -= place*lo
+			target -= place * lo
 		} else {
 			res += numMap[hi]
-			target -= place*hi
-			fmt.Printf("hi closer\n")
+			target -= place * hi
 		}
-		fmt.Printf("RES = %s\n", res)
 	}
 
 	for res[0] == '0' {
