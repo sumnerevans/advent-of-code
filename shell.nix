@@ -249,6 +249,9 @@ mkShell {
     pythonWithPackages
     pypy3
 
+    # Typescript
+    typescript
+
     # Utilities
     initDayScript
     cRunScript
