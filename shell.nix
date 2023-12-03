@@ -252,6 +252,10 @@ mkShell {
     # Typescript
     typescript
 
+    # F#
+    dotnet-sdk
+    fsautocomplete
+
     # Utilities
     initDayScript
     cRunScript
