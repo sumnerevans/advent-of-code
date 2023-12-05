@@ -231,10 +231,18 @@ mkShell {
     gdb
     valgrind
 
+    # F#
+    dotnet-sdk
+    fsautocomplete
+
     # Golang
     go_1_19
     gopls
     gotools
+
+    # Kotlin
+    gradle
+    kotlin
 
     # OCaml
     ocaml
@@ -251,10 +259,6 @@ mkShell {
 
     # Typescript
     typescript
-
-    # F#
-    dotnet-sdk
-    fsautocomplete
 
     # Utilities
     initDayScript
