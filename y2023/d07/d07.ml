@@ -132,39 +132,34 @@ let part1 =
 
 let parse_hand_p2 hand_str =
   match List.sort compare (compress hand_str) with
-  | [(5, _)] -> (FiveOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, 'J'); (4, _)] -> (FiveOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (4, 'J')] -> (FiveOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(2, 'J'); (3, _)] -> (FiveOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(2, _); (3, 'J')] -> (FiveOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (4, _)] -> (FourOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, 'J'); _; (3, _)] -> (FourOfAKind, ints_of_hand_str_p2 hand_str)
-  | [_; (1, 'J'); (3, _)] -> (FourOfAKind, ints_of_hand_str_p2 hand_str)
-  | [_; (1, _); (3, 'J')] -> (FourOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (2, 'J'); (2, _)] -> (FourOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (2, _); (2, 'J')] -> (FourOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(2, _); (3, _)] -> (FullHouse, ints_of_hand_str_p2 hand_str)
-  | [(1, 'J'); (2, _); (2, _)] -> (FullHouse, ints_of_hand_str_p2 hand_str)
-  | [(1, 'J'); (1, _); (1, _); (2, _)] ->
+  | [(5, _)]
+   |[(1, 'J'); (4, _)]
+   |[(1, _); (4, 'J')]
+   |[(2, 'J'); (3, _)]
+   |[(2, _); (3, 'J')] ->
+      (FiveOfAKind, ints_of_hand_str_p2 hand_str)
+  | [(1, _); (4, _)]
+   |[(1, 'J'); _; (3, _)]
+   |[_; (1, 'J'); (3, _)]
+   |[_; (1, _); (3, 'J')]
+   |[(1, _); (2, 'J'); (2, _)]
+   |[(1, _); (2, _); (2, 'J')] ->
+      (FourOfAKind, ints_of_hand_str_p2 hand_str)
+  | [(2, _); (3, _)] | [(1, 'J'); (2, _); (2, _)] ->
+      (FullHouse, ints_of_hand_str_p2 hand_str)
+  | [(1, 'J'); (1, _); (1, _); (2, _)]
+   |[(1, _); (1, 'J'); (1, _); (2, _)]
+   |[(1, _); (1, _); (1, 'J'); (2, _)]
+   |[(1, _); (1, _); (1, _); (2, 'J')]
+   |[_; _; (3, _)] ->
       (ThreeOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (1, 'J'); (1, _); (2, _)] ->
-      (ThreeOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (1, _); (1, 'J'); (2, _)] ->
-      (ThreeOfAKind, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (1, _); (1, _); (2, 'J')] ->
-      (ThreeOfAKind, ints_of_hand_str_p2 hand_str)
-  | [_; _; (3, _)] -> (ThreeOfAKind, ints_of_hand_str_p2 hand_str)
   | [_; (2, _); (2, _)] -> (TwoPair, ints_of_hand_str_p2 hand_str)
-  | [_; _; _; (2, _)] -> (OnePair, ints_of_hand_str_p2 hand_str)
-  | [(1, 'J'); (1, _); (1, _); (1, _); (1, _)] ->
-      (OnePair, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (1, 'J'); (1, _); (1, _); (1, _)] ->
-      (OnePair, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (1, _); (1, 'J'); (1, _); (1, _)] ->
-      (OnePair, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (1, _); (1, _); (1, 'J'); (1, _)] ->
-      (OnePair, ints_of_hand_str_p2 hand_str)
-  | [(1, _); (1, _); (1, _); (1, _); (1, 'J')] ->
+  | [_; _; _; (2, _)]
+   |[(1, 'J'); (1, _); (1, _); (1, _); (1, _)]
+   |[(1, _); (1, 'J'); (1, _); (1, _); (1, _)]
+   |[(1, _); (1, _); (1, 'J'); (1, _); (1, _)]
+   |[(1, _); (1, _); (1, _); (1, 'J'); (1, _)]
+   |[(1, _); (1, _); (1, _); (1, _); (1, 'J')] ->
       (OnePair, ints_of_hand_str_p2 hand_str)
   | _ -> (HighCard, ints_of_hand_str_p2 hand_str)
 
@@ -173,32 +168,13 @@ let part2 =
     List.map
       (fun s ->
         match String.split_on_char ' ' s with
-        | [hand; bet] ->
-            (* let hand_type, (a, b, c, d, e) = parse_hand_p2 hand in *)
-            (* printf "%s %d (%d, %d, %d, %d, %d)\n" hand *)
-            (*   (int_of_hand hand_type) a b c d e ; *)
-            (* flush stdout ; *)
-            (* let _ = *)
-            (*   match ints_of_hand_str_p2 hand with *)
-            (*   | 14, _, _, _, _ -> input_line stdin *)
-            (*   | _, 14, _, _, _ -> input_line stdin *)
-            (*   | _, _, 14, _, _ -> input_line stdin *)
-            (*   | _, _, _, 14, _ -> input_line stdin *)
-            (*   | _, _, _, _, 14 -> input_line stdin *)
-            (*   | _ -> "" *)
-            (* in *)
-            (* () ; *)
-            (parse_hand_p2 hand, int_of_string bet)
+        | [hand; bet] -> (parse_hand_p2 hand, int_of_string bet)
         | _ -> failwith "Invalid input" )
       (read_file file)
   in
   List.fold_left ( + ) 0
   @@ List.mapi
-       (fun i ((hand_type, (a, b, c, d, e)), bet) ->
-         printf "%d (%d, %d, %d, %d, %d) %d %d" (int_of_hand hand_type) a b c
-           d e (i + 1) bet ;
-         print_newline () ;
-         (i + 1) * bet )
+       (fun i (_, bet) -> (i + 1) * bet)
        (List.sort
           (fun (hand1, _) (hand2, _) -> compare_hands hand2 hand1)
           hands )
