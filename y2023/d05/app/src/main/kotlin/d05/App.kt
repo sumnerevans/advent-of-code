@@ -5,125 +5,59 @@ package d05
 
 import java.io.BufferedReader
 import java.io.File
-import java.math.BigInteger
 
-class Range {
-    var start: BigInteger
-    var end: BigInteger
-
-    constructor(start: BigInteger, length: BigInteger) {
-        this.start = start
-        this.end = start + length - 1.toBigInteger()
+fun doTransforms(transformSets: List<List<Pair<Pair<Long, Long>, Long>>>, seedIn: Long): Long {
+    var seed = seedIn
+    for (transforms in transformSets) {
+        for ((transform_range, offset) in transforms) {
+            if (seed >= transform_range.first &&
+                            seed < transform_range.first + transform_range.second
+            ) {
+                seed += offset
+                break
+            }
+        }
     }
-
-    fun length(): BigInteger {
-        return this.end - this.start + 1.toBigInteger()
-    }
-
-    fun containsRange(other: Range): Boolean {
-        return this.start <= other.start && this.end >= other.end
-    }
-
-    fun containsValue(value: BigInteger): Boolean {
-        return this.start <= value && this.end >= value
-    }
-
-    override fun toString(): String {
-        return "Range($start, $end)"
-    }
-
-    fun overlaps(other: Range): Boolean {
-        return this.containsValue(other.start) || this.containsValue(other.end)
-    }
+    return seed
 }
 
 fun main() {
     val filename =
-    // "/home/sumner/projects/github.com/sumnerevans/advent-of-code/y2023/d05/05.test.1.txt"
+    //       "/home/sumner/projects/github.com/sumnerevans/advent-of-code/y2023/d05/05.test.1.txt"
     "/home/sumner/projects/github.com/sumnerevans/advent-of-code/y2023/d05/05.txt"
     val bufferedReader: BufferedReader = File(filename).bufferedReader()
 
     val seeds =
-            bufferedReader
-                    .readLine()
-                    .substring(7)
-                    .split(" ")
-                    .map { it.toBigInteger() }
-                    .toMutableList()
-    var seedRanges = seeds.chunked(2).map { Range(it[0], it[1]) }.toMutableList()
-
-    // check if any of the seed ranges overlap
-    // val totalRangeLength = seedRanges.sumOf { it.length() }
+            bufferedReader.readLine().substring(7).split(" ").map { it.toLong() }.toMutableList()
 
     bufferedReader.readLine() // eat the first empty line
+
+    var transformSets = mutableListOf<List<Pair<Pair<Long, Long>, Long>>>()
 
     while (true) {
         if (bufferedReader.readLine() == null) { // eat the map line
             break
         }
 
-        val transforms = mutableListOf<Pair<Range, BigInteger>>()
+        val transforms = mutableListOf<Pair<Pair<Long, Long>, Long>>()
         while (true) {
             val line = bufferedReader.readLine()
             if (line == null || line == "") {
                 break
             }
             val (dst, src, len) = line.split(" ")
-            transforms.add(
-                    Pair(
-                            Range(src.toBigInteger(), len.toBigInteger()),
-                            dst.toBigInteger() - src.toBigInteger()
-                    )
-            )
+            transforms.add(Pair(Pair(src.toLong(), len.toLong()), dst.toLong() - src.toLong()))
         }
-
-        for (i in 0 until seeds.size) {
-            for ((transform_range, offset) in transforms) {
-                if (seeds[i] >= transform_range.start && seeds[i] <= transform_range.end) {
-                    seeds[i] += offset
-                    break
-                }
-            }
-        }
-
-        val newSeedRanges = mutableListOf<Range>()
-        for (seedRange in seedRanges) {
-            println(seedRange)
-            val overlaps = mutableListOf<Range>()
-            for ((transformRange, offset) in transforms) {
-                println("  " + transformRange.toString())
-                if (transformRange.overlaps(seedRange)) {
-                    overlaps.add(transformRange)
-                }
-            }
-
-            // if (transformRange.containsRange(seedRange)) {
-            //    newSeedRanges.add(Range(seedRange.start + offset, seedRange.length()))
-            //    break
-            // } else if (transformRange.containsValue(seedRange.start)) {
-            //    val overlapAmount = transformRange.end - seedRange.start + 1.toBigInteger()
-            //    newSeedRanges.add(Range(seedRange.start + offset, overlapAmount))
-            //    newSeedRanges.add(
-            //            Range(
-            //                    transformRange.end + 1.toBigInteger(),
-            //                    seedRange.length() - overlapAmount
-            //            )
-            //    )
-            //    break
-            // } else if (transformRange.containsValue(seedRange.end)) {
-            //    val overlapAmount = seedRange.end - transformRange.start + 1.toBigInteger()
-            //    newSeedRanges.add(Range(seedRange.start, seedRange.length() - overlapAmount))
-            //    newSeedRanges.add(Range(transformRange.start + offset, overlapAmount))
-            //    break
-            // }
-        }
-        println(newSeedRanges.sumOf { it.length() })
-        println(newSeedRanges)
-        seedRanges = newSeedRanges
+        transformSets.add(transforms)
     }
+
     print("Part 1: ")
-    println(seeds.min())
+    println(seeds.map { doTransforms(transformSets, it) }.min())
 
     print("Part 2: ")
-    println(seedRanges.minBy { it.start }.start)
+    println(
+            seeds.chunked(2)
+                    .map { (it[0]..(it[0] + it[1])).map { doTransforms(transformSets, it) }.min() }
+                    .min()
+    )
 }
