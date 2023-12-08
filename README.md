@@ -55,15 +55,19 @@ input using `curl`.
 
 ## Results
 
-### 2023 (2\*)
+### 2023 (10\*)
 
 I did a random language from this wheel every night:
 https://wheelgenerator.com/#?session=yNVh4tmDjxdOAKtq
 
 ```
-      -------Part 1--------   -------Part 2--------
-Day       Time  Rank  Score       Time  Rank  Score
-  1   00:11:38  5636      0   00:21:47  2021      0
+      -------Part 1--------   --------Part 2--------
+Day       Time  Rank  Score       Time   Rank  Score
+  8   00:20:16  5859      0   00:42:07   2970      0
+  7   01:11:56  8044      0   02:06:29   8720      0
+  5   01:14:02  9429      0       >24h  57697      0
+  2   00:44:29  9493      0       >24h  94541      0
+  1   00:11:38  5636      0   00:21:47   2021      0
 ```
 
 ### 2022 (50\*)
