@@ -23,13 +23,13 @@ printfn "Part 1:"
 
 let rec step_p1 current directionIdx =
     if current = "ZZZ" then
-        0
+        directionIdx
     else
         let (left, right) = map[current]
 
         match directions[directionIdx % directions.Length] with
-        | 'L' -> 1 + (step_p1 left (directionIdx + 1))
-        | 'R' -> 1 + (step_p1 right (directionIdx + 1))
+        | 'L' -> (step_p1 left (directionIdx + 1))
+        | 'R' -> (step_p1 right (directionIdx + 1))
         | _ -> failwith "invalid direction"
 
 printfn "%A" (step_p1 "AAA" 0)
