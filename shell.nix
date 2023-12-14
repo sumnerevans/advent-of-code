@@ -15,8 +15,6 @@ let
   );
   binName = "python";
 
-  PROJECT_ROOT = builtins.getEnv "PWD";
-
   curl = ''${pkgs.curl}/bin/curl -f --cookie "session=$sessionToken"'';
   rg = "${ripgrep}/bin/rg --color never";
 
@@ -38,17 +36,17 @@ let
 
     ${getDayScriptPart "initday"}
 
-    mkdir -p ${PROJECT_ROOT}/$yearDirname/d$day
-    touch ${PROJECT_ROOT}/$yearDirname/d$day/$day.test.1.txt
-    cat ${PROJECT_ROOT}/templates/template.go \
+    mkdir -p $PROJECT_ROOT/$yearDirname/d$day
+    touch $PROJECT_ROOT/$yearDirname/d$day/$day.test.1.txt
+    cat $PROJECT_ROOT/templates/template.go \
       | sed "s/%DAYNUM%/$day/g" \
-      > ${PROJECT_ROOT}/$yearDirname/d$day/$day.go
-    cat ${PROJECT_ROOT}/templates/testtemplate.go \
+      > $PROJECT_ROOT/$yearDirname/d$day/$day.go
+    cat $PROJECT_ROOT/templates/testtemplate.go \
       | sed "s/%DAYNUM%/$day/g" \
       | sed "s/%YEARNUM%/$year/g" \
-      > ${PROJECT_ROOT}/$yearDirname/d$day/''${day}_test.go
+      > $PROJECT_ROOT/$yearDirname/d$day/''${day}_test.go
 
-    cd ${PROJECT_ROOT}/$yearDirname/d$day
+    cd $PROJECT_ROOT/$yearDirname/d$day
   '';
 
   getInputScript = writeShellScriptBin "getinput" ''
@@ -66,10 +64,10 @@ let
 
     [[ -f $day.txt ]] && less $day.txt && exit 0
 
-    if [[ -f ${PROJECT_ROOT}/.session_token ]]; then
+    if [[ -f $PROJECT_ROOT/.session_token ]]; then
       dayTruncated=$day
       [[ $(echo "$day < 10" | ${bc}/bin/bc) == "1" ]] && dayTruncated=''${day:1}
-      sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
+      sessionToken=$(cat $PROJECT_ROOT/.session_token)
       ${curl} --output $day.txt https://adventofcode.com/$year/day/$dayTruncated/input
     else
       ${noSessionToken}
@@ -85,8 +83,8 @@ let
     [[ ! $(echo $yearDirname | ${rg} "y\d{4}") ]] && exit 0
     year=''${yearDirname:1}
 
-    if [[ -f ${PROJECT_ROOT}/.session_token ]]; then
-      sessionToken=$(cat ${PROJECT_ROOT}/.session_token)
+    if [[ -f $PROJECT_ROOT/.session_token ]]; then
+      sessionToken=$(cat $PROJECT_ROOT/.session_token)
       ${curl} -s https://adventofcode.com/$year/leaderboard/self |
         ${html-xml-utils}/bin/hxselect -c pre |
         ${gnused}/bin/sed "s/<[^>]*>//g" |
@@ -182,36 +180,12 @@ let
     ./bin/$day --test <inputs/$day.txt
   '';
 
-  # CoC Config
-  cocConfig = writeText "coc-settings.json" (
-    builtins.toJSON {
-      "python.formatting.provider" = "black";
-      "python.linting.flake8Enabled" = true;
-      "python.linting.mypyEnabled" = true;
-      "python.linting.pylintEnabled" = false;
-      "python.pythonPath" = "${pythonWithPackages}/bin/${binName}";
-      "clangd.path" = "${clang-tools}/bin/clangd";
-      "languageserver" = {
-        "ocaml-lsp" = {
-          command = "${ocamlPackages.ocaml-lsp}/bin/ocamllsp";
-          filetypes = [ "ocaml" "reason" ];
-        };
-      };
-    }
-  );
-
   twitchChatScript = writeShellScriptBin "twitchchat" ''
-    TOKEN=$(cat ${PROJECT_ROOT}/.chat_token) 
+    TOKEN=$(cat $PROJECT_ROOT/.chat_token) 
     ttchat --channel sumnerevans --token $TOKEN
   '';
 in
 mkShell {
-  shellHook = ''
-    mkdir -p .vim
-    ln -sf ${cocConfig} ${PROJECT_ROOT}/.vim/coc-settings.json
-  '';
-
-  PROJECT_ROOT = PROJECT_ROOT;
   POST_CD_COMMAND = "${printStatsScript}/bin/printstats";
 
   buildInputs = [
