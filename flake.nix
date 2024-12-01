@@ -190,7 +190,6 @@
             # Core
             coreutils
             gnumake
-            rnix-lsp
             sloccount
             tokei
 
@@ -204,11 +203,11 @@
             valgrind
 
             # F#
-            dotnet-sdk
-            fsautocomplete
+            # dotnet-sdk
+            # fsautocomplete
 
             # Golang
-            go_1_19
+            go
             gopls
             gotools
 
