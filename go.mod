@@ -4,7 +4,7 @@ go 1.23
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
-	github.com/rs/zerolog v1.29.1
+	github.com/rs/zerolog v1.30.0
 	github.com/stretchr/testify v1.8.3
 	golang.org/x/exp v0.0.0-20221106115401-f9659909a136
 )
