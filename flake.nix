@@ -12,7 +12,7 @@
         pkgs = import nixpkgs { inherit system; };
 
         pythonWithPackages = pkgs.python3.withPackages
-          (ps: with ps; [ black flake8 graphviz numpy pynvim z3 ]);
+          (ps: with ps; [ black flake8 graphviz numpy pynvim z3-solver ]);
         binName = "python";
 
         curl = ''${pkgs.curl}/bin/curl -f --cookie "session=$sessionToken"'';
@@ -190,7 +190,6 @@
             # Core
             coreutils
             gnumake
-            sloccount
             tokei
 
             # Streaming
@@ -202,8 +201,8 @@
             gdb
             valgrind
 
-            # F#
-            # dotnet-sdk
+            # F#/C#
+            dotnet-sdk
             # fsautocomplete
 
             # Golang
