@@ -5,3 +5,4 @@
 __pycache__
 bin/
 leaderboard-analysis/*.json
+obj/

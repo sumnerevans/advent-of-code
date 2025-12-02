@@ -202,7 +202,7 @@
             valgrind
 
             # F#/C#
-            dotnet-sdk
+            dotnet-sdk_9
             # fsautocomplete
 
             # Golang
