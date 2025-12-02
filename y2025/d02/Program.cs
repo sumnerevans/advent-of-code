@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-
 public static class Program
 {
     readonly record struct Range(long Start, long End);
@@ -9,8 +6,6 @@ public static class Program
     {
         using (var reader = new StreamReader("02.txt"))
         // using (var reader = new StreamReader("02.test.01.txt"))
-        // using (var reader = new StreamReader("02.test.02.txt"))
-        // using (var reader = new StreamReader("02.test.03.txt"))
         {
             var ranges = reader
                 .ReadLine()!
@@ -25,7 +20,6 @@ public static class Program
 
             Console.WriteLine($"Part 1: {Part1(ranges)}");
             Console.WriteLine($"Part 2: {Part2(ranges)}");
-            Console.WriteLine(new char[]{'a'}.ToString());
         }
     }
 
@@ -44,10 +38,7 @@ public static class Program
         }
     }
 
-    static long Part2(List<Range> ranges)
-    {
-        return ranges.SelectMany(InvalidPart2).Sum();
-    }
+    static long Part2(List<Range> ranges) => ranges.SelectMany(InvalidPart2).Sum();
 
     static IEnumerable<long> InvalidPart2(Range range)
     {
