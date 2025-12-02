@@ -39,7 +39,6 @@ public static class Program
 
         Console.WriteLine($"Part 1: {Part1(instrs)}");
         Console.WriteLine($"Part 2: {Part2(instrs)}");
-        // Incorrect part 2: 6039
     }
 
     static int Part1(List<Instr> instrs) => Locations(instrs).Count(loc => loc == 0);
@@ -67,9 +66,6 @@ public static class Program
         int location = 50;
         foreach (var instr in instrs)
         {
-            Console.WriteLine($"{location} {instr}");
-
-            Console.WriteLine(instr.Count / 100);
             int newLoc = instr.Direction switch
             {
                 Direction.Left => location - instr.Count,
@@ -77,21 +73,12 @@ public static class Program
             };
 
             if ((location < 0 && newLoc > 0) || (location > 0 && newLoc < 0))
-            {
-                Console.WriteLine("pass");
                 yield return 1;
-            }
 
-            Console.WriteLine($" -> {newLoc}");
             if (newLoc == 0)
-            {
-                Console.WriteLine("land");
                 yield return 1;
-            }
             else
-            {
                 yield return Math.Abs(newLoc / 100);
-            }
 
             location = newLoc % 100;
         }
