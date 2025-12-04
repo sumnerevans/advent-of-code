@@ -214,15 +214,14 @@ print("\nPart 2:")
 def part2(lines: List[str], test: bool = False) -> int:
     ans = 0
 
-    M = [x for x in lines]
+    M = [list(line) for line in lines]
+    maxR = len(lines)
+    maxC = len(lines[0])
 
     while True:
         changed = 0
-        maxR = len(lines)
-        maxC = len(lines[0])
-        newM = []
+        newM = [x[:] for x in M]
         for r, line in enumerate(M):
-            newM.append([])
             for c, ch in enumerate(line):
                 if ch == "@":
                     adjs = grid_adjs(
@@ -231,11 +230,9 @@ def part2(lines: List[str], test: bool = False) -> int:
                     if sum(map(lambda a: 1 if M[a[0]][a[1]] == "@" else 0, adjs)) < 4:
                         changed += 1
                         ans += 1
-                        newM[r].append("x")
+                        newM[r][c] = "x"
                     else:
-                        newM[r].append("@")
-                else:
-                    newM[r].append(ch)
+                        newM[r][c] = "@"
 
         M = newM
 
