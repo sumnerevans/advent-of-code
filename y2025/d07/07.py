@@ -32,11 +32,6 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
-# Utilities
-def cache():  # Python 3.9 compat
-    return ft.lru_cache(maxsize=None)
-
-
 print(f"\n{'=' * 30}\n")
 
 # Read the input
@@ -126,7 +121,7 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str], test: bool = False) -> int:
-    @cache()
+    @ft.cache
     def worlds(dr, loc):
         if dr >= len(lines):
             return 1
@@ -137,7 +132,9 @@ def part2(lines: List[str], test: bool = False) -> int:
 
         return w
 
-    return worlds(1, lines[0].index("S"))
+    a =  worlds(1, lines[0].index("S"))
+    print(worlds.cache_info())
+    return a
 
 
 # Run test on part 2

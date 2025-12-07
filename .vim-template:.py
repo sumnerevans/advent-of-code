@@ -135,10 +135,6 @@ def bitstrtoint(s: Union[str, List[Union[int, str, bool]]]) -> int:
     return int(s, 2)
 
 
-def cache():  # Python 3.9 compat
-    return ft.lru_cache(maxsize=None)
-
-
 def chunks(iterable, n):
     if n < 1:
         raise Exception('not allowed')
