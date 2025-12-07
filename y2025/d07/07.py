@@ -1,19 +1,8 @@
 #! /usr/bin/env python3
 
 import functools as ft
-import heapq
-import itertools as it
-import math
-import operator
-import os
-import re
-import string
 import sys
 import time
-from collections import defaultdict
-from copy import deepcopy
-from enum import Enum, IntEnum
-from fractions import Fraction
 from typing import (Callable, Dict, Generator, Iterable, Iterator, List, Match, Optional, Set,
                     Tuple, TypeVar, Union)
 
@@ -137,18 +126,14 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str], test: bool = False) -> int:
-    ans = 1
-
     @cache()
     def worlds(dr, loc):
-        w = 0
         if dr >= len(lines):
             return 1
         if lines[dr][loc] == "^":
-            w += worlds(dr + 1, loc - 1)
-            w += worlds(dr + 1, loc + 1)
+            return worlds(dr + 1, loc - 1) + worlds(dr + 1, loc + 1)
         else:
-            w = worlds(dr + 1, loc)
+            return worlds(dr + 1, loc)
 
         return w
 
