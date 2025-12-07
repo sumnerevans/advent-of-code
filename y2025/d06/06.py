@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
 import functools as ft
-import itertools as it
 import heapq
+import itertools as it
 import math
 import operator
 import os
@@ -10,30 +10,18 @@ import re
 import string
 import sys
 import time
-from copy import deepcopy
 from collections import defaultdict
+from copy import deepcopy
 from enum import Enum, IntEnum
 from fractions import Fraction
-from typing import (
-    Callable,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Match,
-    Optional,
-    Set,
-    Tuple,
-    TypeVar,
-    Iterator,
-    Union,
-)
+from typing import (Callable, Dict, Generator, Iterable, Iterator, List, Match, Optional, Set,
+                    Tuple, TypeVar, Union)
 
 TEST = True
 DEBUG = False
 STDIN = False
-INFILENAME = "%FILE%.txt"
-TESTFILENAME = "%FILE%.test.01.txt"
+INFILENAME = "06.txt"
+TESTFILENAME = "06.test.01.txt"
 for arg in sys.argv:
     if arg == "--notest":
         TEST = False
@@ -141,7 +129,7 @@ def cache():  # Python 3.9 compat
 
 def chunks(iterable, n):
     if n < 1:
-        raise Exception('not allowed')
+        raise Exception("not allowed")
     itertype = type(iterable) if type(iterable) in (list, set, tuple) else list
 
     container = []
@@ -156,7 +144,9 @@ def chunks(iterable, n):
 
 
 def dijkstra(
-    next_states: Callable[[K], Iterable[Tuple[int, K]]], start: K, end_state: Callable[[K], bool],
+    next_states: Callable[[K], Iterable[Tuple[int, K]]],
+    start: K,
+    end_state: Callable[[K], bool],
 ) -> int:
     """
     A simple implementation of Dijkstra's shortest path algorithm for finding the
@@ -398,15 +388,15 @@ print(f"\n{'=' * 30}\n")
 
 # Read the input
 if STDIN:
-    input_lines: List[str] = [l.strip() for l in sys.stdin.readlines()]
+    input_lines: List[str] = [l[:-1] for l in sys.stdin.readlines()]
 else:
     with open(INFILENAME) as f:
-        input_lines: List[str] = [l.strip() for l in f.readlines()]
+        input_lines: List[str] = [l[:-1] for l in f.readlines()]
 
 # Try and read in the test file.
 try:
     with open(TESTFILENAME) as f:
-        test_lines: List[str] = [l.strip() for l in f.readlines()]
+        test_lines: List[str] = [l[:-1] for l in f.readlines()]
 except Exception:
     test_lines = []
 
@@ -423,14 +413,9 @@ print("Part 1:")
 def part1(lines: List[str], test: bool = False) -> int:
     ans = 0
 
-    # seq = [int(x) for x in lines]
-    # seq = [int(x) for x in lines[0].split(",")]
-    # L = [[int(x) for x in l] for l in lines]
-    "(<>)"
-    for line in lines:
-        "(<>)"
-
-    "(<>)"
+    L = zip(*[list(l.split()) for l in lines[:-1]])
+    for operands, op in zip(L, lines[-1].split()):
+        ans += eval(f" {op} ".join(operands))
 
     return ans
 
@@ -442,7 +427,7 @@ if TEST:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part1 = part1(test_lines, test=True)
-        expected = %HERE%
+        expected = 4277556
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part1 == expected:
@@ -470,7 +455,7 @@ if tries:
 
 
 # Regression Test
-expected = None  # (<>)
+expected = 6171290547579
 if expected is not None:
     assert ans_part1 == expected
 
@@ -482,7 +467,27 @@ print("\nPart 2:")
 def part2(lines: List[str], test: bool = False) -> int:
     ans = 0
 
-    "(<>)"
+    op_idx = []
+    ops = []
+    for i, c in enumerate(lines[-1]):
+        if c != " ":
+            op_idx.append(i)
+            ops.append(c)
+    op_idx.append(i+1)
+
+    vlines = list(zip(*lines[:-1]))
+
+    o = 0
+    for s, e in zip(op_idx, op_idx[1:]):
+        ev = ""
+        for idx in range(s,e):
+            operand = ''.join(vlines[idx]).strip()
+            if operand:
+                ev += ops[o]
+                ev+= operand.strip()
+        o+=1
+        print(ev[1:])
+        ans += eval(ev[1:])
 
     return ans
 
@@ -494,7 +499,7 @@ if TEST:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part2 = part2(test_lines, test=True)
-        expected = None  # (<>)
+        expected = 3263827
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part2 == expected:
