@@ -429,7 +429,9 @@ def part1(lines: List[str], test: bool = False) -> int:
     def follow(p):
         if parents[p] == p:
             return p
-        return follow(parents[p])
+        root = follow(parents[p])
+        parents[p] = root
+        return root
 
     i = 0
     for e in edges:
@@ -512,9 +514,11 @@ def part2(lines: List[str], test: bool = False) -> int:
     def follow(p):
         if parents[p] == p:
             return p
-        return follow(parents[p])
+        root = follow(parents[p])
+        parents[p] = root
+        return root
 
-    i = 0
+
     ans = 0
     for e in edges:
         p1 = follow(e[1])
