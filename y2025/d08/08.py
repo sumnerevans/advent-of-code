@@ -411,8 +411,6 @@ print("Part 1:")
 
 
 def part1(lines: List[str], test: bool = False) -> int:
-    ans = 0
-
     coords = [tuple(allints(line)) for line in lines]
     parents = [i for i in range(len(coords))]
 
@@ -426,8 +424,6 @@ def part1(lines: List[str], test: bool = False) -> int:
             d = dist(c1, c2)
             G[i][j] = min(G[i][j], d)
 
-    print(G)
-
     edges = sorted([(d, a, b) for a, x in G.items() for b, d in x.items()])
 
     def follow(p):
@@ -440,23 +436,16 @@ def part1(lines: List[str], test: bool = False) -> int:
         if i == n:
             break
         i += 1
-        print("==========", e)
-        print(coords[e[1]], coords[e[2]])
         p1 = follow(e[1])
         p2 = follow(e[2])
-        print(p1, p2)
         if p1 == p2:
-            print("skip")
             continue
         parents[p1] = p2
-        print(parents)
 
     counts = defaultdict(int)
     for x in parents:
         counts[follow(x)] += 1
 
-    print(sorted(counts.values()))
-    print(sorted(counts.values())[-3:])
     return prod(sorted(counts.values())[-3:])
 
 
@@ -518,8 +507,6 @@ def part2(lines: List[str], test: bool = False) -> int:
             d = dist(c1, c2)
             G[i][j] = min(G[i][j], d)
 
-    print(G)
-
     edges = sorted([(d, a, b) for a, x in G.items() for b, d in x.items()])
 
     def follow(p):
@@ -530,17 +517,12 @@ def part2(lines: List[str], test: bool = False) -> int:
     i = 0
     ans = 0
     for e in edges:
-        print("==========", e)
-        print(coords[e[1]], coords[e[2]])
         p1 = follow(e[1])
         p2 = follow(e[2])
-        print(p1, p2)
         if p1 == p2:
-            print("skip")
             continue
         parents[p1] = p2
         ans = coords[e[1]][0] * coords[e[2]][0]
-        print(parents)
 
         counts = defaultdict(int)
         for x in parents:
