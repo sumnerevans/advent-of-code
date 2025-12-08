@@ -80,16 +80,9 @@ def dist(c1, c2):
     return abs((c2[0] - c1[0]) ** 2 + (c2[1] - c1[1]) ** 2 + (c2[2] - c1[2]) ** 2)
 
 
-# Part 1
-########################################################################################
-print("Part 1:")
-
-
-def part1(lines: List[str], test: bool = False) -> int:
+@ft.cache
+def get_in(lines):
     coords = [tuple(allints(line)) for line in lines]
-    parents = [i for i in range(len(coords))]
-
-    n = 10 if test else 1000
 
     G = defaultdict(lambda: defaultdict(lambda: float("inf")))
     for i, c1 in enumerate(coords):
@@ -100,6 +93,20 @@ def part1(lines: List[str], test: bool = False) -> int:
             G[i][j] = min(G[i][j], d)
 
     edges = sorted([(d, a, b) for a, x in G.items() for b, d in x.items()])
+
+    return coords, G, edges
+
+
+# Part 1
+########################################################################################
+print("Part 1:")
+
+
+def part1(lines: List[str], test: bool = False) -> int:
+    coords, G, edges = get_in(tuple(lines))
+    parents = [i for i in range(len(coords))]
+
+    n = 10 if test else 1000
 
     def follow(p):
         if parents[p] == p:
@@ -171,20 +178,10 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str], test: bool = False) -> int:
-    coords = [tuple(allints(line)) for line in lines]
+    coords, G, edges = get_in(tuple(lines))
     parents = [i for i in range(len(coords))]
 
     n = 10 if test else 1000
-
-    G = defaultdict(lambda: defaultdict(lambda: float("inf")))
-    for i, c1 in enumerate(coords):
-        for j, c2 in enumerate(coords):
-            if i <= j:
-                continue
-            d = dist(c1, c2)
-            G[i][j] = min(G[i][j], d)
-
-    edges = sorted([(d, a, b) for a, x in G.items() for b, d in x.items()])
 
     def follow(p):
         if parents[p] == p:
