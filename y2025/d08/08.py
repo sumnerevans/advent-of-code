@@ -81,7 +81,7 @@ def dist(c1, c2):
 
 
 @ft.cache
-def get_in(lines):
+def construct_graph(lines):
     coords = [tuple(allints(line)) for line in lines]
 
     G = defaultdict(lambda: defaultdict(lambda: float("inf")))
@@ -103,7 +103,7 @@ print("Part 1:")
 
 
 def part1(lines: List[str], test: bool = False) -> int:
-    coords, G, edges = get_in(tuple(lines))
+    coords, G, edges = construct_graph(tuple(lines))
     parents = [i for i in range(len(coords))]
 
     n = 10 if test else 1000
@@ -115,11 +115,7 @@ def part1(lines: List[str], test: bool = False) -> int:
         parents[p] = root
         return root
 
-    i = 0
-    for e in edges:
-        if i == n:
-            break
-        i += 1
+    for e in edges[:n]:
         p1 = follow(e[1])
         p2 = follow(e[2])
         if p1 == p2:
@@ -178,7 +174,7 @@ print("\nPart 2:")
 
 
 def part2(lines: List[str], test: bool = False) -> int:
-    coords, G, edges = get_in(tuple(lines))
+    coords, G, edges = construct_graph(tuple(lines))
     parents = [i for i in range(len(coords))]
 
     n = 10 if test else 1000
