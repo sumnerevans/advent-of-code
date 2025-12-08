@@ -195,10 +195,7 @@ def part2(lines: List[str], test: bool = False) -> int:
         parents[p1] = p2
         ans = coords[e[1]][0] * coords[e[2]][0]
 
-        counts = defaultdict(int)
-        for x in parents:
-            counts[follow(x)] += 1
-        if len(counts) == 1:
+        if len(set(follow(p) for p in parents)) == 1:
             return ans
 
 
