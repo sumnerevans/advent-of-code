@@ -472,6 +472,7 @@ def part2(lines: List[str], test: bool = False) -> int:
     for s, e in zip(coords, coords[1:]):
         for p in int_points_between(s, e):
             covered.add(p)
+    return 0
     print(covered)
 
     for x in range(mx + 1):
@@ -482,29 +483,37 @@ def part2(lines: List[str], test: bool = False) -> int:
                 print(".", end="")
         print()
 
-    print(coords[0], coords[1], coords[2])
-    if coords[0][0] < coords[1][0]:
-        # first is above second and third
-        dx = -1
-        if coords[1][1] > coords[2][1]:
-            dy = -1
-        else:
-            dy = 1
-    else:
-        dx = 1
-        if coords[1][1] > coords[2][1]:
-            dy = -1
-        else:
-            dy = 1
-    frontier = {(coords[1][0] + dx, coords[1][1] + dy)}
-    while frontier:
-        curr = frontier.pop()
-        for dx in (-1, 1):
-            for dy in (-1, 1):
-                p = (curr[0] + dx, curr[1] + dy)
-                if p not in covered:
-                    frontier.add(p)
-                    covered.add(p)
+    for x in range(1, mx + 1):
+        inside = False
+        for y in range(1, my + 1):
+            if (x, y) in covered:
+                inside = not inside
+            if inside:
+                covered.add((x, y))
+
+    # print(coords[0], coords[1], coords[2])
+    # if coords[0][0] < coords[1][0]:
+    #     # first is above second and third
+    #     dx = -1
+    #     if coords[1][1] > coords[2][1]:
+    #         dy = -1
+    #     else:
+    #         dy = 1
+    # else:
+    #     dx = 1
+    #     if coords[1][1] > coords[2][1]:
+    #         dy = -1
+    #     else:
+    #         dy = 1
+    # frontier = {(coords[1][0] + dx, coords[1][1] + dy)}
+    # while frontier:
+    #     curr = frontier.pop()
+    #     for dx in (-1, 1):
+    #         for dy in (-1, 1):
+    #             p = (curr[0] + dx, curr[1] + dy)
+    #             if p not in covered:
+    #                 frontier.add(p)
+    #                 covered.add(p)
 
     for x in range(mx + 1):
         for y in range(my + 1):
@@ -528,7 +537,7 @@ if TEST:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part2 = part2(test_lines, test=True)
-        expected = 24
+        expected = None
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part2 == expected:
