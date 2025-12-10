@@ -17,11 +17,13 @@ from fractions import Fraction
 from typing import (Callable, Dict, Generator, Iterable, Iterator, List, Match, Optional, Set,
                     Tuple, TypeVar, Union)
 
+import z3
+
 TEST = True
 DEBUG = False
 STDIN = False
 INFILENAME = "10.txt"
-TESTFILENAME = "10.test.02.txt"
+TESTFILENAME = "10.test.01.txt"
 for arg in sys.argv:
     if arg == "--notest":
         TEST = False
@@ -481,6 +483,85 @@ def part2(lines: List[str], test: bool = False) -> int:
     ans = 0
 
     for line in lines:
+        print("======")
+        _, *buttons, joltages = line.split()
+        buttons = [eval(b[:-1] + ",)") for b in buttons]
+        joltages = eval(joltages.replace("{", "(").replace("}", ")"))
+
+        J = [z3.Int(f"j{i}") for i in range(len(joltages))]
+        B = [z3.Int(f"b{i}") for i in range(len(buttons))]
+
+        o = z3.Optimize()
+        o.add(*[J[i] == j for i, j in enumerate(joltages)])
+        o.add(*[b >= 0 for b in B])
+
+        for i, j in enumerate(J):
+            print(i, j)
+            included = set()
+            for idx, button in enumerate(buttons):
+                if i in button:
+                    included.add(idx)
+                    print("", idx, button)
+
+            o.add(z3.Sum(B[i] for i in included) == j)
+
+        o.minimize(z3.Sum(B))
+        print(o)
+        o.check()
+        m = o.model()
+        print(m)
+        ans += sum(m[b].as_long() for b in B)
+        print(ans)
+        continue
+
+        ohea
+        #
+        # adders = []
+        # for b in buttons:
+        #     adder = []
+        #     for i in range(len(joltages)):
+        #         if i in b:
+        #             adder.append(1)
+        #         else:
+        #             adder.append(0)
+        #     adders.append(tuple(adder))
+        # adders.sort(reverse=True)
+        #
+        # coefs = []
+        #
+        # lv = tuple(0 for _ in range(len(joltages)))
+        # hv = tuple(max(joltages) for _ in range(len(joltages)))
+        #
+        # while True:
+        #     print(lv, hv)
+        #     print(half)
+        #
+        #     sum = tuple(0 for _ in range(len(joltages)))
+        #     for coef, adder in zip(half, adders):
+        #         print(coef, adder)
+        #         x = mul(adder, coef)
+        #         sum = add(sum, x)
+        #         print(sum)
+        #
+        #     if gt(sum, joltages):
+        #         print("gt")
+        #         hv = half
+        #     else:
+        #         print("lt")
+        #         lv = half
+        #
+        #     input()
+
+    return ans
+
+    with open("10.ans") as f:
+        answers: List[int] = [int(l.strip()) for l in f.readlines()]
+
+    for i, line in enumerate(lines):
+        print(i, ans)
+        if i < len(answers) and not test:
+            ans += answers[i]
+            continue
         _, *buttons, joltages = line.split()
         joltages = eval(joltages.replace("{", "(").replace("}", ")"))
         buttons = [eval(b[:-1] + ",)") for b in buttons]
@@ -510,7 +591,6 @@ if TEST:
     else:
         test_ans_part2 = part2(test_lines, test=True)
         expected = 33
-        expected = 24 # 2
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part2 == expected:
@@ -537,7 +617,7 @@ if tries2:
     assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-expected = None  # (<>)
+expected = 16757
 if expected is not None:
     assert ans_part2 == expected
 
