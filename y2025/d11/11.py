@@ -76,9 +76,8 @@ print("Part 1:")
 def part1(lines: List[str], test: bool = False) -> int:
     devices = {}
     for line in lines:
-        d, outs = line.split(": ")
-        outputs = outs.split()
-        devices[d] = outs.split()
+        d, *outs = line.split()
+        devices[d[:-1]] = outs
 
     def count(curr):
         if curr == "out":
@@ -135,9 +134,8 @@ print("\nPart 2:")
 def part2(lines: List[str], test: bool = False) -> int:
     devices = {}
     for line in lines:
-        d, outs = line.split(": ")
-        outputs = outs.split()
-        devices[d] = outs.split()
+        d, *outs = line.split()
+        devices[d[:-1]] = outs
 
     @ft.cache
     def count(curr, p1, p2):
@@ -186,7 +184,7 @@ if tries2:
     assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-expected = None  # (<>)
+expected = 358458157650450
 if expected is not None:
     assert ans_part2 == expected
 
