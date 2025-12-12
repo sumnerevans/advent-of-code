@@ -465,68 +465,70 @@ def part2(lines: List[str], test: bool = False) -> int:
 
     coords = [tuple(allints(l)) for l in lines]
     coords.append(coords[0])
-    mx = max(x for x, y in coords)
-    my = max(y for x, y in coords)
-    print(mx, my, mx * my)
+
+    xs = sorted(set(x for x, y in coords))
+    cx = len(xs)
+    ys = sorted(set(y for x, y in coords))
+    cy = len(ys)
+
+    compressed = [(xs.index(x), ys.index(y)) for x, y in coords]
+
     covered = set()
-    for s, e in zip(coords, coords[1:]):
+    for s, e in zip(compressed, compressed[1:]):
         for p in int_points_between(s, e):
             covered.add(p)
-    return 0
-    print(covered)
 
-    for x in range(mx + 1):
-        for y in range(my + 1):
+    for x in range(cx):
+        for y in range(cy):
             if (x, y) in covered:
                 print("#", end="")
             else:
                 print(".", end="")
         print()
 
-    for x in range(1, mx + 1):
-        inside = False
-        for y in range(1, my + 1):
-            if (x, y) in covered:
-                inside = not inside
-            if inside:
+    print()
+
+    outside = set()
+    frontier = {(-1, -1)}
+    while frontier:
+        curr = frontier.pop()
+        outside.add(curr)
+        for c in grid_adjs(curr, ((-1, cx + 1), (-1, cy + 1))):
+            if c not in covered and c not in outside:
+                frontier.add(c)
+
+    for x in range(cx):
+        for y in range(cy):
+            if (x, y) not in outside and (x, y) not in covered:
                 covered.add((x, y))
 
-    # print(coords[0], coords[1], coords[2])
-    # if coords[0][0] < coords[1][0]:
-    #     # first is above second and third
-    #     dx = -1
-    #     if coords[1][1] > coords[2][1]:
-    #         dy = -1
-    #     else:
-    #         dy = 1
-    # else:
-    #     dx = 1
-    #     if coords[1][1] > coords[2][1]:
-    #         dy = -1
-    #     else:
-    #         dy = 1
-    # frontier = {(coords[1][0] + dx, coords[1][1] + dy)}
-    # while frontier:
-    #     curr = frontier.pop()
-    #     for dx in (-1, 1):
-    #         for dy in (-1, 1):
-    #             p = (curr[0] + dx, curr[1] + dy)
-    #             if p not in covered:
-    #                 frontier.add(p)
-    #                 covered.add(p)
-
-    for x in range(mx + 1):
-        for y in range(my + 1):
-            print("x" if (x, y) in covered else ".", end="")
+    for x in range(cx):
+        for y in range(cy):
+            if (x, y) in outside:
+                print("*", end="")
+            elif (x, y) in covered:
+                print("#", end="")
+            else:
+                print(".", end="")
+                covered.add((x, y))
         print()
-    # G = [["." for _ in range(mx + 1)] for _ in range(mx + 1)]
-    # print(G)
-    # for s,e in it.combinations(coords, r=2):
-    #     for x, y in int_points_between(s,e):
-    #         G[x][y] = 'X'
-    #
-    #     print("\n".join(str(l) for l in G))
-    #
+
+    for (i1, (x1, y1)), (i2, (x2, y2)) in it.combinations(enumerate(compressed), r=2):
+        all_in = True
+
+        for x, _ in int_points_between((x1, 0), (x2, 0)):
+            for y, _ in int_points_between((y1, 0), (y2, 0)):
+                if (x, y) not in covered:
+                    all_in = False
+                    break
+            if not all_in:
+                break
+
+        if all_in:
+            ax1, ay1 = coords[i1]
+            ax2, ay2 = coords[i2]
+            ans = max(ans, (abs(ax2 - ax1) + 1) * (abs(ay2 - ay1) + 1))
+
     return ans
 
 
@@ -537,7 +539,8 @@ if TEST:
         print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
     else:
         test_ans_part2 = part2(test_lines, test=True)
-        expected = None
+        expected = 24
+        # expected = None
         if expected is None:
             print(f"{bcolors.FAIL}No test configured!{bcolors.ENDC}")
         elif test_ans_part2 == expected:
@@ -557,14 +560,16 @@ part2_end = time.time()
 print("Result:", ans_part2)
 
 tries2 = [
-    # Store the attempts that failed here.
+    4663234440,
+    113674732,
+    92630,
 ]
 if tries2:
     print("Tries Part 2:", tries2)
     assert ans_part2 not in tries2, "Same as an incorrect answer!"
 
 # Regression Test
-expected = None  # (<>)
+expected = 1544362560
 if expected is not None:
     assert ans_part2 == expected
 
